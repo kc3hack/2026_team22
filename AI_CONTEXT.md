@@ -28,11 +28,11 @@
 
 Git フックは使わず、**Task (go-task) で手動実行**します。
 
-| タスク | 説明 | いつ使うか |
-|--------|------|------------|
-| `task pre-commit` | ステージ済みファイルに lint-staged（ESLint + Prettier）を実行 | コミット前 |
-| `task pre-push` | 現在のブランチが `main` / `master` なら警告して終了コード 1 | push 前 |
-| `task check-before-push` | pre-commit → pre-push を順に実行 | コミット＆push 前の一括確認 |
+| タスク                   | 説明                                                          | いつ使うか                  |
+| ------------------------ | ------------------------------------------------------------- | --------------------------- |
+| `task pre-commit`        | ステージ済みファイルに lint-staged（ESLint + Prettier）を実行 | コミット前                  |
+| `task pre-push`          | 現在のブランチが `main` / `master` なら警告して終了コード 1   | push 前                     |
+| `task check-before-push` | pre-commit → pre-push を順に実行                              | コミット＆push 前の一括確認 |
 
 ```bash
 # 利用可能なタスク一覧
