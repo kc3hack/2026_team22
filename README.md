@@ -70,9 +70,6 @@ pnpm install
 
 # 環境チェック（初回におすすめ）
 pnpm run setup
-
-# Huskyの初期化（初回のみ）
-pnpm run prepare
 ```
 
 ### 環境変数の設定（任意）
