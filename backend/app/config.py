@@ -32,6 +32,12 @@ class Settings(BaseSettings):
     # CORS設定
     CORS_ORIGINS: list[str] = ["http://localhost:8081", "http://localhost:19006"]
 
+    # OpenRouter（LLM）設定
+    # https://openrouter.ai/docs
+    OPENROUTER_API_KEY: str = ""
+    OPENROUTER_BASE_URL: str = "https://openrouter.ai/api/v1"
+    OPENROUTER_MODEL: str = "openai/gpt-4o-mini"  # 無料枠: deepseek/deepseek-chat-v3-0324:free 等
+
     class Config:
         env_file = (".env", "../.env")  # backend/ または プロジェクトルート
         env_file_encoding = "utf-8"
