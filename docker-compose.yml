@@ -1,0 +1,57 @@
+# SleepSupportApp Docker Compose（開発環境用）
+# docker-compose up で API(FastAPI) と DB(PostgreSQL) をまとめて起動
+# ローカルでバックエンドを動かすときはこれを使う
+
+services:
+  # FastAPI Backend
+  api:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: sleepsupport-api
+    ports:
+      - "${API_PORT:-8000}:8000"
+    environment:
+      - ENV=development
+      - DEBUG=true
+      - DATABASE_URL=postgresql+asyncpg://postgres:postgres@db:5432/sleepsupport
+      - API_HOST=0.0.0.0
+      - API_PORT=8000
+    volumes:
+      # 開発時のホットリロード用
+      - ./backend/app:/app/app
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - sleepsupport-network
+
+  # PostgreSQL Database (Supabaseのローカル代替)
+  db:
+    image: postgres:15-alpine
+    container_name: sleepsupport-db
+    ports:
+      - "${DB_PORT:-5432}:5432"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=sleepsupport
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./backend/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+    networks:
+      - sleepsupport-network
+
+networks:
+  sleepsupport-network:
+    driver: bridge
+
+volumes:
+  postgres_data:

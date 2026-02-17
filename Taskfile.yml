@@ -1,0 +1,36 @@
+# Taskfile - コミット・push 前のチェックを手動実行する用
+# 使い方: コミット前に task pre-commit / push 前に task pre-push
+version: '3'
+
+tasks:
+  default:
+    desc: 利用可能なタスク一覧を表示
+    cmds:
+      - task --list
+
+  # コミット前に実行: ステージ済みファイルに ESLint + Prettier
+  pre-commit:
+    desc: コミット前に実行（lint-staged）
+    cmds:
+      - pnpm exec lint-staged
+
+  # push 前に実行: 保護ブランチへの直接 push を警告
+  pre-push:
+    desc: push 前に実行（保護ブランチチェック）
+    cmds:
+      - |
+        BRANCH=$(git symbolic-ref --short HEAD 2>/dev/null)
+        if [ "$BRANCH" = "main" ] || [ "$BRANCH" = "master" ]; then
+          echo ""
+          echo "⚠️  警告: 保護ブランチ '$BRANCH' への直接 push です。"
+          echo "   feature ブランチを作成してから push することを推奨します。"
+          echo ""
+          exit 1
+        fi
+
+  # 両方まとめて実行（コミット＆push 前の確認用）
+  check-before-push:
+    desc: pre-commit と pre-push を順に実行
+    cmds:
+      - task: pre-commit
+      - task: pre-push

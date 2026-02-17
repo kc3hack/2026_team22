@@ -1,0 +1,6 @@
+# Prettierがフォーマット対象から除外するファイル
+node_modules/
+.expo/
+dist/
+build/
+*.lock

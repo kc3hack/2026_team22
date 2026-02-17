@@ -1,0 +1,11 @@
+{
+  "_comment": "Prettier - コードフォーマッター。改行・インデント・クォートなどを自動整形。pnpm format で実行",
+  "semi": true,
+  "singleQuote": true,
+  "tabWidth": 2,
+  "trailingComma": "es5",
+  "printWidth": 100,
+  "bracketSpacing": true,
+  "arrowParens": "avoid",
+  "endOfLine": "lf"
+}

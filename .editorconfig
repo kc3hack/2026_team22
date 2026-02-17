@@ -1,0 +1,20 @@
+# EditorConfig - エディタの基本設定を統一
+# インデント（スペース2）、改行コード（LF）、末尾空白削除など
+# VSCode/Cursor等が自動で読み込む（チーム内でフォーマットを揃えるため）
+# https://editorconfig.org
+
+root = true
+
+[*]
+indent_style = space
+indent_size = 2
+end_of_line = lf
+charset = utf-8
+trim_trailing_whitespace = true
+insert_final_newline = true
+
+[*.md]
+trim_trailing_whitespace = false
+
+[*.{json,yml,yaml}]
+indent_size = 2
