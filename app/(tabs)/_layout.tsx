@@ -26,6 +26,20 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
+        name="sleep-monitor"
+        options={{
+          title: 'モニター',
+          tabBarIcon: ({ color }) => <Text style={{ color, fontSize: 20 }}>🌙</Text>,
+        }}
+      />
+      <Tabs.Screen
+        name="sleep-log"
+        options={{
+          title: 'ログ',
+          tabBarIcon: ({ color }) => <Text style={{ color, fontSize: 20 }}>📊</Text>,
+        }}
+      />
+      <Tabs.Screen
         name="profile"
         options={{
           title: 'プロフィール',
