@@ -1,14 +1,21 @@
 import React from 'react';
-import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, Switch } from 'react-native';
 import { COLORS } from '@shared/constants';
 import { useSleepSettingsStore } from './sleepSettingsStore';
+import { getReminderTimeString } from '@shared/lib';
 
 /**
  * 睡眠設定画面
  * 起床時刻と睡眠時間を設定し、就寝予定時刻を自動計算する
+ * 就寝リマインダー通知のON/OFFを切り替えられる
  */
 export const SleepSettingsScreen: React.FC = () => {
   const settings = useSleepSettingsStore();
+
+  const reminderTime = getReminderTimeString(
+    settings.calculatedSleepHour,
+    settings.calculatedSleepMinute,
+  );
 
   return (
     <SafeAreaView style={styles.container}>
@@ -98,6 +105,29 @@ export const SleepSettingsScreen: React.FC = () => {
             {settings.calculatedSleepMinute.toString().padStart(2, '0')}
           </Text>
           <Text style={styles.resultHint}>この時刻の1時間前から監視が開始されます</Text>
+        </View>
+
+        {/* 就寝リマインダー通知 */}
+        <View style={styles.reminderCard}>
+          <View style={styles.reminderHeader}>
+            <View>
+              <Text style={styles.reminderLabel}>🔔 就寝リマインダー</Text>
+              <Text style={styles.reminderDesc}>就寝時刻の1時間前に通知</Text>
+            </View>
+            <Switch
+              value={settings.reminderEnabled}
+              onValueChange={settings.setReminderEnabled}
+              trackColor={{ false: '#334155', true: COLORS.primary }}
+              thumbColor={settings.reminderEnabled ? '#E0E7FF' : '#94A3B8'}
+              ios_backgroundColor="#334155"
+            />
+          </View>
+          {settings.reminderEnabled && (
+            <View style={styles.reminderTimeRow}>
+              <Text style={styles.reminderTimeLabel}>通知予定時刻</Text>
+              <Text style={styles.reminderTimeValue}>{reminderTime}</Text>
+            </View>
+          )}
         </View>
       </View>
     </SafeAreaView>
@@ -201,6 +231,7 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     padding: 24,
     alignItems: 'center',
+    marginBottom: 16,
   },
   resultLabel: {
     fontSize: 14,
@@ -217,5 +248,45 @@ const styles = StyleSheet.create({
   resultHint: {
     fontSize: 12,
     color: 'rgba(255,255,255,0.6)',
+  },
+  // リマインダーカード
+  reminderCard: {
+    backgroundColor: '#0F172A',
+    borderRadius: 16,
+    padding: 20,
+  },
+  reminderHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  reminderLabel: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: COLORS.text.dark,
+    marginBottom: 4,
+  },
+  reminderDesc: {
+    fontSize: 12,
+    color: '#94A3B8',
+  },
+  reminderTimeRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginTop: 16,
+    paddingTop: 16,
+    borderTopWidth: 1,
+    borderTopColor: '#1E293B',
+  },
+  reminderTimeLabel: {
+    fontSize: 14,
+    color: '#94A3B8',
+  },
+  reminderTimeValue: {
+    fontSize: 24,
+    fontWeight: '300',
+    color: COLORS.primary,
+    fontVariant: ['tabular-nums'],
   },
 });

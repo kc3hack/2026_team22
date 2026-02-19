@@ -14,4 +14,6 @@ export interface SleepSettings {
   calculatedSleepHour: number;
   /** 就寝予定時刻の分（自動計算） */
   calculatedSleepMinute: number;
+  /** 就寝リマインダー通知が有効か */
+  reminderEnabled: boolean;
 }

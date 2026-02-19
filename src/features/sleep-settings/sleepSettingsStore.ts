@@ -8,6 +8,8 @@ interface SleepSettingsActions {
   setSleepDuration: (hours: number) => void;
   /** 就寝予定時刻をDate.getTime()で取得 */
   getSleepTimeToday: () => number;
+  /** リマインダー通知のON/OFF切り替え */
+  setReminderEnabled: (enabled: boolean) => void;
 }
 
 /**
@@ -45,6 +47,7 @@ export const useSleepSettingsStore = create<SleepSettings & SleepSettingsActions
     sleepDurationHours: defaultDuration,
     calculatedSleepHour: defaultSleep.hour,
     calculatedSleepMinute: defaultSleep.minute,
+    reminderEnabled: true,
 
     setWakeUpTime: (hour: number, minute: number) => {
       const sleep = calculateSleepTime(hour, minute, get().sleepDurationHours);
@@ -77,5 +80,7 @@ export const useSleepSettingsStore = create<SleepSettings & SleepSettingsActions
       }
       return sleepTime.getTime();
     },
+
+    setReminderEnabled: (enabled: boolean) => set({ reminderEnabled: enabled }),
   };
 });

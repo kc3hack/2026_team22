@@ -110,3 +110,80 @@ export const canSendNotification = (key: string, cooldownMs: number): boolean =>
 export const resetNotificationCooldowns = (): void => {
     lastSentMap.clear();
 };
+
+// ─────────────────────────────────────────────
+// 就寝リマインダー通知
+// ─────────────────────────────────────────────
+
+/** 就寝リマインダー通知の固定ID */
+const BEDTIME_REMINDER_ID = 'bedtime-reminder';
+
+/**
+ * 就寝リマインダー通知をスケジュールする
+ * 指定された就寝時刻の1時間前に毎日通知を送る
+ *
+ * @param sleepHour 就寝予定時刻（時）
+ * @param sleepMinute 就寝予定時刻（分）
+ */
+export const scheduleBedtimeReminder = async (
+    sleepHour: number,
+    sleepMinute: number,
+): Promise<void> => {
+    // 権限チェック
+    const granted = await initializeNotifications();
+    if (!granted) return;
+
+    // 既存のリマインダーをキャンセル
+    await cancelBedtimeReminder();
+
+    // 1時間前を計算
+    let reminderHour = sleepHour - 1;
+    if (reminderHour < 0) {
+        reminderHour += 24;
+    }
+
+    try {
+        await Notifications.scheduleNotificationAsync({
+            identifier: BEDTIME_REMINDER_ID,
+            content: {
+                title: '🌙 おやすみ準備の時間です',
+                body: `就寝予定時刻 ${sleepHour.toString().padStart(2, '0')}:${sleepMinute.toString().padStart(2, '0')} まであと1時間です。睡眠モニターを起動しましょう。`,
+                sound: true,
+            },
+            trigger: {
+                type: Notifications.SchedulableTriggerInputTypes.DAILY,
+                hour: reminderHour,
+                minute: sleepMinute,
+            },
+        });
+    } catch (error) {
+        console.error('[Notifications] リマインダーのスケジュールに失敗:', error);
+    }
+};
+
+/**
+ * 就寝リマインダー通知をキャンセルする
+ */
+export const cancelBedtimeReminder = async (): Promise<void> => {
+    try {
+        await Notifications.cancelScheduledNotificationAsync(BEDTIME_REMINDER_ID);
+    } catch {
+        // 既にキャンセル済み or 存在しない場合は無視
+    }
+};
+
+/**
+ * リマインダーの通知時刻を "HH:mm" 形式で返す
+ *
+ * @param sleepHour 就寝予定時刻（時）
+ * @param sleepMinute 就寝予定時刻（分）
+ * @returns "HH:mm" 形式の文字列
+ */
+export const getReminderTimeString = (
+    sleepHour: number,
+    sleepMinute: number,
+): string => {
+    let reminderHour = sleepHour - 1;
+    if (reminderHour < 0) reminderHour += 24;
+    return `${reminderHour.toString().padStart(2, '0')}:${sleepMinute.toString().padStart(2, '0')}`;
+};

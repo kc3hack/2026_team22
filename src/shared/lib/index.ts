@@ -15,4 +15,7 @@ export {
     sendLocalNotification,
     canSendNotification,
     resetNotificationCooldowns,
+    scheduleBedtimeReminder,
+    cancelBedtimeReminder,
+    getReminderTimeString,
 } from './notifications';
