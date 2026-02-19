@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, ScrollView } from 'react-native';
 import { useRouter } from 'expo-router';
 import { COLORS } from '@shared/constants';
@@ -28,8 +28,52 @@ export const HomeScreen: React.FC = () => {
     void fetchPlan();
   }, [fetchPlan]);
 
-  const sleepTimeStr = `${settings.calculatedSleepHour.toString().padStart(2, '0')}:${settings.calculatedSleepMinute.toString().padStart(2, '0')}`;
-  const wakeTimeStr = `${settings.wakeUpHour.toString().padStart(2, '0')}:${settings.wakeUpMinute.toString().padStart(2, '0')}`;
+  // オーバーライド考慮の有効な時刻
+  const effectiveSleep = settings.getEffectiveSleepTime();
+  const effectiveWake = settings.getEffectiveWakeTime();
+  const sleepTimeStr = `${effectiveSleep.hour.toString().padStart(2, '0')}:${effectiveSleep.minute.toString().padStart(2, '0')}`;
+  const wakeTimeStr = `${effectiveWake.hour.toString().padStart(2, '0')}:${effectiveWake.minute.toString().padStart(2, '0')}`;
+  const isOverridden = settings.todayOverride !== null && settings.todayOverride.date === new Date().toISOString().slice(0, 10);
+
+  // スケジュールカードの編集モード
+  const [editingSchedule, setEditingSchedule] = useState(false);
+
+  const adjustSleepHour = (delta: number) => {
+    const newHour = (effectiveSleep.hour + delta + 24) % 24;
+    settings.setTodayOverride({
+      sleepHour: newHour,
+      sleepMinute: effectiveSleep.minute,
+      wakeHour: effectiveWake.hour,
+      wakeMinute: effectiveWake.minute,
+    });
+  };
+  const adjustSleepMinute = (delta: number) => {
+    const newMinute = (effectiveSleep.minute + delta + 60) % 60;
+    settings.setTodayOverride({
+      sleepHour: effectiveSleep.hour,
+      sleepMinute: newMinute,
+      wakeHour: effectiveWake.hour,
+      wakeMinute: effectiveWake.minute,
+    });
+  };
+  const adjustWakeHour = (delta: number) => {
+    const newHour = (effectiveWake.hour + delta + 24) % 24;
+    settings.setTodayOverride({
+      sleepHour: effectiveSleep.hour,
+      sleepMinute: effectiveSleep.minute,
+      wakeHour: newHour,
+      wakeMinute: effectiveWake.minute,
+    });
+  };
+  const adjustWakeMinute = (delta: number) => {
+    const newMinute = (effectiveWake.minute + delta + 60) % 60;
+    settings.setTodayOverride({
+      sleepHour: effectiveSleep.hour,
+      sleepMinute: effectiveSleep.minute,
+      wakeHour: effectiveWake.hour,
+      wakeMinute: newMinute,
+    });
+  };
 
   // 朝の振り返りカードの表示条件
   const showMorningReview = useMemo(() => {
@@ -115,8 +159,19 @@ export const HomeScreen: React.FC = () => {
           )}
 
           {/* 今夜の予定 */}
-          <View style={styles.scheduleCard}>
-            <Text style={styles.cardTitle}>🌙 今夜のスケジュール</Text>
+          <TouchableOpacity
+            style={[styles.scheduleCard, isOverridden && styles.scheduleCardOverridden]}
+            onPress={() => setEditingSchedule(!editingSchedule)}
+            activeOpacity={0.8}
+          >
+            <View style={styles.scheduleHeader}>
+              <Text style={styles.cardTitle}>🌙 今夜のスケジュール</Text>
+              {isOverridden && (
+                <View style={styles.overrideBadge}>
+                  <Text style={styles.overrideBadgeText}>今日だけ</Text>
+                </View>
+              )}
+            </View>
             <View style={styles.scheduleRow}>
               <View style={styles.scheduleItem}>
                 <Text style={styles.scheduleLabel}>就寝</Text>
@@ -128,8 +183,79 @@ export const HomeScreen: React.FC = () => {
                 <Text style={styles.scheduleTime}>{wakeTimeStr}</Text>
               </View>
             </View>
-            <Text style={styles.durationText}>睡眠時間: {settings.sleepDurationHours}時間</Text>
-          </View>
+
+            {/* 編集モード */}
+            {editingSchedule && (
+              <View style={styles.editSection}>
+                <View style={styles.editDivider} />
+
+                {/* 就寝時刻編集 */}
+                <Text style={styles.editLabel}>🌙 就寝時刻</Text>
+                <View style={styles.editRow}>
+                  <TouchableOpacity style={styles.editBtn} onPress={() => adjustSleepHour(-1)}>
+                    <Text style={styles.editBtnText}>▲</Text>
+                  </TouchableOpacity>
+                  <Text style={styles.editTime}>
+                    {effectiveSleep.hour.toString().padStart(2, '0')}
+                  </Text>
+                  <TouchableOpacity style={styles.editBtn} onPress={() => adjustSleepHour(1)}>
+                    <Text style={styles.editBtnText}>▼</Text>
+                  </TouchableOpacity>
+                  <Text style={styles.editColon}>:</Text>
+                  <TouchableOpacity style={styles.editBtn} onPress={() => adjustSleepMinute(-5)}>
+                    <Text style={styles.editBtnText}>▲</Text>
+                  </TouchableOpacity>
+                  <Text style={styles.editTime}>
+                    {effectiveSleep.minute.toString().padStart(2, '0')}
+                  </Text>
+                  <TouchableOpacity style={styles.editBtn} onPress={() => adjustSleepMinute(5)}>
+                    <Text style={styles.editBtnText}>▼</Text>
+                  </TouchableOpacity>
+                </View>
+
+                {/* 起床時刻編集 */}
+                <Text style={styles.editLabel}>☀️ 起床時刻</Text>
+                <View style={styles.editRow}>
+                  <TouchableOpacity style={styles.editBtn} onPress={() => adjustWakeHour(-1)}>
+                    <Text style={styles.editBtnText}>▲</Text>
+                  </TouchableOpacity>
+                  <Text style={styles.editTime}>
+                    {effectiveWake.hour.toString().padStart(2, '0')}
+                  </Text>
+                  <TouchableOpacity style={styles.editBtn} onPress={() => adjustWakeHour(1)}>
+                    <Text style={styles.editBtnText}>▼</Text>
+                  </TouchableOpacity>
+                  <Text style={styles.editColon}>:</Text>
+                  <TouchableOpacity style={styles.editBtn} onPress={() => adjustWakeMinute(-5)}>
+                    <Text style={styles.editBtnText}>▲</Text>
+                  </TouchableOpacity>
+                  <Text style={styles.editTime}>
+                    {effectiveWake.minute.toString().padStart(2, '0')}
+                  </Text>
+                  <TouchableOpacity style={styles.editBtn} onPress={() => adjustWakeMinute(5)}>
+                    <Text style={styles.editBtnText}>▼</Text>
+                  </TouchableOpacity>
+                </View>
+
+                {/* リセットボタン */}
+                {isOverridden && (
+                  <TouchableOpacity
+                    style={styles.resetButton}
+                    onPress={() => {
+                      settings.clearTodayOverride();
+                      setEditingSchedule(false);
+                    }}
+                  >
+                    <Text style={styles.resetButtonText}>↩ デフォルトに戻す</Text>
+                  </TouchableOpacity>
+                )}
+              </View>
+            )}
+
+            {!editingSchedule && (
+              <Text style={styles.tapHint}>タップして今日の時刻を変更</Text>
+            )}
+          </TouchableOpacity>
 
           {/* モニタリング状態 */}
           <TouchableOpacity
@@ -320,6 +446,92 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontSize: 14,
     color: COLORS.primary,
+  },
+  scheduleCardOverridden: {
+    borderWidth: 1,
+    borderColor: COLORS.warning,
+  },
+  scheduleHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  overrideBadge: {
+    backgroundColor: 'rgba(245, 158, 11, 0.15)',
+    borderRadius: 8,
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+  },
+  overrideBadgeText: {
+    fontSize: 11,
+    fontWeight: '600',
+    color: COLORS.warning,
+  },
+  tapHint: {
+    textAlign: 'center',
+    fontSize: 12,
+    color: '#475569',
+    marginTop: 4,
+  },
+  // 編集UI
+  editSection: {
+    marginTop: 4,
+  },
+  editDivider: {
+    height: 1,
+    backgroundColor: '#1E293B',
+    marginBottom: 16,
+  },
+  editLabel: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: '#94A3B8',
+    marginBottom: 8,
+  },
+  editRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 4,
+    marginBottom: 16,
+  },
+  editBtn: {
+    width: 32,
+    height: 32,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#1E293B',
+    borderRadius: 8,
+  },
+  editBtnText: {
+    color: COLORS.primary,
+    fontSize: 14,
+  },
+  editTime: {
+    fontSize: 28,
+    fontWeight: '200',
+    color: COLORS.text.dark,
+    width: 44,
+    textAlign: 'center',
+    fontVariant: ['tabular-nums'],
+  },
+  editColon: {
+    fontSize: 28,
+    fontWeight: '200',
+    color: COLORS.text.dark,
+    marginHorizontal: 2,
+  },
+  resetButton: {
+    backgroundColor: 'rgba(245, 158, 11, 0.1)',
+    borderRadius: 10,
+    paddingVertical: 10,
+    alignItems: 'center',
+  },
+  resetButtonText: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: COLORS.warning,
   },
   // モニターカード
   monitorCard: {

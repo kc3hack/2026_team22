@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import type { SleepSettings } from './types';
+import type { SleepSettings, TodayOverride } from './types';
 
 interface SleepSettingsActions {
   /** 起床時刻を設定 */
@@ -8,6 +8,14 @@ interface SleepSettingsActions {
   setSleepDuration: (hours: number) => void;
   /** 就寝予定時刻をDate.getTime()で取得 */
   getSleepTimeToday: () => number;
+  /** 今日だけのオーバーライドを設定 */
+  setTodayOverride: (override: Omit<TodayOverride, 'date'>) => void;
+  /** オーバーライドをクリア */
+  clearTodayOverride: () => void;
+  /** オーバーライド考慮の有効な就寝時刻を取得 */
+  getEffectiveSleepTime: () => { hour: number; minute: number };
+  /** オーバーライド考慮の有効な起床時刻を取得 */
+  getEffectiveWakeTime: () => { hour: number; minute: number };
 }
 
 /**
@@ -45,6 +53,7 @@ export const useSleepSettingsStore = create<SleepSettings & SleepSettingsActions
     sleepDurationHours: defaultDuration,
     calculatedSleepHour: defaultSleep.hour,
     calculatedSleepMinute: defaultSleep.minute,
+    todayOverride: null as TodayOverride | null,
 
     setWakeUpTime: (hour: number, minute: number) => {
       const sleep = calculateSleepTime(hour, minute, get().sleepDurationHours);
@@ -76,6 +85,31 @@ export const useSleepSettingsStore = create<SleepSettings & SleepSettingsActions
         sleepTime.setDate(sleepTime.getDate() + 1);
       }
       return sleepTime.getTime();
+    },
+
+    setTodayOverride: (override) => {
+      const today = new Date().toISOString().slice(0, 10);
+      set({ todayOverride: { ...override, date: today } });
+    },
+
+    clearTodayOverride: () => set({ todayOverride: null }),
+
+    getEffectiveSleepTime: () => {
+      const state = get();
+      const today = new Date().toISOString().slice(0, 10);
+      if (state.todayOverride && state.todayOverride.date === today) {
+        return { hour: state.todayOverride.sleepHour, minute: state.todayOverride.sleepMinute };
+      }
+      return { hour: state.calculatedSleepHour, minute: state.calculatedSleepMinute };
+    },
+
+    getEffectiveWakeTime: () => {
+      const state = get();
+      const today = new Date().toISOString().slice(0, 10);
+      if (state.todayOverride && state.todayOverride.date === today) {
+        return { hour: state.todayOverride.wakeHour, minute: state.todayOverride.wakeMinute };
+      }
+      return { hour: state.wakeUpHour, minute: state.wakeUpMinute };
     },
   };
 });
