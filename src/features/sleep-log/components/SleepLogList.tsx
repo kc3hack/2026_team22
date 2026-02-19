@@ -127,13 +127,7 @@ export const SleepLogList: React.FC<SleepLogListProps> = ({ logs }) => {
 
             {/* タグ行 */}
             <View style={styles.tagsContainer}>
-              {item.bonus > 0 && (
-                <View style={styles.tagBonus}>
-                  <Text style={styles.tagText}>
-                    ⭐ ボーナス
-                  </Text>
-                </View>
-              )}
+
               {item.usagePenalty > 0 && (
                 <View style={styles.tagPenalty}>
                   <Text style={styles.tagText}>
@@ -151,8 +145,7 @@ export const SleepLogList: React.FC<SleepLogListProps> = ({ logs }) => {
                   <Text style={styles.tagText}>🔊 音</Text>
                 </View>
               )}
-              {!item.bonus &&
-                !item.usagePenalty &&
+              {!item.usagePenalty &&
                 !item.lightExceeded &&
                 !item.noiseExceeded && (
                   <View style={styles.tagSuccess}>
@@ -202,24 +195,9 @@ export const SleepLogList: React.FC<SleepLogListProps> = ({ logs }) => {
                     </Text>
                   </View>
                 )}
-                {item.bonus > 0 && (
-                  <View style={styles.detailRow}>
-                    <Text style={styles.detailLabel}>
-                      ⭐ ボーナス
-                    </Text>
-                    <Text
-                      style={[
-                        styles.detailValue,
-                        { color: COLORS.success },
-                      ]}
-                    >
-                      +{item.bonus}
-                    </Text>
-                  </View>
-                )}
+
                 {item.usagePenalty === 0 &&
-                  item.environmentPenalty === 0 &&
-                  item.bonus === 0 && (
+                  item.environmentPenalty === 0 && (
                     <Text style={styles.perfectText}>
                       ✨ 減点なし！完璧です
                     </Text>

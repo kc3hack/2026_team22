@@ -12,7 +12,7 @@ export const mockSleepLogs: SleepLogEntry[] = [
         score: 100,
         usagePenalty: 0,
         environmentPenalty: 0,
-        bonus: 10,
+
         phase1Warning: false,
         phase2Warning: false,
         lightExceeded: false,
@@ -28,7 +28,7 @@ export const mockSleepLogs: SleepLogEntry[] = [
         score: 85,
         usagePenalty: 15,
         environmentPenalty: 0,
-        bonus: 0,
+
         phase1Warning: true,
         phase2Warning: false,
         lightExceeded: false,
@@ -44,7 +44,7 @@ export const mockSleepLogs: SleepLogEntry[] = [
         score: 60,
         usagePenalty: 0,
         environmentPenalty: 40,
-        bonus: 0,
+
         phase1Warning: false,
         phase2Warning: false,
         lightExceeded: true,
@@ -60,7 +60,7 @@ export const mockSleepLogs: SleepLogEntry[] = [
         score: 30,
         usagePenalty: 50,
         environmentPenalty: 20,
-        bonus: 0,
+
         phase1Warning: true,
         phase2Warning: true,
         lightExceeded: true,
@@ -76,7 +76,7 @@ export const mockSleepLogs: SleepLogEntry[] = [
         score: 75,
         usagePenalty: 25,
         environmentPenalty: 0,
-        bonus: 0,
+
         phase1Warning: true,
         phase2Warning: false,
         lightExceeded: false,
@@ -92,7 +92,7 @@ export const mockSleepLogs: SleepLogEntry[] = [
         score: 90,
         usagePenalty: 5,
         environmentPenalty: 5,
-        bonus: 0,
+
         phase1Warning: false,
         phase2Warning: false,
         lightExceeded: false,
@@ -108,7 +108,7 @@ export const mockSleepLogs: SleepLogEntry[] = [
         score: 100,
         usagePenalty: 0,
         environmentPenalty: 0,
-        bonus: 10,
+
         phase1Warning: false,
         phase2Warning: false,
         lightExceeded: false,

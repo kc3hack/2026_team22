@@ -11,7 +11,7 @@ export const ScoreBreakdown: React.FC<ScoreBreakdownProps> = ({ log }) => {
     const items = [
         { label: 'スマホ使用', value: -log.usagePenalty, color: COLORS.error },
         { label: '環境（光・音）', value: -log.environmentPenalty, color: COLORS.error },
-        { label: 'ボーナス', value: log.bonus, color: COLORS.success }, // Fixed to handle positive bonus
+
     ].filter((item) => item.value !== 0);
 
     if (items.length === 0) {

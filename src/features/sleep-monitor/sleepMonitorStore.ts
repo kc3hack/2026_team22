@@ -57,7 +57,7 @@ const initialScore: SleepScore = {
   total: SCORE_POINTS.BASE_SCORE,
   usagePenalty: 0,
   environmentPenalty: 0,
-  bonus: 0,
+
   phase1Warning: false,
   phase2Warning: false,
   lightExceeded: false,
@@ -136,7 +136,7 @@ export const useSleepMonitorStore = create<MonitorState & MonitorActions>((set, 
     set(state => {
       let usagePenalty = 0;
       let environmentPenalty = 0;
-      let bonus = 0;
+
 
       const phase1Warning = state.warnings.some(w => w.phase === 'phase1');
       const phase2Warning = state.warnings.some(w => w.phase === 'phase2');
@@ -151,16 +151,13 @@ export const useSleepMonitorStore = create<MonitorState & MonitorActions>((set, 
       if (lightExceeded) environmentPenalty += Math.abs(SCORE_POINTS.LIGHT_PENALTY);
       if (noiseExceeded) environmentPenalty += Math.abs(SCORE_POINTS.NOISE_PENALTY);
 
-      // ボーナス: 両フェーズとも操作5分未満
-      if (!phase1Warning && !phase2Warning && state.usage.usageMinutes < 5) {
-        bonus = SCORE_POINTS.LOW_USAGE_BONUS;
-      }
+
 
       const total = Math.max(
         SCORE_POINTS.MIN_SCORE,
         Math.min(
           SCORE_POINTS.MAX_SCORE,
-          SCORE_POINTS.BASE_SCORE - usagePenalty - environmentPenalty + bonus
+          SCORE_POINTS.BASE_SCORE - usagePenalty - environmentPenalty
         )
       );
 
@@ -169,7 +166,7 @@ export const useSleepMonitorStore = create<MonitorState & MonitorActions>((set, 
           total,
           usagePenalty,
           environmentPenalty,
-          bonus,
+
           phase1Warning,
           phase2Warning,
           lightExceeded,

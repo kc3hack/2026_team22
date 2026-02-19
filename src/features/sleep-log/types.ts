@@ -16,8 +16,7 @@ export interface SleepLogEntry {
   usagePenalty: number;
   /** 環境減点 */
   environmentPenalty: number;
-  /** ボーナス */
-  bonus: number;
+
   /** Phase1警告が発動したか */
   phase1Warning: boolean;
   /** Phase2警告が発動したか */

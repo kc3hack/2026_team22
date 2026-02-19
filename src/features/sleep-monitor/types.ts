@@ -53,8 +53,7 @@ export interface SleepScore {
   usagePenalty: number;
   /** 環境要因による減点 */
   environmentPenalty: number;
-  /** ボーナス加点 */
-  bonus: number;
+
   /** Phase1で警告が発動したか */
   phase1Warning: boolean;
   /** Phase2で警告が発動したか */

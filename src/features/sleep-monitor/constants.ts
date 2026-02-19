@@ -20,8 +20,7 @@ export const USAGE_THRESHOLDS = {
   PHASE1_WARN: 20,
   /** Phase 2: 15分以上で警告 */
   PHASE2_WARN: 15,
-  /** ボーナス条件: 5分未満 */
-  BONUS_THRESHOLD: 5,
+
 } as const;
 
 /** 環境NGライン */
@@ -44,8 +43,7 @@ export const SCORE_POINTS = {
   LIGHT_PENALTY: -10,
   /** 就寝時にうるさい: -10点 */
   NOISE_PENALTY: -10,
-  /** 操作時間5分未満ボーナス: +10点 */
-  LOW_USAGE_BONUS: 10,
+
   /** 最高スコア */
   MAX_SCORE: 100,
   /** 最低スコア */
