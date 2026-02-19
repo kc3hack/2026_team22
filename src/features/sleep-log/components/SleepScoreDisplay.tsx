@@ -19,15 +19,20 @@ const getScoreColor = (score: number): string => {
 /**
  * 睡眠スコア表示コンポーネント
  */
-export const SleepScoreDisplay: React.FC<SleepScoreDisplayProps> = ({ score, dateLabel }) => {
+export const SleepScoreDisplay: React.FC<SleepScoreDisplayProps> = ({
+  score,
+  dateLabel,
+}) => {
   const color = getScoreColor(score);
 
   return (
     <View style={styles.container}>
       <Text style={styles.dateLabel}>{dateLabel}</Text>
-      <View style={[styles.scoreCircle, { borderColor: color }]}>
-        <Text style={[styles.scoreValue, { color }]}>{score}</Text>
-        <Text style={styles.scoreUnit}>点</Text>
+      <View style={styles.scoreRing}>
+        <View style={[styles.scoreCircle, { borderColor: color }]}>
+          <Text style={[styles.scoreValue, { color }]}>{score}</Text>
+          <Text style={styles.scoreUnit}>点</Text>
+        </View>
       </View>
     </View>
   );
@@ -36,12 +41,22 @@ export const SleepScoreDisplay: React.FC<SleepScoreDisplayProps> = ({ score, dat
 const styles = StyleSheet.create({
   container: {
     alignItems: 'center',
-    padding: 16,
+    padding: 20,
   },
   dateLabel: {
-    fontSize: 14,
+    fontSize: 13,
     color: '#94A3B8',
-    marginBottom: 12,
+    marginBottom: 16,
+    fontWeight: '500',
+  },
+  scoreRing: {
+    width: 136,
+    height: 136,
+    borderRadius: 68,
+    borderWidth: 2,
+    borderColor: 'rgba(99, 102, 241, 0.15)',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   scoreCircle: {
     width: 120,
@@ -50,6 +65,7 @@ const styles = StyleSheet.create({
     borderWidth: 4,
     justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: 'rgba(15, 23, 42, 0.5)',
   },
   scoreValue: {
     fontSize: 48,
@@ -59,5 +75,10 @@ const styles = StyleSheet.create({
   scoreUnit: {
     fontSize: 14,
     color: '#94A3B8',
+  },
+  commentText: {
+    fontSize: 15,
+    fontWeight: '600',
+    marginTop: 12,
   },
 });
