@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useCallback, useRef } from 'react';
 import {
     View,
     Text,
@@ -6,21 +6,26 @@ import {
     SafeAreaView,
     ScrollView,
     RefreshControl,
+    Animated,
+    Easing,
 } from 'react-native';
 import { COLORS } from '@shared/constants';
 import { useSleepPlanStore } from './sleepPlanStore';
-import { WeeklyPlanTimeline } from './components/WeeklyPlanTimeline';
 import { WeeklyPlanCard } from './components/WeeklyPlanCard';
 import { PlanStatus } from './components/PlanStatus';
 
 /**
- * 週間睡眠プラン画面
- * 朝のホーム表示時にAIが生成した7日分の睡眠プランを表示
+ * 週間睡眠プラン画面 — Cosmic Sleep デザイン
+ * AIが生成した7日分の睡眠プランを美しく表示
  */
 export const SleepPlanScreen: React.FC = () => {
     const { plan, isLoading, error, fetchPlan } = useSleepPlanStore();
-    const [selectedDate, setSelectedDate] = useState<string | null>(null);
-    const [refreshing, setRefreshing] = useState(false);
+    const [refreshing, setRefreshing] = React.useState(false);
+
+    // アニメーション
+    const moonFloat = useRef(new Animated.Value(0)).current;
+    const headerFade = useRef(new Animated.Value(0)).current;
+    const contentFade = useRef(new Animated.Value(0)).current;
 
     // 今日の日付
     const today = new Date();
@@ -34,12 +39,47 @@ export const SleepPlanScreen: React.FC = () => {
         void fetchPlan();
     }, [fetchPlan]);
 
-    // プラン取得後、今日を初期選択
+    // ヘッダーアニメーション
     useEffect(() => {
-        if (plan && !selectedDate) {
-            setSelectedDate(todayStr);
+        // 月の浮遊アニメーション
+        Animated.loop(
+            Animated.sequence([
+                Animated.timing(moonFloat, {
+                    toValue: -8,
+                    duration: 2500,
+                    easing: Easing.inOut(Easing.ease),
+                    useNativeDriver: true,
+                }),
+                Animated.timing(moonFloat, {
+                    toValue: 0,
+                    duration: 2500,
+                    easing: Easing.inOut(Easing.ease),
+                    useNativeDriver: true,
+                }),
+            ]),
+        ).start();
+
+        // ヘッダーフェードイン
+        Animated.timing(headerFade, {
+            toValue: 1,
+            duration: 800,
+            easing: Easing.out(Easing.cubic),
+            useNativeDriver: true,
+        }).start();
+    }, [moonFloat, headerFade]);
+
+    // コンテンツフェードイン
+    useEffect(() => {
+        if (plan) {
+            Animated.timing(contentFade, {
+                toValue: 1,
+                duration: 600,
+                delay: 200,
+                easing: Easing.out(Easing.cubic),
+                useNativeDriver: true,
+            }).start();
         }
-    }, [plan, selectedDate, todayStr]);
+    }, [plan, contentFade]);
 
     /** プルダウンリフレッシュ */
     const handleRefresh = useCallback(async () => {
@@ -48,16 +88,38 @@ export const SleepPlanScreen: React.FC = () => {
         setRefreshing(false);
     }, [fetchPlan]);
 
-    /** 選択中のプランデータ */
-    const selectedPlan = plan?.dailyPlans.find(d => d.date === selectedDate) ?? null;
-
     // ローディング / エラー表示
     if (!plan && (isLoading || error)) {
         return (
             <SafeAreaView style={styles.container}>
-                <View style={styles.header}>
-                    <Text style={styles.title}>📋 週間睡眠プラン</Text>
+                {/* 背景装飾 */}
+                <View style={styles.bgStars}>
+                    {[...Array(8)].map((_, i) => (
+                        <View
+                            key={i}
+                            style={[
+                                styles.star,
+                                {
+                                    top: `${8 + i * 10}%`,
+                                    right: `${5 + (i % 4) * 22}%`,
+                                    opacity: 0.15 + (i % 3) * 0.1,
+                                    width: 2 + (i % 3),
+                                    height: 2 + (i % 3),
+                                },
+                            ]}
+                        />
+                    ))}
                 </View>
+                <Animated.View style={[styles.header, { opacity: headerFade }]}>
+                    <View style={styles.titleRow}>
+                        <Animated.Text
+                            style={[styles.moonIcon, { transform: [{ translateY: moonFloat }] }]}
+                        >
+                            🌙
+                        </Animated.Text>
+                        <Text style={styles.title}>週間睡眠プラン</Text>
+                    </View>
+                </Animated.View>
                 <PlanStatus isLoading={isLoading} error={error} onRetry={() => void fetchPlan(true)} />
             </SafeAreaView>
         );
@@ -65,6 +127,25 @@ export const SleepPlanScreen: React.FC = () => {
 
     return (
         <SafeAreaView style={styles.container}>
+            {/* 背景装飾 */}
+            <View style={styles.bgStars}>
+                {[...Array(8)].map((_, i) => (
+                    <View
+                        key={i}
+                        style={[
+                            styles.star,
+                            {
+                                top: `${8 + i * 10}%`,
+                                right: `${5 + (i % 4) * 22}%`,
+                                opacity: 0.15 + (i % 3) * 0.1,
+                                width: 2 + (i % 3),
+                                height: 2 + (i % 3),
+                            },
+                        ]}
+                    />
+                ))}
+            </View>
+
             <ScrollView
                 style={styles.scrollView}
                 contentContainerStyle={styles.scrollContent}
@@ -76,47 +157,57 @@ export const SleepPlanScreen: React.FC = () => {
                     />
                 }
             >
-                {/* ヘッダー */}
-                <View style={styles.header}>
-                    <Text style={styles.title}>📋 週間睡眠プラン</Text>
-                    <Text style={styles.subtitle}>AIがあなたの予定に合わせて最適化</Text>
-                </View>
-
-                {/* キャッシュ情報 */}
-                {plan && (
-                    <View style={styles.metaRow}>
-                        <Text style={styles.metaText}>
-                            {plan.cacheHit ? '♻️ キャッシュから取得' : '✨ 新規生成'}
-                        </Text>
-                        <Text style={styles.metaText}>
-                            更新: {new Date(plan.createdAt).toLocaleDateString('ja-JP')}
-                        </Text>
+                {/* ── ヘッダー ── */}
+                <Animated.View style={[styles.header, { opacity: headerFade }]}>
+                    <View style={styles.titleRow}>
+                        <Animated.Text
+                            style={[styles.moonIcon, { transform: [{ translateY: moonFloat }] }]}
+                        >
+                            🌙
+                        </Animated.Text>
+                        <View>
+                            <Text style={styles.title}>週間睡眠プラン</Text>
+                            <Text style={styles.subtitle}>AIがあなたの予定に合わせて最適化</Text>
+                        </View>
                     </View>
-                )}
 
-                {/* タイムライン */}
-                {plan && (
-                    <WeeklyPlanTimeline
-                        plans={plan.dailyPlans}
-                        selectedDate={selectedDate}
-                        onSelectDate={setSelectedDate}
-                    />
-                )}
+                    {/* キャッシュバッジ */}
+                    {plan && (
+                        <View style={styles.metaBadge}>
+                            <Text style={styles.metaEmoji}>
+                                {plan.cacheHit ? '♻️' : '✨'}
+                            </Text>
+                            <Text style={styles.metaText}>
+                                {plan.cacheHit ? 'キャッシュ' : '新規生成'}
+                                {' · '}
+                                {new Date(plan.createdAt).toLocaleDateString('ja-JP', {
+                                    month: 'short',
+                                    day: 'numeric',
+                                })}
+                            </Text>
+                        </View>
+                    )}
+                </Animated.View>
 
-                {/* 選択中のプラン詳細 */}
-                {selectedPlan && (
-                    <WeeklyPlanCard plan={selectedPlan} isToday={selectedPlan.date === todayStr} />
-                )}
-
-                {/* 全日程一覧 */}
-                {plan && (
-                    <View style={styles.allPlansSection}>
-                        <Text style={styles.sectionTitle}>1週間の概要</Text>
-                        {plan.dailyPlans.map(p => (
-                            <WeeklyPlanCard key={p.date} plan={p} isToday={p.date === todayStr} />
-                        ))}
-                    </View>
-                )}
+                {/* ── 全日程一覧 ── */}
+                <Animated.View style={{ opacity: contentFade }}>
+                    {plan && (
+                        <View style={styles.allPlansSection}>
+                            <Text style={styles.sectionTitle}>📋 1週間の概要</Text>
+                            <Text style={styles.sectionSubtitle}>
+                                タップで詳細を確認できます
+                            </Text>
+                            {plan.dailyPlans.map((p, i) => (
+                                <WeeklyPlanCard
+                                    key={p.date}
+                                    plan={p}
+                                    isToday={p.date === todayStr}
+                                    index={i}
+                                />
+                            ))}
+                        </View>
+                    )}
+                </Animated.View>
             </ScrollView>
         </SafeAreaView>
     );
@@ -127,46 +218,83 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: '#1E293B',
     },
+    bgStars: {
+        ...StyleSheet.absoluteFillObject,
+        zIndex: 0,
+    },
+    star: {
+        position: 'absolute',
+        borderRadius: 4,
+        backgroundColor: '#E2E8F0',
+    },
     scrollView: {
         flex: 1,
     },
     scrollContent: {
         paddingHorizontal: 16,
-        paddingBottom: 40,
+        paddingBottom: 60,
     },
+    // Header
     header: {
-        paddingTop: 20,
-        paddingBottom: 12,
+        paddingTop: 24,
+        paddingBottom: 20,
         paddingHorizontal: 4,
+    },
+    titleRow: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 12,
+        marginBottom: 8,
+    },
+    moonIcon: {
+        fontSize: 32,
     },
     title: {
-        fontSize: 24,
-        fontWeight: 'bold',
+        fontSize: 26,
+        fontWeight: '800',
         color: COLORS.text.dark,
-        marginBottom: 4,
+        letterSpacing: 0.5,
     },
     subtitle: {
-        fontSize: 14,
+        fontSize: 13,
         color: '#94A3B8',
+        marginTop: 2,
     },
-    metaRow: {
+    metaBadge: {
         flexDirection: 'row',
-        justifyContent: 'space-between',
-        paddingHorizontal: 4,
-        marginBottom: 16,
+        alignItems: 'center',
+        gap: 6,
+        backgroundColor: 'rgba(15, 23, 42, 0.6)',
+        alignSelf: 'flex-start',
+        borderRadius: 10,
+        paddingHorizontal: 10,
+        paddingVertical: 5,
+        borderWidth: 1,
+        borderColor: 'rgba(51, 65, 85, 0.5)',
+        marginTop: 4,
+    },
+    metaEmoji: {
+        fontSize: 12,
     },
     metaText: {
-        fontSize: 12,
-        color: '#475569',
+        fontSize: 11,
+        color: '#94A3B8',
+        fontWeight: '500',
+    },
+    // All plans
+    allPlansSection: {
+        marginTop: 12,
     },
     sectionTitle: {
-        fontSize: 16,
-        fontWeight: '600',
+        fontSize: 17,
+        fontWeight: '700',
         color: COLORS.text.dark,
-        marginBottom: 12,
-        marginTop: 8,
+        marginBottom: 4,
+        letterSpacing: 0.3,
     },
-    allPlansSection: {
-        marginTop: 8,
+    sectionSubtitle: {
+        fontSize: 12,
+        color: '#64748B',
+        marginBottom: 14,
     },
 });
