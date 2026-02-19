@@ -74,7 +74,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   label: {
-    fontSize: 12,
+    fontSize: 16,
     color: '#94A3B8',
     marginBottom: 8,
   },
@@ -89,23 +89,23 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   scoreValue: {
-    fontSize: 36,
+    fontSize: 47,
     fontWeight: '700',
     fontVariant: ['tabular-nums'],
   },
   scoreMax: {
-    fontSize: 12,
+    fontSize: 16,
     color: '#64748B',
   },
   scoreLabel: {
-    fontSize: 14,
+    fontSize: 18,
     fontWeight: '600',
   },
   usageSection: {
     alignItems: 'center',
   },
   usageValue: {
-    fontSize: 48,
+    fontSize: 62,
     fontWeight: '300',
     color: COLORS.text.dark,
     fontVariant: ['tabular-nums'],
@@ -114,7 +114,7 @@ const styles = StyleSheet.create({
     color: COLORS.warning,
   },
   usageUnit: {
-    fontSize: 14,
+    fontSize: 18,
     color: '#94A3B8',
   },
 });

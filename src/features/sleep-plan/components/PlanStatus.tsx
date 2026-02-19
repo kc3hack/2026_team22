@@ -168,10 +168,10 @@ const styles = StyleSheet.create({
         backgroundColor: 'rgba(99, 102, 241, 0.12)',
     },
     moonIcon: {
-        fontSize: 56,
+        fontSize: 73,
     },
     loadingTitle: {
-        fontSize: 20,
+        fontSize: 26,
         fontWeight: '700',
         color: COLORS.text.dark,
         marginBottom: 16,
@@ -192,7 +192,7 @@ const styles = StyleSheet.create({
         backgroundColor: COLORS.primary,
     },
     loadingSubText: {
-        fontSize: 14,
+        fontSize: 18,
         color: '#94A3B8',
         textAlign: 'center',
         lineHeight: 22,
@@ -218,17 +218,17 @@ const styles = StyleSheet.create({
         marginBottom: 20,
     },
     errorIcon: {
-        fontSize: 36,
+        fontSize: 47,
     },
     errorTitle: {
-        fontSize: 17,
+        fontSize: 23,
         fontWeight: '700',
         color: '#F87171',
         marginBottom: 8,
         textAlign: 'center',
     },
     errorDetail: {
-        fontSize: 13,
+        fontSize: 17,
         color: '#94A3B8',
         textAlign: 'center',
         marginBottom: 24,
@@ -248,6 +248,6 @@ const styles = StyleSheet.create({
     retryText: {
         color: '#FFFFFF',
         fontWeight: '700',
-        fontSize: 15,
+        fontSize: 19,
     },
 });

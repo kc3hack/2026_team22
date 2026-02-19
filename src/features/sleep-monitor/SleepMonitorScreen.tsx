@@ -174,7 +174,7 @@ const styles = StyleSheet.create({
     paddingBottom: 16,
   },
   title: {
-    fontSize: 24,
+    fontSize: 31,
     fontWeight: 'bold',
     color: COLORS.text.dark,
   },
@@ -187,7 +187,7 @@ const styles = StyleSheet.create({
   stopButtonText: {
     color: COLORS.text.dark,
     fontWeight: '600',
-    fontSize: 14,
+    fontSize: 18,
   },
   infoCard: {
     backgroundColor: '#0F172A',
@@ -196,13 +196,13 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   infoTitle: {
-    fontSize: 16,
+    fontSize: 21,
     fontWeight: '600',
     color: COLORS.text.dark,
     marginBottom: 12,
   },
   infoText: {
-    fontSize: 14,
+    fontSize: 18,
     color: '#94A3B8',
     lineHeight: 22,
   },
@@ -214,7 +214,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   settingTitle: {
-    fontSize: 14,
+    fontSize: 18,
     color: '#94A3B8',
     marginBottom: 16,
   },
@@ -233,10 +233,10 @@ const styles = StyleSheet.create({
   },
   timeButtonText: {
     color: COLORS.primary,
-    fontSize: 16,
+    fontSize: 21,
   },
   timeDisplay: {
-    fontSize: 48,
+    fontSize: 62,
     fontWeight: '200',
     color: COLORS.text.dark,
     width: 70,
@@ -244,7 +244,7 @@ const styles = StyleSheet.create({
     fontVariant: ['tabular-nums'],
   },
   timeSeparator: {
-    fontSize: 48,
+    fontSize: 62,
     fontWeight: '200',
     color: COLORS.text.dark,
     marginHorizontal: 4,
@@ -258,12 +258,12 @@ const styles = StyleSheet.create({
   },
   startButtonText: {
     color: COLORS.text.dark,
-    fontSize: 18,
+    fontSize: 23,
     fontWeight: '700',
   },
   startButtonSub: {
     color: COLORS.text.dark,
-    fontSize: 12,
+    fontSize: 16,
     opacity: 0.7,
     marginTop: 4,
   },
@@ -275,6 +275,6 @@ const styles = StyleSheet.create({
   },
   quickStartText: {
     color: '#94A3B8',
-    fontSize: 14,
+    fontSize: 18,
   },
 });

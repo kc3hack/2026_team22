@@ -241,13 +241,13 @@ const styles = StyleSheet.create({
         gap: 8,
     },
     dayOfWeek: {
-        fontSize: 20,
+        fontSize: 26,
         fontWeight: '800',
         color: COLORS.text.dark,
         letterSpacing: 0.3,
     },
     dateText: {
-        fontSize: 14,
+        fontSize: 18,
         color: '#64748B',
         fontWeight: '500',
     },
@@ -268,7 +268,7 @@ const styles = StyleSheet.create({
         shadowRadius: 6,
     },
     todayBadgeText: {
-        fontSize: 9,
+        fontSize: 12,
         fontWeight: '800',
         color: '#FFFFFF',
         letterSpacing: 1.5,
@@ -280,7 +280,7 @@ const styles = StyleSheet.create({
         borderWidth: 1,
     },
     importanceText: {
-        fontSize: 12,
+        fontSize: 16,
         fontWeight: '700',
     },
     // Time
@@ -306,15 +306,15 @@ const styles = StyleSheet.create({
         marginBottom: 4,
     },
     timeIcon: {
-        fontSize: 12,
+        fontSize: 16,
     },
     timeLabel: {
-        fontSize: 11,
+        fontSize: 14,
         color: '#94A3B8',
         fontWeight: '600',
     },
     timeValue: {
-        fontSize: 28,
+        fontSize: 36,
         fontWeight: '300',
         color: COLORS.text.dark,
         fontVariant: ['tabular-nums'],
@@ -335,7 +335,7 @@ const styles = StyleSheet.create({
         backgroundColor: 'rgba(99, 102, 241, 0.3)',
     },
     arrowHead: {
-        fontSize: 18,
+        fontSize: 23,
         color: 'rgba(99, 102, 241, 0.5)',
         marginLeft: -2,
         fontWeight: '300',
@@ -351,13 +351,13 @@ const styles = StyleSheet.create({
         marginBottom: 6,
     },
     durationLabel: {
-        fontSize: 11,
+        fontSize: 14,
         color: '#64748B',
         fontWeight: '600',
         letterSpacing: 0.3,
     },
     durationValue: {
-        fontSize: 14,
+        fontSize: 18,
         fontWeight: '700',
         fontVariant: ['tabular-nums'],
     },
@@ -388,10 +388,10 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
     eventIcon: {
-        fontSize: 13,
+        fontSize: 17,
     },
     eventText: {
-        fontSize: 13,
+        fontSize: 17,
         color: '#CBD5E1',
         flex: 1,
         fontWeight: '500',
@@ -415,11 +415,11 @@ const styles = StyleSheet.create({
         gap: 6,
     },
     adviceIcon: {
-        fontSize: 13,
+        fontSize: 17,
         marginTop: 1,
     },
     adviceText: {
-        fontSize: 13,
+        fontSize: 17,
         color: '#94A3B8',
         lineHeight: 20,
         flex: 1,

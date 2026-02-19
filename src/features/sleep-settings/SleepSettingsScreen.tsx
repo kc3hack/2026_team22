@@ -115,7 +115,7 @@ const styles = StyleSheet.create({
     paddingBottom: 10,
   },
   title: {
-    fontSize: 24,
+    fontSize: 31,
     fontWeight: 'bold',
     color: COLORS.text.dark,
   },
@@ -132,7 +132,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   settingLabel: {
-    fontSize: 16,
+    fontSize: 21,
     fontWeight: '600',
     color: COLORS.text.dark,
     marginBottom: 16,
@@ -152,10 +152,10 @@ const styles = StyleSheet.create({
   },
   timeButtonText: {
     color: COLORS.primary,
-    fontSize: 16,
+    fontSize: 21,
   },
   timeDisplay: {
-    fontSize: 40,
+    fontSize: 52,
     fontWeight: '200',
     color: COLORS.text.dark,
     width: 60,
@@ -163,7 +163,7 @@ const styles = StyleSheet.create({
     fontVariant: ['tabular-nums'],
   },
   timeSeparator: {
-    fontSize: 40,
+    fontSize: 52,
     fontWeight: '200',
     color: COLORS.text.dark,
     marginHorizontal: 2,
@@ -183,17 +183,17 @@ const styles = StyleSheet.create({
   },
   durationButtonText: {
     color: COLORS.primary,
-    fontSize: 24,
+    fontSize: 31,
     fontWeight: '300',
   },
   durationValue: {
-    fontSize: 48,
+    fontSize: 62,
     fontWeight: '200',
     color: COLORS.text.dark,
     fontVariant: ['tabular-nums'],
   },
   durationUnit: {
-    fontSize: 16,
+    fontSize: 21,
     color: '#94A3B8',
   },
   resultCard: {
@@ -203,19 +203,19 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   resultLabel: {
-    fontSize: 14,
+    fontSize: 18,
     color: 'rgba(255,255,255,0.8)',
     marginBottom: 8,
   },
   resultTime: {
-    fontSize: 56,
+    fontSize: 73,
     fontWeight: '200',
     color: '#FFFFFF',
     fontVariant: ['tabular-nums'],
     marginBottom: 8,
   },
   resultHint: {
-    fontSize: 12,
+    fontSize: 16,
     color: 'rgba(255,255,255,0.6)',
   },
 });

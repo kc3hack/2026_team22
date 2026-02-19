@@ -65,13 +65,13 @@ const styles = StyleSheet.create({
     paddingBottom: 12,
   },
   title: {
-    fontSize: 24,
+    fontSize: 31,
     fontWeight: 'bold',
     color: COLORS.text.dark,
     marginBottom: 4,
   },
   subtitle: {
-    fontSize: 14,
+    fontSize: 18,
     color: '#94A3B8',
   },
   scrollContent: {
@@ -96,12 +96,12 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
   sectionTitle: {
-    fontSize: 16,
+    fontSize: 21,
     fontWeight: '700',
     color: COLORS.text.dark,
   },
   logCount: {
-    fontSize: 13,
+    fontSize: 17,
     color: '#64748B',
     fontWeight: '500',
   },

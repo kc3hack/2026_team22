@@ -119,15 +119,15 @@ const styles = StyleSheet.create({
         marginBottom: 16,
     },
     sunEmoji: {
-        fontSize: 28,
+        fontSize: 36,
     },
     title: {
-        fontSize: 17,
+        fontSize: 23,
         fontWeight: '700',
         color: COLORS.text.dark,
     },
     subtitle: {
-        fontSize: 12,
+        fontSize: 16,
         color: '#94A3B8',
         marginTop: 2,
     },
@@ -140,7 +140,7 @@ const styles = StyleSheet.create({
         borderRadius: 12,
     },
     scoreLabel: {
-        fontSize: 12,
+        fontSize: 16,
         color: '#94A3B8',
         marginBottom: 4,
     },
@@ -149,18 +149,18 @@ const styles = StyleSheet.create({
         alignItems: 'baseline',
     },
     scoreValue: {
-        fontSize: 40,
+        fontSize: 52,
         fontWeight: '700',
         fontVariant: ['tabular-nums'],
     },
     scoreUnit: {
-        fontSize: 16,
+        fontSize: 21,
         color: '#64748B',
         marginLeft: 4,
     },
     // 気分選択
     moodQuestion: {
-        fontSize: 14,
+        fontSize: 18,
         fontWeight: '600',
         color: COLORS.text.dark,
         textAlign: 'center',
@@ -183,14 +183,14 @@ const styles = StyleSheet.create({
         transform: [{ scale: 1.05 }],
     },
     moodEmoji: {
-        fontSize: 24,
+        fontSize: 31,
         marginBottom: 4,
     },
     moodEmojiSelected: {
-        fontSize: 28,
+        fontSize: 36,
     },
     moodLabel: {
-        fontSize: 10,
+        fontSize: 13,
         color: '#94A3B8',
         fontWeight: '500',
     },
@@ -200,7 +200,7 @@ const styles = StyleSheet.create({
     },
     thanksText: {
         textAlign: 'center',
-        fontSize: 13,
+        fontSize: 17,
         color: COLORS.success,
         fontWeight: '600',
         marginTop: 12,

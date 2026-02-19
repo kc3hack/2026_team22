@@ -70,12 +70,12 @@ const styles = StyleSheet.create({
     marginBottom: 30,
   },
   luxValue: {
-    fontSize: 48,
+    fontSize: 62,
     fontWeight: 'bold',
     color: COLORS.text.dark,
   },
   luxUnit: {
-    fontSize: 18,
+    fontSize: 23,
     color: COLORS.text.dark,
     opacity: 0.7,
   },
@@ -92,11 +92,11 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   scoreLabel: {
-    fontSize: 16,
+    fontSize: 21,
     color: COLORS.text.dark,
   },
   scoreValue: {
-    fontSize: 32,
+    fontSize: 42,
     fontWeight: 'bold',
   },
   progressBar: {
@@ -110,7 +110,7 @@ const styles = StyleSheet.create({
     borderRadius: 4,
   },
   recommendation: {
-    fontSize: 14,
+    fontSize: 18,
     color: COLORS.text.dark,
     lineHeight: 22,
     textAlign: 'center',

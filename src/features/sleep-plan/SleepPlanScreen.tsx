@@ -260,16 +260,16 @@ const styles = StyleSheet.create({
         marginBottom: 8,
     },
     moonIcon: {
-        fontSize: 32,
+        fontSize: 42,
     },
     title: {
-        fontSize: 26,
+        fontSize: 34,
         fontWeight: '800',
         color: COLORS.text.dark,
         letterSpacing: 0.5,
     },
     subtitle: {
-        fontSize: 13,
+        fontSize: 17,
         color: '#94A3B8',
         marginTop: 2,
     },
@@ -287,10 +287,10 @@ const styles = StyleSheet.create({
         marginTop: 4,
     },
     metaEmoji: {
-        fontSize: 12,
+        fontSize: 16,
     },
     metaText: {
-        fontSize: 11,
+        fontSize: 14,
         color: '#94A3B8',
         fontWeight: '500',
     },
@@ -299,14 +299,14 @@ const styles = StyleSheet.create({
         marginTop: 12,
     },
     sectionTitle: {
-        fontSize: 17,
+        fontSize: 23,
         fontWeight: '700',
         color: COLORS.text.dark,
         marginBottom: 4,
         letterSpacing: 0.3,
     },
     sectionSubtitle: {
-        fontSize: 12,
+        fontSize: 16,
         color: '#64748B',
         marginBottom: 14,
     },

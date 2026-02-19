@@ -103,13 +103,13 @@ const styles = StyleSheet.create({
     marginBottom: 40,
   },
   title: {
-    fontSize: 32,
+    fontSize: 42,
     fontWeight: 'bold',
     color: COLORS.text.dark,
     marginBottom: 8,
   },
   subtitle: {
-    fontSize: 16,
+    fontSize: 21,
     color: COLORS.text.dark,
     opacity: 0.7,
   },
@@ -123,14 +123,14 @@ const styles = StyleSheet.create({
   },
   errorText: {
     color: COLORS.error,
-    fontSize: 14,
+    fontSize: 18,
     textAlign: 'center',
   },
   inputContainer: {
     gap: 8,
   },
   label: {
-    fontSize: 14,
+    fontSize: 18,
     color: COLORS.text.dark,
     fontWeight: '500',
   },
@@ -138,7 +138,7 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.background.dark,
     borderRadius: 12,
     padding: 16,
-    fontSize: 16,
+    fontSize: 21,
     color: COLORS.text.dark,
     borderWidth: 1,
     borderColor: '#334155',
@@ -155,7 +155,7 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     color: COLORS.text.dark,
-    fontSize: 18,
+    fontSize: 23,
     fontWeight: '600',
   },
 });

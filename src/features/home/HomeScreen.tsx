@@ -332,13 +332,13 @@ const styles = StyleSheet.create({
     paddingBottom: 16,
   },
   greeting: {
-    fontSize: 28,
+    fontSize: 36,
     fontWeight: 'bold',
     color: COLORS.text.dark,
     marginBottom: 4,
   },
   subtitle: {
-    fontSize: 14,
+    fontSize: 18,
     color: '#94A3B8',
   },
   content: {
@@ -366,7 +366,7 @@ const styles = StyleSheet.create({
     paddingVertical: 4,
   },
   importanceText: {
-    fontSize: 12,
+    fontSize: 16,
     fontWeight: '600',
   },
   planTimeRow: {
@@ -380,28 +380,28 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   planTimeLabel: {
-    fontSize: 11,
+    fontSize: 14,
     color: '#94A3B8',
     marginBottom: 2,
   },
   planTimeValue: {
-    fontSize: 28,
+    fontSize: 36,
     fontWeight: '300',
     color: COLORS.primary,
     fontVariant: ['tabular-nums'],
   },
   planArrow: {
-    fontSize: 16,
+    fontSize: 21,
     color: '#475569',
     marginTop: 12,
   },
   planEventText: {
-    fontSize: 13,
+    fontSize: 17,
     color: '#94A3B8',
     marginBottom: 6,
   },
   planAdvice: {
-    fontSize: 13,
+    fontSize: 17,
     color: '#94A3B8',
     lineHeight: 20,
   },
@@ -412,7 +412,7 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   cardTitle: {
-    fontSize: 16,
+    fontSize: 21,
     fontWeight: '600',
     color: COLORS.text.dark,
     marginBottom: 16,
@@ -428,23 +428,23 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   scheduleLabel: {
-    fontSize: 12,
+    fontSize: 16,
     color: '#94A3B8',
     marginBottom: 4,
   },
   scheduleTime: {
-    fontSize: 36,
+    fontSize: 47,
     fontWeight: '200',
     color: COLORS.text.dark,
     fontVariant: ['tabular-nums'],
   },
   arrow: {
-    fontSize: 20,
+    fontSize: 26,
     color: '#64748B',
   },
   durationText: {
     textAlign: 'center',
-    fontSize: 14,
+    fontSize: 18,
     color: COLORS.primary,
   },
   scheduleCardOverridden: {
@@ -464,13 +464,13 @@ const styles = StyleSheet.create({
     paddingVertical: 3,
   },
   overrideBadgeText: {
-    fontSize: 11,
+    fontSize: 14,
     fontWeight: '600',
     color: COLORS.warning,
   },
   tapHint: {
     textAlign: 'center',
-    fontSize: 12,
+    fontSize: 16,
     color: '#475569',
     marginTop: 4,
   },
@@ -484,7 +484,7 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   editLabel: {
-    fontSize: 13,
+    fontSize: 17,
     fontWeight: '600',
     color: '#94A3B8',
     marginBottom: 8,
@@ -506,10 +506,10 @@ const styles = StyleSheet.create({
   },
   editBtnText: {
     color: COLORS.primary,
-    fontSize: 14,
+    fontSize: 18,
   },
   editTime: {
-    fontSize: 28,
+    fontSize: 36,
     fontWeight: '200',
     color: COLORS.text.dark,
     width: 44,
@@ -517,7 +517,7 @@ const styles = StyleSheet.create({
     fontVariant: ['tabular-nums'],
   },
   editColon: {
-    fontSize: 28,
+    fontSize: 36,
     fontWeight: '200',
     color: COLORS.text.dark,
     marginHorizontal: 2,
@@ -529,7 +529,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   resetButtonText: {
-    fontSize: 13,
+    fontSize: 17,
     fontWeight: '600',
     color: COLORS.warning,
   },
@@ -546,7 +546,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(16, 185, 129, 0.1)',
   },
   monitorText: {
-    fontSize: 14,
+    fontSize: 18,
     color: '#94A3B8',
   },
   // スコアカード
@@ -561,17 +561,17 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   scoreValue: {
-    fontSize: 56,
+    fontSize: 73,
     fontWeight: '700',
     fontVariant: ['tabular-nums'],
   },
   scoreUnit: {
-    fontSize: 18,
+    fontSize: 23,
     color: '#64748B',
     marginLeft: 4,
   },
   noDataText: {
-    fontSize: 14,
+    fontSize: 18,
     color: '#64748B',
     textAlign: 'center',
   },
@@ -584,7 +584,7 @@ const styles = StyleSheet.create({
   },
   weeklyLinkText: {
     color: '#94A3B8',
-    fontSize: 14,
+    fontSize: 18,
     fontWeight: '500',
   },
 });

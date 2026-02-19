@@ -167,7 +167,7 @@ const styles = StyleSheet.create({
         marginBottom: 20,
     },
     title: {
-        fontSize: 16,
+        fontSize: 21,
         fontWeight: '700',
         color: COLORS.text.dark,
     },
@@ -181,11 +181,11 @@ const styles = StyleSheet.create({
         gap: 4,
     },
     avgLabel: {
-        fontSize: 12,
+        fontSize: 16,
         color: '#94A3B8',
     },
     avgValue: {
-        fontSize: 14,
+        fontSize: 18,
         fontWeight: '700',
         fontVariant: ['tabular-nums'],
     },
@@ -211,7 +211,7 @@ const styles = StyleSheet.create({
         borderRadius: 6,
     },
     scoreBubbleText: {
-        fontSize: 11,
+        fontSize: 14,
         fontWeight: '700',
         color: '#FFF',
         fontVariant: ['tabular-nums'],
@@ -228,7 +228,7 @@ const styles = StyleSheet.create({
         minHeight: 6,
     },
     dayLabel: {
-        fontSize: 10,
+        fontSize: 13,
         color: '#94A3B8',
         marginTop: 6,
         textAlign: 'center',
@@ -239,7 +239,7 @@ const styles = StyleSheet.create({
         fontWeight: '600',
     },
     moodEmoji: {
-        fontSize: 12,
+        fontSize: 16,
         marginTop: 2,
     },
     noDataText: {

@@ -44,7 +44,7 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   dateLabel: {
-    fontSize: 13,
+    fontSize: 17,
     color: '#94A3B8',
     marginBottom: 16,
     fontWeight: '500',
@@ -68,16 +68,18 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(15, 23, 42, 0.5)',
   },
   scoreValue: {
-    fontSize: 48,
+    fontSize: 55,
     fontWeight: '700',
+    marginTop: 30,
     fontVariant: ['tabular-nums'],
   },
   scoreUnit: {
-    fontSize: 14,
+    fontSize: 25,
+    marginBottom: 30,
     color: '#94A3B8',
   },
   commentText: {
-    fontSize: 15,
+    fontSize: 19,
     fontWeight: '600',
     marginTop: 12,
   },

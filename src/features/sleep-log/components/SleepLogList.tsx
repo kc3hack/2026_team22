@@ -308,17 +308,17 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
   emptyEmoji: {
-    fontSize: 48,
+    fontSize: 62,
     marginBottom: 16,
   },
   emptyText: {
-    fontSize: 18,
+    fontSize: 23,
     fontWeight: '600',
     color: COLORS.text.dark,
     marginBottom: 8,
   },
   emptyHint: {
-    fontSize: 14,
+    fontSize: 18,
     color: '#94A3B8',
     textAlign: 'center',
   },
@@ -344,12 +344,12 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   logDate: {
-    fontSize: 15,
+    fontSize: 19,
     fontWeight: '600',
     color: COLORS.text.dark,
   },
   moodEmoji: {
-    fontSize: 16,
+    fontSize: 21,
   },
   scoreRow: {
     flexDirection: 'row',
@@ -357,17 +357,17 @@ const styles = StyleSheet.create({
     gap: 2,
   },
   logScore: {
-    fontSize: 22,
+    fontSize: 29,
     fontWeight: '700',
     fontVariant: ['tabular-nums'],
   },
   scoreUnit: {
-    fontSize: 12,
+    fontSize: 16,
     color: '#94A3B8',
     marginRight: 6,
   },
   chevron: {
-    fontSize: 10,
+    fontSize: 13,
     color: '#64748B',
   },
   tagsContainer: {
@@ -394,12 +394,12 @@ const styles = StyleSheet.create({
     borderRadius: 6,
   },
   tagText: {
-    fontSize: 11,
+    fontSize: 14,
     color: '#CBD5E1',
     fontWeight: '500',
   },
   tagTextSuccess: {
-    fontSize: 11,
+    fontSize: 14,
     color: COLORS.success,
     fontWeight: '500',
   },
@@ -414,9 +414,9 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   detailSectionTitle: {
-    fontSize: 12,
+    fontSize: 16,
     fontWeight: '600',
-    color: '#64748B',
+    color: '#FFFFFF',
     marginBottom: 8,
     textTransform: 'uppercase',
     letterSpacing: 0.5,
@@ -429,11 +429,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: 4,
   },
   detailLabel: {
-    fontSize: 14,
-    color: '#94A3B8',
+    fontSize: 18,
+    color: '#FFFFFF',
   },
   detailValue: {
-    fontSize: 16,
+    fontSize: 21,
     fontWeight: '700',
     fontVariant: ['tabular-nums'],
   },
@@ -441,7 +441,7 @@ const styles = StyleSheet.create({
     color: COLORS.success,
     textAlign: 'center',
     fontWeight: '600',
-    fontSize: 14,
+    fontSize: 18,
     paddingVertical: 4,
   },
   warningRow: {
@@ -460,14 +460,14 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(100, 116, 139, 0.15)',
   },
   warningText: {
-    fontSize: 12,
+    fontSize: 16,
     fontWeight: '600',
   },
   warningTextActive: {
     color: COLORS.warning,
   },
   warningTextInactive: {
-    color: '#475569',
+    color: '#FFFFFF',
   },
   moodDetailRow: {
     flexDirection: 'row',
@@ -476,10 +476,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: 4,
   },
   moodDetailEmoji: {
-    fontSize: 24,
+    fontSize: 31,
   },
   moodDetailLabel: {
-    fontSize: 14,
-    color: '#CBD5E1',
+    fontSize: 18,
+    color: '#FFFFFF',
   },
 });

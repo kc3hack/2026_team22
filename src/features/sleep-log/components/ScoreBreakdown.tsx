@@ -48,7 +48,7 @@ const styles = StyleSheet.create({
         marginBottom: 16,
     },
     title: {
-        fontSize: 16,
+        fontSize: 21,
         fontWeight: '600',
         color: COLORS.text.dark,
         marginBottom: 16, // Increased margin for better spacing
@@ -60,10 +60,10 @@ const styles = StyleSheet.create({
     },
     label: {
         color: '#94A3B8',
-        fontSize: 14,
+        fontSize: 18,
     },
     value: {
-        fontSize: 16,
+        fontSize: 21,
         fontWeight: '700',
     },
     perfectText: {
