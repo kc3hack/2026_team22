@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { View, Text, StyleSheet, Animated, Easing } from 'react-native';
+import { View, Text, StyleSheet, Animated, Easing, TouchableOpacity } from 'react-native';
 import { COLORS } from '@shared/constants';
 import type { DailyPlan } from '../types';
 
@@ -10,6 +10,8 @@ interface WeeklyPlanCardProps {
     isToday?: boolean;
     /** カード表示順インデックス（アニメーション用） */
     index?: number;
+    /** カードタップ時のコールバック */
+    onPress?: () => void;
 }
 
 /** 睡眠時間バーの最大幅に対する比率計算 (6h=60%, 10h=100%) */
@@ -29,6 +31,7 @@ export const WeeklyPlanCard: React.FC<WeeklyPlanCardProps> = ({
     plan,
     isToday = false,
     index = 0,
+    onPress,
 }) => {
     const fadeAnim = useRef(new Animated.Value(0)).current;
     const slideAnim = useRef(new Animated.Value(20)).current;
@@ -85,117 +88,119 @@ export const WeeklyPlanCard: React.FC<WeeklyPlanCardProps> = ({
     const barWidth = `${sleepRatio(plan.sleepDurationHours) * 100}%` as const;
 
     return (
-        <Animated.View
-            style={[
-                styles.card,
-                isToday && styles.todayCard,
-                {
-                    opacity: fadeAnim,
-                    transform: [{ translateY: slideAnim }],
-                },
-            ]}
-        >
-            {/* 今日グロー背景 */}
-            {isToday && (
-                <Animated.View style={[styles.todayGlowBg, { opacity: glowAnim }]} />
-            )}
+        <TouchableOpacity activeOpacity={0.85} onPress={onPress} disabled={!onPress}>
+            <Animated.View
+                style={[
+                    styles.card,
+                    isToday && styles.todayCard,
+                    {
+                        opacity: fadeAnim,
+                        transform: [{ translateY: slideAnim }],
+                    },
+                ]}
+            >
+                {/* 今日グロー背景 */}
+                {isToday && (
+                    <Animated.View style={[styles.todayGlowBg, { opacity: glowAnim }]} />
+                )}
 
-            {/* ── ヘッダー ── */}
-            <View style={styles.header}>
-                <View style={styles.dateArea}>
-                    <Text style={[styles.dayOfWeek, isToday && styles.todayAccent]}>
-                        {plan.dayOfWeek}
-                    </Text>
-                    <Text style={[styles.dateText, isToday && styles.todayAccentSub]}>
-                        {plan.date.slice(5).replace('-', '/')}
-                    </Text>
-                    {isToday && (
-                        <View style={styles.todayBadge}>
-                            <Text style={styles.todayBadgeText}>TODAY</Text>
-                        </View>
-                    )}
-                </View>
-                <View
-                    style={[
-                        styles.importanceBadge,
-                        { backgroundColor: importanceBadge.bg, borderColor: importanceBadge.border },
-                    ]}
-                >
-                    <Text style={[styles.importanceText, { color: importanceBadge.color }]}>
-                        {importanceBadge.label}
-                    </Text>
-                </View>
-            </View>
-
-            {/* ── 時刻表示 ── */}
-            <View style={styles.timeSection}>
-                <View style={styles.timeBlock}>
-                    <View style={styles.timeLabelRow}>
-                        <Text style={styles.timeIcon}>🌙</Text>
-                        <Text style={styles.timeLabel}>就寝</Text>
+                {/* ── ヘッダー ── */}
+                <View style={styles.header}>
+                    <View style={styles.dateArea}>
+                        <Text style={[styles.dayOfWeek, isToday && styles.todayAccent]}>
+                            {plan.dayOfWeek}
+                        </Text>
+                        <Text style={[styles.dateText, isToday && styles.todayAccentSub]}>
+                            {plan.date.slice(5).replace('-', '/')}
+                        </Text>
+                        {isToday && (
+                            <View style={styles.todayBadge}>
+                                <Text style={styles.todayBadgeText}>TODAY</Text>
+                            </View>
+                        )}
                     </View>
-                    <Text style={[styles.timeValue, isToday && styles.todayTimeValue]}>
-                        {plan.recommendedSleepTime}
-                    </Text>
-                </View>
-
-                <View style={styles.arrowContainer}>
-                    <View style={styles.arrowLine} />
-                    <Text style={styles.arrowHead}>›</Text>
-                </View>
-
-                <View style={styles.timeBlock}>
-                    <View style={styles.timeLabelRow}>
-                        <Text style={styles.timeIcon}>☀️</Text>
-                        <Text style={styles.timeLabel}>起床</Text>
-                    </View>
-                    <Text style={[styles.timeValue, isToday && styles.todayTimeValue]}>
-                        {plan.recommendedWakeTime}
-                    </Text>
-                </View>
-            </View>
-
-            {/* ── 睡眠時間バー ── */}
-            <View style={styles.durationSection}>
-                <View style={styles.durationHeader}>
-                    <Text style={styles.durationLabel}>睡眠時間</Text>
-                    <Text style={[styles.durationValue, { color: barColor }]}>
-                        {plan.sleepDurationHours}時間
-                    </Text>
-                </View>
-                <View style={styles.durationBarTrack}>
                     <View
                         style={[
-                            styles.durationBarFill,
-                            { width: barWidth, backgroundColor: barColor },
+                            styles.importanceBadge,
+                            { backgroundColor: importanceBadge.bg, borderColor: importanceBadge.border },
                         ]}
-                    />
-                </View>
-            </View>
-
-            {/* ── 翌日の予定 ── */}
-            {plan.nextDayEvent && (
-                <View style={styles.eventRow}>
-                    <View style={styles.eventIconWrap}>
-                        <Text style={styles.eventIcon}>📅</Text>
+                    >
+                        <Text style={[styles.importanceText, { color: importanceBadge.color }]}>
+                            {importanceBadge.label}
+                        </Text>
                     </View>
-                    <Text style={styles.eventText} numberOfLines={1}>
-                        {plan.nextDayEvent}
-                    </Text>
                 </View>
-            )}
 
-            {/* ── アドバイス ── */}
-            <View style={styles.adviceSection}>
-                <View style={styles.adviceLine} />
-                <View style={styles.adviceContent}>
-                    <Text style={styles.adviceIcon}>💡</Text>
-                    <Text style={styles.adviceText} numberOfLines={2}>
-                        {plan.advice}
-                    </Text>
+                {/* ── 時刻表示 ── */}
+                <View style={styles.timeSection}>
+                    <View style={styles.timeBlock}>
+                        <View style={styles.timeLabelRow}>
+                            <Text style={styles.timeIcon}>🌙</Text>
+                            <Text style={styles.timeLabel}>就寝</Text>
+                        </View>
+                        <Text style={[styles.timeValue, isToday && styles.todayTimeValue]}>
+                            {plan.recommendedSleepTime}
+                        </Text>
+                    </View>
+
+                    <View style={styles.arrowContainer}>
+                        <View style={styles.arrowLine} />
+                        <Text style={styles.arrowHead}>›</Text>
+                    </View>
+
+                    <View style={styles.timeBlock}>
+                        <View style={styles.timeLabelRow}>
+                            <Text style={styles.timeIcon}>☀️</Text>
+                            <Text style={styles.timeLabel}>起床</Text>
+                        </View>
+                        <Text style={[styles.timeValue, isToday && styles.todayTimeValue]}>
+                            {plan.recommendedWakeTime}
+                        </Text>
+                    </View>
                 </View>
-            </View>
-        </Animated.View>
+
+                {/* ── 睡眠時間バー ── */}
+                <View style={styles.durationSection}>
+                    <View style={styles.durationHeader}>
+                        <Text style={styles.durationLabel}>睡眠時間</Text>
+                        <Text style={[styles.durationValue, { color: barColor }]}>
+                            {plan.sleepDurationHours}時間
+                        </Text>
+                    </View>
+                    <View style={styles.durationBarTrack}>
+                        <View
+                            style={[
+                                styles.durationBarFill,
+                                { width: barWidth, backgroundColor: barColor },
+                            ]}
+                        />
+                    </View>
+                </View>
+
+                {/* ── 翌日の予定 ── */}
+                {plan.nextDayEvent && (
+                    <View style={styles.eventRow}>
+                        <View style={styles.eventIconWrap}>
+                            <Text style={styles.eventIcon}>📅</Text>
+                        </View>
+                        <Text style={styles.eventText} numberOfLines={1}>
+                            {plan.nextDayEvent}
+                        </Text>
+                    </View>
+                )}
+
+                {/* ── アドバイス ── */}
+                <View style={styles.adviceSection}>
+                    <View style={styles.adviceLine} />
+                    <View style={styles.adviceContent}>
+                        <Text style={styles.adviceIcon}>💡</Text>
+                        <Text style={styles.adviceText} numberOfLines={2}>
+                            {plan.advice}
+                        </Text>
+                    </View>
+                </View>
+            </Animated.View>
+        </TouchableOpacity>
     );
 };
 

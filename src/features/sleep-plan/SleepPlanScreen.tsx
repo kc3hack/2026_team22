@@ -1,4 +1,4 @@
-import React, { useEffect, useCallback, useRef } from 'react';
+import React, { useEffect, useCallback, useRef, useState } from 'react';
 import {
     View,
     Text,
@@ -13,6 +13,7 @@ import { COLORS } from '@shared/constants';
 import { useSleepPlanStore } from './sleepPlanStore';
 import { WeeklyPlanCard } from './components/WeeklyPlanCard';
 import { PlanStatus } from './components/PlanStatus';
+import { DayDetailModal } from './components/DayDetailModal';
 
 /**
  * 週間睡眠プラン画面 — Cosmic Sleep デザイン
@@ -21,6 +22,7 @@ import { PlanStatus } from './components/PlanStatus';
 export const SleepPlanScreen: React.FC = () => {
     const { plan, isLoading, error, fetchPlan } = useSleepPlanStore();
     const [refreshing, setRefreshing] = React.useState(false);
+    const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
 
     // アニメーション
     const moonFloat = useRef(new Animated.Value(0)).current;
@@ -203,12 +205,23 @@ export const SleepPlanScreen: React.FC = () => {
                                     plan={p}
                                     isToday={p.date === todayStr}
                                     index={i}
+                                    onPress={() => setSelectedIndex(i)}
                                 />
                             ))}
                         </View>
                     )}
                 </Animated.View>
             </ScrollView>
+
+            {/* 曜日詳細モーダル */}
+            {plan && (
+                <DayDetailModal
+                    plan={selectedIndex !== null ? plan.dailyPlans[selectedIndex] ?? null : null}
+                    allPlans={plan.dailyPlans}
+                    selectedIndex={selectedIndex ?? 0}
+                    onClose={() => setSelectedIndex(null)}
+                />
+            )}
         </SafeAreaView>
     );
 };
