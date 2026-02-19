@@ -26,6 +26,13 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
+        name="sleep-plan"
+        options={{
+          title: 'プラン',
+          tabBarIcon: ({ color }) => <Text style={{ color, fontSize: 20 }}>📋</Text>,
+        }}
+      />
+      <Tabs.Screen
         name="sleep-monitor"
         options={{
           title: 'モニター',
