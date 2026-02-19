@@ -46,13 +46,6 @@ export default function TabLayout() {
           tabBarIcon: ({ color }) => <Text style={{ color, fontSize: 20 }}>📊</Text>,
         }}
       />
-      <Tabs.Screen
-        name="profile"
-        options={{
-          title: 'プロフィール',
-          tabBarIcon: ({ color }) => <Text style={{ color, fontSize: 20 }}>👤</Text>,
-        }}
-      />
     </Tabs>
   );
 }

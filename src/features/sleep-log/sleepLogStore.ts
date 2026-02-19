@@ -8,7 +8,9 @@ interface SleepLogState {
 
 interface SleepLogActions {
   /** ログを追加 */
-  addLog: (entry: Omit<SleepLogEntry, 'id' | 'createdAt'>) => void;
+  addLog: (entry: Omit<SleepLogEntry, 'id' | 'createdAt' | 'mood'>) => void;
+  /** ログの気分を設定 */
+  setMood: (logId: string, mood: number) => void;
   /** ログを削除 */
   removeLog: (id: string) => void;
   /** 全ログをクリア */
@@ -27,6 +29,7 @@ export const useSleepLogStore = create<SleepLogState & SleepLogActions>(set => (
     const newLog: SleepLogEntry = {
       ...entry,
       id: `log-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+      mood: null,
       createdAt: Date.now(),
     };
     set(state => ({
@@ -37,6 +40,13 @@ export const useSleepLogStore = create<SleepLogState & SleepLogActions>(set => (
   removeLog: id =>
     set(state => ({
       logs: state.logs.filter(log => log.id !== id),
+    })),
+
+  setMood: (logId, mood) =>
+    set(state => ({
+      logs: state.logs.map(log =>
+        log.id === logId ? { ...log, mood } : log,
+      ),
     })),
 
   clearLogs: () => set({ logs: [] }),

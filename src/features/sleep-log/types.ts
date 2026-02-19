@@ -26,6 +26,8 @@ export interface SleepLogEntry {
   lightExceeded: boolean;
   /** 就寝時にうるさかったか */
   noiseExceeded: boolean;
+  /** 朝の気分フィードバック (1〜5, 未入力は null) */
+  mood: number | null;
   /** 作成日時 */
   createdAt: number;
 }

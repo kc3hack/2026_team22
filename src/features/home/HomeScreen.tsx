@@ -1,5 +1,5 @@
-import React from 'react';
-import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity } from 'react-native';
+import React, { useMemo } from 'react';
+import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, ScrollView } from 'react-native';
 import { useRouter } from 'expo-router';
 import { COLORS } from '@shared/constants';
 import { useSleepSettingsStore } from '@features/sleep-settings';
@@ -7,6 +7,7 @@ import { useSleepMonitorStore } from '@features/sleep-monitor';
 import { useSleepLogStore } from '@features/sleep-log';
 import { useSleepPlanStore } from '@features/sleep-plan';
 import { useEffect } from 'react';
+import { MorningReviewCard } from './components/MorningReviewCard';
 
 /**
  * ホーム画面（ダッシュボード）
@@ -16,8 +17,9 @@ export const HomeScreen: React.FC = () => {
   const router = useRouter();
   const settings = useSleepSettingsStore();
   const monitor = useSleepMonitorStore();
-  const { logs } = useSleepLogStore();
-  const latestScore = logs[0]?.score ?? null;
+  const { logs, setMood } = useSleepLogStore();
+  const latestLog = logs[0] ?? null;
+  const latestScore = latestLog?.score ?? null;
   const { plan, fetchPlan } = useSleepPlanStore();
   const todayPlan = useSleepPlanStore(state => state.getTodayPlan());
 
@@ -29,6 +31,15 @@ export const HomeScreen: React.FC = () => {
   const sleepTimeStr = `${settings.calculatedSleepHour.toString().padStart(2, '0')}:${settings.calculatedSleepMinute.toString().padStart(2, '0')}`;
   const wakeTimeStr = `${settings.wakeUpHour.toString().padStart(2, '0')}:${settings.wakeUpMinute.toString().padStart(2, '0')}`;
 
+  // 朝の振り返りカードの表示条件
+  const showMorningReview = useMemo(() => {
+    if (!latestLog || latestLog.mood !== null) return false;
+    const now = new Date();
+    const currentMinutes = now.getHours() * 60 + now.getMinutes();
+    const wakeMinutes = settings.wakeUpHour * 60 + settings.wakeUpMinute;
+    return currentMinutes >= wakeMinutes;
+  }, [latestLog, settings.wakeUpHour, settings.wakeUpMinute]);
+
   const importanceColor = {
     high: COLORS.error,
     medium: COLORS.warning,
@@ -37,134 +48,143 @@ export const HomeScreen: React.FC = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.greeting}>おやすみサポート</Text>
-        <Text style={styles.subtitle}>良質な睡眠のための準備を</Text>
-      </View>
-
-      <View style={styles.content}>
-        {/* 今日の睡眠プラン */}
-        {todayPlan && (
-          <TouchableOpacity
-            style={styles.planCard}
-            onPress={() => router.push('/sleep-plan' as never)}
-          >
-            <View style={styles.planCardHeader}>
-              <Text style={styles.cardTitle}>✨ 今日のAIプラン</Text>
-              <View
-                style={[
-                  styles.importanceBadge,
-                  {
-                    backgroundColor:
-                      todayPlan.importance === 'high'
-                        ? 'rgba(239, 68, 68, 0.15)'
-                        : todayPlan.importance === 'medium'
-                          ? 'rgba(245, 158, 11, 0.15)'
-                          : 'rgba(16, 185, 129, 0.15)',
-                  },
-                ]}
-              >
-                <Text
-                  style={[styles.importanceText, { color: importanceColor[todayPlan.importance] }]}
-                >
-                  {todayPlan.importance === 'high'
-                    ? '重要'
-                    : todayPlan.importance === 'medium'
-                      ? '普通'
-                      : '軽め'}
-                </Text>
-              </View>
-            </View>
-            <View style={styles.planTimeRow}>
-              <View style={styles.planTimeItem}>
-                <Text style={styles.planTimeLabel}>推奨就寝</Text>
-                <Text style={styles.planTimeValue}>{todayPlan.recommendedSleepTime}</Text>
-              </View>
-              <Text style={styles.planArrow}>→</Text>
-              <View style={styles.planTimeItem}>
-                <Text style={styles.planTimeLabel}>推奨起床</Text>
-                <Text style={styles.planTimeValue}>{todayPlan.recommendedWakeTime}</Text>
-              </View>
-            </View>
-            {todayPlan.nextDayEvent && (
-              <Text style={styles.planEventText}>📅 明日: {todayPlan.nextDayEvent}</Text>
-            )}
-            <Text style={styles.planAdvice} numberOfLines={2}>
-              💡 {todayPlan.advice}
-            </Text>
-          </TouchableOpacity>
-        )}
-
-        {/* 今夜の予定 */}
-        <View style={styles.scheduleCard}>
-          <Text style={styles.cardTitle}>🌙 今夜のスケジュール</Text>
-          <View style={styles.scheduleRow}>
-            <View style={styles.scheduleItem}>
-              <Text style={styles.scheduleLabel}>就寝</Text>
-              <Text style={styles.scheduleTime}>{sleepTimeStr}</Text>
-            </View>
-            <Text style={styles.arrow}>→</Text>
-            <View style={styles.scheduleItem}>
-              <Text style={styles.scheduleLabel}>起床</Text>
-              <Text style={styles.scheduleTime}>{wakeTimeStr}</Text>
-            </View>
-          </View>
-          <Text style={styles.durationText}>睡眠時間: {settings.sleepDurationHours}時間</Text>
+      <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
+        <View style={styles.header}>
+          <Text style={styles.greeting}>おやすみサポート</Text>
+          <Text style={styles.subtitle}>良質な睡眠のための準備を</Text>
         </View>
 
-        {/* モニタリング状態 */}
-        <TouchableOpacity
-          style={[styles.monitorCard, monitor.isMonitoring && styles.monitorCardActive]}
-          onPress={() => router.push('/sleep-monitor' as never)}
-        >
-          <Text style={styles.cardTitle}>{monitor.isMonitoring ? '🟢 監視中' : '⚪ 待機中'}</Text>
-          <Text style={styles.monitorText}>
-            {monitor.isMonitoring
-              ? `${monitor.currentPhase.toUpperCase()} - タップして確認`
-              : 'タップして睡眠モニターを開始'}
-          </Text>
-        </TouchableOpacity>
-
-        {/* 最新スコア */}
-        <TouchableOpacity
-          style={styles.scoreCard}
-          onPress={() => router.push('/sleep-log' as never)}
-        >
-          <Text style={styles.cardTitle}>📊 最新スコア</Text>
-          {latestScore !== null ? (
-            <View style={styles.scoreRow}>
-              <Text
-                style={[
-                  styles.scoreValue,
-                  {
-                    color:
-                      latestScore >= 80
-                        ? COLORS.success
-                        : latestScore >= 50
-                          ? COLORS.warning
-                          : COLORS.error,
-                  },
-                ]}
-              >
-                {latestScore}
-              </Text>
-              <Text style={styles.scoreUnit}>/ 100</Text>
-            </View>
-          ) : (
-            <Text style={styles.noDataText}>まだデータがありません</Text>
+        <View style={styles.content}>
+          {/* 朝の振り返りカード */}
+          {showMorningReview && latestLog && (
+            <MorningReviewCard
+              score={latestLog.score}
+              onSelectMood={(mood) => setMood(latestLog.id, mood)}
+            />
           )}
-        </TouchableOpacity>
+          {/* 今日の睡眠プラン */}
+          {todayPlan && (
+            <TouchableOpacity
+              style={styles.planCard}
+              onPress={() => router.push('/sleep-plan' as never)}
+            >
+              <View style={styles.planCardHeader}>
+                <Text style={styles.cardTitle}>✨ 今日のAIプラン</Text>
+                <View
+                  style={[
+                    styles.importanceBadge,
+                    {
+                      backgroundColor:
+                        todayPlan.importance === 'high'
+                          ? 'rgba(239, 68, 68, 0.15)'
+                          : todayPlan.importance === 'medium'
+                            ? 'rgba(245, 158, 11, 0.15)'
+                            : 'rgba(16, 185, 129, 0.15)',
+                    },
+                  ]}
+                >
+                  <Text
+                    style={[styles.importanceText, { color: importanceColor[todayPlan.importance] }]}
+                  >
+                    {todayPlan.importance === 'high'
+                      ? '重要'
+                      : todayPlan.importance === 'medium'
+                        ? '普通'
+                        : '軽め'}
+                  </Text>
+                </View>
+              </View>
+              <View style={styles.planTimeRow}>
+                <View style={styles.planTimeItem}>
+                  <Text style={styles.planTimeLabel}>推奨就寝</Text>
+                  <Text style={styles.planTimeValue}>{todayPlan.recommendedSleepTime}</Text>
+                </View>
+                <Text style={styles.planArrow}>→</Text>
+                <View style={styles.planTimeItem}>
+                  <Text style={styles.planTimeLabel}>推奨起床</Text>
+                  <Text style={styles.planTimeValue}>{todayPlan.recommendedWakeTime}</Text>
+                </View>
+              </View>
+              {todayPlan.nextDayEvent && (
+                <Text style={styles.planEventText}>📅 明日: {todayPlan.nextDayEvent}</Text>
+              )}
+              <Text style={styles.planAdvice} numberOfLines={2}>
+                💡 {todayPlan.advice}
+              </Text>
+            </TouchableOpacity>
+          )}
 
-        {/* 週間プランへのリンク */}
-        {plan && (
+          {/* 今夜の予定 */}
+          <View style={styles.scheduleCard}>
+            <Text style={styles.cardTitle}>🌙 今夜のスケジュール</Text>
+            <View style={styles.scheduleRow}>
+              <View style={styles.scheduleItem}>
+                <Text style={styles.scheduleLabel}>就寝</Text>
+                <Text style={styles.scheduleTime}>{sleepTimeStr}</Text>
+              </View>
+              <Text style={styles.arrow}>→</Text>
+              <View style={styles.scheduleItem}>
+                <Text style={styles.scheduleLabel}>起床</Text>
+                <Text style={styles.scheduleTime}>{wakeTimeStr}</Text>
+              </View>
+            </View>
+            <Text style={styles.durationText}>睡眠時間: {settings.sleepDurationHours}時間</Text>
+          </View>
+
+          {/* モニタリング状態 */}
           <TouchableOpacity
-            style={styles.weeklyLinkCard}
-            onPress={() => router.push('/sleep-plan' as never)}
+            style={[styles.monitorCard, monitor.isMonitoring && styles.monitorCardActive]}
+            onPress={() => router.push('/sleep-monitor' as never)}
           >
-            <Text style={styles.weeklyLinkText}>📋 週間プランを確認する →</Text>
+            <Text style={styles.cardTitle}>{monitor.isMonitoring ? '🟢 監視中' : '⚪ 待機中'}</Text>
+            <Text style={styles.monitorText}>
+              {monitor.isMonitoring
+                ? `${monitor.currentPhase.toUpperCase()} - タップして確認`
+                : 'タップして睡眠モニターを開始'}
+            </Text>
           </TouchableOpacity>
-        )}
-      </View>
+
+          {/* 最新スコア */}
+          <TouchableOpacity
+            style={styles.scoreCard}
+            onPress={() => router.push('/sleep-log' as never)}
+          >
+            <Text style={styles.cardTitle}>📊 最新スコア</Text>
+            {latestScore !== null ? (
+              <View style={styles.scoreRow}>
+                <Text
+                  style={[
+                    styles.scoreValue,
+                    {
+                      color:
+                        latestScore >= 80
+                          ? COLORS.success
+                          : latestScore >= 50
+                            ? COLORS.warning
+                            : COLORS.error,
+                    },
+                  ]}
+                >
+                  {latestScore}
+                </Text>
+                <Text style={styles.scoreUnit}>/ 100</Text>
+              </View>
+            ) : (
+              <Text style={styles.noDataText}>まだデータがありません</Text>
+            )}
+          </TouchableOpacity>
+
+          {/* 週間プランへのリンク */}
+          {plan && (
+            <TouchableOpacity
+              style={styles.weeklyLinkCard}
+              onPress={() => router.push('/sleep-plan' as never)}
+            >
+              <Text style={styles.weeklyLinkText}>📋 週間プランを確認する →</Text>
+            </TouchableOpacity>
+          )}
+        </View>
+      </ScrollView>
     </SafeAreaView>
   );
 };
@@ -173,6 +193,12 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#1E293B',
+  },
+  scrollView: {
+    flex: 1,
+  },
+  scrollContent: {
+    paddingBottom: 40,
   },
   header: {
     paddingHorizontal: 20,
