@@ -6,10 +6,17 @@ import { useLightSensor } from '@features/light-sensor';
 import { geminiClient } from '@shared/lib/gemini';
 import { googleCalendar } from '@shared/lib/googleCalendar';
 import {
+  initializeNotifications,
+  sendLocalNotification,
+  canSendNotification,
+  resetNotificationCooldowns,
+} from '@shared/lib/notifications';
+import {
   PHASE_DURATION,
   USAGE_THRESHOLDS,
   ENVIRONMENT_THRESHOLDS,
   POLLING_INTERVAL,
+  NOTIFICATION_CONFIG,
 } from '../constants';
 import type { MonitorPhase, EventImportance } from '../types';
 
@@ -130,6 +137,10 @@ export const useSleepMonitor = (): UseSleepMonitorReturn => {
       hasTriggeredPhase1Ref.current = false;
       hasTriggeredPhase2Ref.current = false;
 
+      // プッシュ通知を初期化
+      initializeNotifications();
+      resetNotificationCooldowns();
+
       // 光センサーを開始
       if (lightSensor.isAvailable && !lightSensor.isActive) {
         lightSensor.startSensor();
@@ -150,6 +161,7 @@ export const useSleepMonitor = (): UseSleepMonitorReturn => {
     store.stopMonitoring();
     usageTracker.stopTracking();
     noiseSensor.stopSensor();
+    resetNotificationCooldowns();
 
     if (phaseUpdateRef.current) {
       clearInterval(phaseUpdateRef.current);
@@ -227,14 +239,33 @@ export const useSleepMonitor = (): UseSleepMonitorReturn => {
       isNoiseExceeded: noiseDb !== null && noiseDb >= ENVIRONMENT_THRESHOLDS.NOISE_MAX_DB,
     });
 
-    // Phase 3の環境チェック: NGラインを超えていれば通知
-    if (store.currentPhase === 'phase3') {
-      if (lightLux !== null && lightLux >= ENVIRONMENT_THRESHOLDS.LIGHT_MAX_LUX) {
+    // 全フェーズの環境チェック: NGラインを超えていれば通知
+    if (lightLux !== null && lightLux >= ENVIRONMENT_THRESHOLDS.LIGHT_MAX_LUX) {
+      // プッシュ通知（クールダウン付き）
+      if (canSendNotification('light', NOTIFICATION_CONFIG.COOLDOWN_MS)) {
+        sendLocalNotification(
+          '💡 環境警告：光',
+          `現在 ${Math.round(lightLux)} lux です。基準値（${ENVIRONMENT_THRESHOLDS.LIGHT_MAX_LUX} lux）を超えています。照明を暗くしましょう。`
+        );
+      }
+      // Phase 3ではアプリ内警告も表示
+      if (store.currentPhase === 'phase3') {
         geminiClient.generateEnvironmentAdvice(lightLux, noiseDb).then(msg => {
           setLatestWarning(msg);
           setShowWarning(true);
         });
-      } else if (noiseDb !== null && noiseDb >= ENVIRONMENT_THRESHOLDS.NOISE_MAX_DB) {
+      }
+    }
+    if (noiseDb !== null && noiseDb >= ENVIRONMENT_THRESHOLDS.NOISE_MAX_DB) {
+      // プッシュ通知（クールダウン付き）
+      if (canSendNotification('noise', NOTIFICATION_CONFIG.COOLDOWN_MS)) {
+        sendLocalNotification(
+          '🔊 環境警告：音',
+          `現在 ${Math.round(noiseDb)} dB です。基準値（${ENVIRONMENT_THRESHOLDS.NOISE_MAX_DB} dB）を超えています。静かな環境を整えましょう。`
+        );
+      }
+      // Phase 3ではアプリ内警告も表示
+      if (store.currentPhase === 'phase3') {
         geminiClient.generateEnvironmentAdvice(lightLux, noiseDb).then(msg => {
           setLatestWarning(msg);
           setShowWarning(true);
@@ -276,6 +307,8 @@ export const useSleepMonitor = (): UseSleepMonitorReturn => {
             setLatestWarning(message);
             setShowWarning(true);
             store.recalculateScore();
+            // プッシュ通知
+            sendLocalNotification('📱 スマホ使用警告', message);
           });
       });
     }
@@ -303,6 +336,8 @@ export const useSleepMonitor = (): UseSleepMonitorReturn => {
             setLatestWarning(message);
             setShowWarning(true);
             store.recalculateScore();
+            // プッシュ通知
+            sendLocalNotification('⚠️ スマホ使用警告', message);
           });
       });
     }

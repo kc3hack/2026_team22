@@ -9,3 +9,10 @@ export type { CalendarEvent, CalendarConfig } from './googleCalendar';
 
 export { geminiClient } from './gemini';
 export type { GeminiConfig, WarningContext } from './gemini';
+
+export {
+    initializeNotifications,
+    sendLocalNotification,
+    canSendNotification,
+    resetNotificationCooldowns,
+} from './notifications';
