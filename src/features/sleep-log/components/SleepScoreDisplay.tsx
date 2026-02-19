@@ -69,18 +69,15 @@ const styles = StyleSheet.create({
   },
   scoreValue: {
     fontSize: 55,
-    fontWeight: '700',
-    marginTop: 30,
+    fontWeight: '500',
+    paddingTop: 30,
+    marginTop: 15,
     fontVariant: ['tabular-nums'],
   },
   scoreUnit: {
     fontSize: 25,
-    marginBottom: 30,
+    marginBottom: 45,
     color: '#94A3B8',
   },
-  commentText: {
-    fontSize: 19,
-    fontWeight: '600',
-    marginTop: 12,
-  },
+
 });
