@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import type { SleepLogEntry } from './types';
+import { mockSleepLogs } from './mockData';
 
 interface SleepLogState {
   /** ログ一覧（新しい順） */
@@ -17,13 +18,15 @@ interface SleepLogActions {
   clearLogs: () => void;
 }
 
+
+
 /**
  * 睡眠ログストア
  * スコア履歴の保存と取得を管理
  * TODO: AsyncStorageで永続化
  */
 export const useSleepLogStore = create<SleepLogState & SleepLogActions>(set => ({
-  logs: [],
+  logs: mockSleepLogs,
 
   addLog: entry => {
     const newLog: SleepLogEntry = {
