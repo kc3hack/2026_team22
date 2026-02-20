@@ -87,6 +87,24 @@
 
 ---
 
+## 実機で 401 Unauthorized になる場合（POST /sleep-plans, GET /settings など）
+
+### 原因
+
+- 実機アプリは LAN IP で Supabase にログインし、JWT を取得している。
+- API は Docker コンテナ内で動作している。コンテナに渡る `SUPABASE_URL` が `http://127.0.0.1:54321` のままだと、**コンテナ内の 127.0.0.1** に接続しようとする（= コンテナ自身）。ホストで動いている Supabase には届かず、JWT 検証が失敗して 401 になる。
+
+### 対処
+
+- `scripts/supabase-env-for-compose.mjs` で、API コンテナ用の `SUPABASE_URL` を **`host.docker.internal`** に差し替えるようにしてある（コンテナからホストの Supabase へ JWT 検証するため）。
+- **`task dev-up` を使っている場合**: そのまま **`task dev-up` を再実行**すれば、この設定が毎回渡される。いったんコンテナだけ作り直したい場合は:
+  ```bash
+  eval "$(node scripts/supabase-env-for-compose.mjs)" && docker-compose up -d --force-recreate
+  ```
+- 実機と PC は**同じ Wi‑Fi** に接続し、`task dev-up` で書き込まれた LAN IP が実機から到達できることを確認する。
+
+---
+
 ## まとめ
 
 - **「Network request failed」の多くは、Metro が古い .env のまま動いているか、ネイティブに古い extra が残っていることが原因。**

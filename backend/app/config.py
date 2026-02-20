@@ -4,8 +4,9 @@
 """
 
 from functools import lru_cache
+
 from pydantic import field_validator
-from pydantic_settings import BaseSettings
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
@@ -57,10 +58,11 @@ class Settings(BaseSettings):
     OPENROUTER_BASE_URL: str = "https://openrouter.ai/api/v1"
     OPENROUTER_MODEL: str = "openai/gpt-4o-mini"  # 無料枠: deepseek/deepseek-chat-v3-0324:free 等
 
-    class Config:
-        env_file = (".env", "../.env")  # backend/ または プロジェクトルート
-        env_file_encoding = "utf-8"
-        case_sensitive = True
+    model_config = SettingsConfigDict(
+        env_file=(".env", "../.env"),  # backend/ または プロジェクトルート
+        env_file_encoding="utf-8",
+        extra="ignore",  # API_URL, DB_PORT 等の未定義環境変数を無視（Taskfile / docker-compose 用）
+    )
 
 
 @lru_cache()

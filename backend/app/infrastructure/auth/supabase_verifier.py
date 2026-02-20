@@ -2,9 +2,13 @@
 Supabase JWT 検証: アクセストークンから user_id を取得する。
 """
 
+import logging
+
 from supabase import create_client
 
 from app.config import settings
+
+logger = logging.getLogger(__name__)
 
 
 def verify_supabase_jwt(access_token: str) -> str:
@@ -30,7 +34,12 @@ def verify_supabase_jwt(access_token: str) -> str:
         )
         response = client.auth.get_user(jwt=access_token)
     except Exception as e:
-        # AuthApiError, AuthSessionMissingError 等
+        # 実機 401 切り分け: 接続失敗かトークン無効かログで判別する
+        logger.warning(
+            "Supabase JWT verification failed: %s (SUPABASE_URL=%s)",
+            e,
+            (settings.SUPABASE_URL or "")[:50],
+        )
         raise ValueError("Invalid or expired token") from e
 
     if response is None or not getattr(response, "user", None):

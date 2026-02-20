@@ -45,6 +45,22 @@ export interface SleepPlanRequest {
   sleepLogs: SleepLogSummary[];
   /** 睡眠設定 */
   settings: SleepSettingsSummary;
+  /** 今日だけのオーバーライド（null なら無し） */
+  todayOverride?: TodayOverrideSummary | null;
+}
+
+/** 今日だけの一時的な時刻オーバーライド（リクエスト用） */
+export interface TodayOverrideSummary {
+  /** 有効日 (YYYY-MM-DD) */
+  date: string;
+  /** 就寝時刻（時） */
+  sleepHour: number;
+  /** 就寝時刻（分） */
+  sleepMinute: number;
+  /** 起床時刻（時） */
+  wakeHour: number;
+  /** 起床時刻（分） */
+  wakeMinute: number;
 }
 
 /** カレンダー予定の要約（リクエスト用） */
@@ -87,4 +103,6 @@ export interface SleepPlanState {
   error: string | null;
   /** 最終取得日時 (Date.getTime()) */
   lastFetchedAt: number | null;
+  /** 最終取得成功時のローカル日付 (YYYY-MM-DD) */
+  lastFetchedDate: string | null;
 }

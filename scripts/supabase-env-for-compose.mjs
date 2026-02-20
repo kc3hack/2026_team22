@@ -40,8 +40,12 @@ try {
     process.exit(1);
   }
 
+  // API コンテナからホストの Supabase に届くよう、localhost/127.0.0.1 を host.docker.internal に差し替える
+  // （コンテナ内の 127.0.0.1 はコンテナ自身のため JWT 検証で 401 になる）
+  const supabaseUrlForContainer = apiUrl.replace(/127\.0\.0\.1|localhost/, 'host.docker.internal');
+
   const vars = {
-    SUPABASE_URL: apiUrl,
+    SUPABASE_URL: supabaseUrlForContainer,
     SUPABASE_ANON_KEY: anonKey,
     SUPABASE_JWT_SECRET: jwtSecret,
     SUPABASE_SERVICE_ROLE_KEY: serviceRoleKey,

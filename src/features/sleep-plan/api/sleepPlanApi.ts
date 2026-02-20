@@ -141,18 +141,59 @@ const generateMockPlan = (calendarEvents: CalendarEventSummary[] = []): WeeklySl
 };
 
 /**
+ * リクエスト Body をバックエンド向け snake_case に変換
+ */
+const toSnakeCaseBody = (req: SleepPlanRequest): Record<string, unknown> => {
+  const todayOverride = req.todayOverride
+    ? {
+      date: req.todayOverride.date,
+      sleep_hour: req.todayOverride.sleepHour,
+      sleep_minute: req.todayOverride.sleepMinute,
+      wake_hour: req.todayOverride.wakeHour,
+      wake_minute: req.todayOverride.wakeMinute,
+    }
+    : null;
+
+  return {
+    calendar_events: req.calendarEvents.map(e => ({
+      title: e.title,
+      start: e.start,
+      end: e.end,
+      all_day: e.allDay ?? false,
+    })),
+    sleep_logs: req.sleepLogs.map(l => ({
+      date: l.date,
+      score: l.score,
+      scheduled_sleep_time: l.scheduledSleepTime,
+    })),
+    settings: {
+      wake_up_time: req.settings.wakeUpTime,
+      sleep_duration_hours: req.settings.sleepDurationHours,
+    },
+    today_override: todayOverride,
+  };
+};
+
+/**
  * 週間睡眠プランを取得
  *
  * 認証トークン付きで POST /api/v1/sleep-plans を呼ぶ。バックエンドが 2xx を返せばその結果を返し、
  * 未実装・エラー時はモックでフォールバックする。
  *
- * @param request リクエストデータ（カレンダー予定 + 睡眠ログ + 設定）
+ * @param request リクエストデータ（カレンダー予定 + 睡眠ログ + 設定 + todayOverride）
+ * @param force  true のとき ?force=true を付与しキャッシュを無視して再計算
  * @returns 週間睡眠プラン
  */
-export const fetchSleepPlan = async (request: SleepPlanRequest): Promise<WeeklySleepPlan> => {
-  const response = await apiV1Fetch('/sleep-plans', {
+export const fetchSleepPlan = async (
+  request: SleepPlanRequest,
+  force = false,
+): Promise<WeeklySleepPlan> => {
+  const path = force ? '/sleep-plans?force=true' : '/sleep-plans';
+  const body = toSnakeCaseBody(request);
+
+  const response = await apiV1Fetch(path, {
     method: 'POST',
-    body: JSON.stringify(request),
+    body: JSON.stringify(body),
   });
 
   if (response.ok) {
@@ -163,7 +204,8 @@ export const fetchSleepPlan = async (request: SleepPlanRequest): Promise<WeeklyS
   console.warn(
     '[SleepPlanApi] Backend returned',
     response.status,
-    '- using mock data. URL: /api/v1/sleep-plans'
+    '- using mock data. URL:',
+    path,
   );
   await new Promise<void>(resolve => setTimeout(() => resolve(), 800));
   return generateMockPlan(request.calendarEvents);
