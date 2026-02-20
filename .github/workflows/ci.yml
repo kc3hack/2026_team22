@@ -91,17 +91,17 @@ jobs:
           docker compose down -v 2>/dev/null || true
           eval "$(node scripts/supabase-env-for-compose.mjs)" && docker compose up -d
 
-      - name: Wait for DB and run migrations
-        run: |
-          echo "Waiting for DB..."
-          sleep 5
-          cd backend && \
-          DATABASE_URL=postgresql://postgres:postgres@localhost:5432/sleepsupport uv run alembic upgrade head
-
       - name: Setup uv (Python)
         uses: astral-sh/setup-uv@v4
         with:
           version: "latest"
+
+      - name: Wait for DB and run migrations
+        run: |
+          echo "Waiting for DB..."
+          sleep 5
+          cd backend && uv sync && \
+          DATABASE_URL=postgresql://postgres:postgres@localhost:5432/sleepsupport uv run alembic upgrade head
 
       - name: Install backend dependencies and run pytest
         run: |
