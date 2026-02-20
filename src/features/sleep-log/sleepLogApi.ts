@@ -118,9 +118,7 @@ function responseToCamel(res: SleepLogApiResponse): SleepLogEntry {
 }
 
 /** camelCase フロント型 → snake_case POST リクエスト */
-function entryToSnake(
-  entry: Omit<SleepLogEntry, 'id' | 'createdAt' | 'mood'>
-): SleepLogCreateRequest {
+function entryToSnake(entry: Omit<SleepLogEntry, 'id' | 'createdAt'>): SleepLogCreateRequest {
   return {
     date: entry.date,
     score: entry.score,
@@ -133,7 +131,7 @@ function entryToSnake(
     phase2_warning: entry.phase2Warning,
     light_exceeded: entry.lightExceeded,
     noise_exceeded: entry.noiseExceeded,
-    mood: null,
+    mood: entry.mood ?? null,
   };
 }
 
@@ -157,7 +155,7 @@ export async function fetchSleepLogsFromApi(limit = 7): Promise<SleepLogEntry[]>
  * POST /api/v1/sleep-logs — 睡眠ログを新規作成する。
  */
 export async function createSleepLogViaApi(
-  entry: Omit<SleepLogEntry, 'id' | 'createdAt' | 'mood'>
+  entry: Omit<SleepLogEntry, 'id' | 'createdAt'>
 ): Promise<SleepLogEntry> {
   const body = entryToSnake(entry);
   const res = await apiV1Fetch('/sleep-logs', {

@@ -3,6 +3,8 @@
  */
 export { SleepLogScreen } from './SleepLogScreen';
 export { useSleepLogStore } from './sleepLogStore';
+export { usePendingLastNightStore } from './pendingLastNightStore';
+export type { PendingLastNightData } from './pendingLastNightStore';
 export type { SleepLogEntry } from './types';
 export {
   fetchSleepLogsFromApi,

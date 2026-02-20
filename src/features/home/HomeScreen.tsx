@@ -14,7 +14,8 @@ import { COLORS } from '@shared/constants';
 import { useSleepSettingsStore } from '@features/sleep-settings';
 import { WheelPicker } from '@shared/components/WheelPicker';
 import { useSleepLogStore } from '@features/sleep-log';
-
+import { usePendingLastNightStore } from '@features/sleep-log/pendingLastNightStore';
+import { AddSleepLogModal } from '@features/sleep-log/components/AddSleepLogModal';
 import { useSleepPlanStore } from '@features/sleep-plan';
 import { MorningReviewCard } from './components/MorningReviewCard';
 
@@ -25,9 +26,11 @@ import { MorningReviewCard } from './components/MorningReviewCard';
 export const HomeScreen: React.FC = () => {
   const router = useRouter();
   const settings = useSleepSettingsStore();
-  const { logs, setMood, fetchLogs } = useSleepLogStore();
+  const { logs, setMood, fetchLogs, addLog } = useSleepLogStore();
+  const { pending: pendingLastNight, clearPending: clearPendingLastNight } =
+    usePendingLastNightStore();
   const latestLog = logs[0] ?? null;
-  const latestScore = latestLog?.score ?? null;
+  const [addLastNightModalVisible, setAddLastNightModalVisible] = useState(false);
   const { fetchPlan } = useSleepPlanStore();
   const todayPlan = useSleepPlanStore(state => state.getTodayPlan());
 
@@ -123,14 +126,37 @@ export const HomeScreen: React.FC = () => {
     }
   };
 
-  // 朝の振り返りカードの表示条件
-  const showMorningReview = useMemo(() => {
-    if (!latestLog) return false;
+  // 朝の時間帯か（起床時刻以降）
+  const isMorning = useMemo(() => {
     const now = new Date();
     const currentMinutes = now.getHours() * 60 + now.getMinutes();
     const wakeMinutes = settings.wakeUpHour * 60 + settings.wakeUpMinute;
     return currentMinutes >= wakeMinutes;
-  }, [latestLog, settings.wakeUpHour, settings.wakeUpMinute]);
+  }, [settings.wakeUpHour, settings.wakeUpMinute]);
+
+  const yesterdayStr = useMemo(() => {
+    const d = new Date();
+    d.setDate(d.getDate() - 1);
+    return d.toISOString().slice(0, 10);
+  }, []);
+
+  /** 昨日のログ（あれば） */
+  const logForYesterday = useMemo(
+    () => logs.find(l => l.date === yesterdayStr) ?? null,
+    [logs, yesterdayStr],
+  );
+  const hasLogForYesterday = logForYesterday !== null;
+
+  /**
+   * 朝の振り返りカードを表示: 昨日のログが既にある、またはアプリが記録した昨夜分の仮データがある。
+   * 気分を選んだら → ログありなら PATCH、ログなしなら 仮データ＋気分で POST して保存。
+   */
+  const showMorningReview =
+    (__DEV__ || isMorning) && (hasLogForYesterday || pendingLastNight !== null);
+
+  /** 昨夜を記録（手動）: 昨日のログがなく、アプリの仮データもないときだけ表示。 */
+  const needRecordLastNight =
+    (__DEV__ || isMorning) && !hasLogForYesterday && pendingLastNight === null;
 
   const importanceColor = {
     high: COLORS.error,
@@ -147,12 +173,51 @@ export const HomeScreen: React.FC = () => {
         </View>
 
         <View style={styles.content}>
-          {/* 朝の振り返りカード */}
-          {showMorningReview && latestLog && latestScore !== null && (
+          {/* 昨夜を記録（朝で昨夜のログがない場合） */}
+          {needRecordLastNight && (
+            <TouchableOpacity
+              style={styles.recordLastNightCard}
+              onPress={() => setAddLastNightModalVisible(true)}
+              activeOpacity={0.8}
+            >
+              <Text style={styles.recordLastNightEmoji}>🌙</Text>
+              <Text style={styles.recordLastNightTitle}>昨夜を記録しましょう</Text>
+              <Text style={styles.recordLastNightSub}>
+                タップして日付・スコアを入力し、昨夜の睡眠を保存します
+              </Text>
+            </TouchableOpacity>
+          )}
+
+          {/* 朝の振り返りカード（ログあり→気分だけ更新 / 仮データあり→気分選択で自動保存） */}
+          {showMorningReview && (logForYesterday || pendingLastNight) && (
             <MorningReviewCard
-              score={latestScore}
-              initialMood={latestLog.mood}
-              onSelectMood={mood => void setMood(latestLog.id, mood)}
+              score={
+                logForYesterday
+                  ? logForYesterday.score
+                  : pendingLastNight!.score
+              }
+              initialMood={logForYesterday?.mood ?? null}
+              onSelectMood={mood => {
+                if (logForYesterday) {
+                  void setMood(logForYesterday.id, mood);
+                } else if (pendingLastNight) {
+                  void addLog({
+                    date: pendingLastNight.date,
+                    score: pendingLastNight.score,
+                    scheduledSleepTime: pendingLastNight.scheduledSleepTime,
+                    usagePenalty: pendingLastNight.usagePenalty,
+                    environmentPenalty: pendingLastNight.environmentPenalty,
+                    phase1Warning: pendingLastNight.phase1Warning,
+                    phase2Warning: pendingLastNight.phase2Warning,
+                    lightExceeded: pendingLastNight.lightExceeded,
+                    noiseExceeded: pendingLastNight.noiseExceeded,
+                    mood,
+                  }).then(() => {
+                    clearPendingLastNight();
+                    void fetchLogs();
+                  });
+                }
+              }}
             />
           )}
 
@@ -306,6 +371,15 @@ export const HomeScreen: React.FC = () => {
           </View>
         </View>
       </ScrollView>
+
+      <AddSleepLogModal
+        visible={addLastNightModalVisible}
+        initialDate={yesterdayStr}
+        title="昨夜を記録"
+        onAdd={entry => addLog(entry)}
+        onSuccess={() => void fetchLogs()}
+        onClose={() => setAddLastNightModalVisible(false)}
+      />
     </SafeAreaView>
   );
 };
@@ -340,6 +414,27 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingHorizontal: 16,
     gap: 16,
+  },
+  recordLastNightCard: {
+    backgroundColor: 'rgba(59, 130, 246, 0.12)',
+    borderRadius: 16,
+    padding: 20,
+    borderWidth: 1,
+    borderColor: 'rgba(59, 130, 246, 0.35)',
+  },
+  recordLastNightEmoji: {
+    fontSize: 32,
+    marginBottom: 8,
+  },
+  recordLastNightTitle: {
+    fontSize: 20,
+    fontWeight: '700',
+    color: COLORS.text.dark,
+    marginBottom: 6,
+  },
+  recordLastNightSub: {
+    fontSize: 15,
+    color: '#94A3B8',
   },
   // AI プランカード
   planCard: {

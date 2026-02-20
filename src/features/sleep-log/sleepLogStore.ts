@@ -23,7 +23,7 @@ interface SleepLogActions {
   /** バックエンドからログ一覧を取得して store を更新 */
   fetchLogs: (limit?: number) => Promise<void>;
   /** ログを追加（API POST → store 更新） */
-  addLog: (entry: Omit<SleepLogEntry, 'id' | 'createdAt' | 'mood'>) => Promise<void>;
+  addLog: (entry: Omit<SleepLogEntry, 'id' | 'createdAt'>) => Promise<void>;
   /** ログの気分を設定（API PATCH → store 更新） */
   setMood: (logId: string, mood: number) => Promise<void>;
   /** ログを部分更新（API PATCH → store 更新） */
