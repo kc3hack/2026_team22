@@ -54,7 +54,7 @@ try {
   }
   process.stderr.write('\n# フロント（pnpm start）用: 別ターミナルで同じ env が必要な場合\n');
   process.stderr.write(`# eval "$(node scripts/supabase-env-for-compose.mjs)"\n\n`);
-} catch (e) {
+} catch (_e) {
   process.stderr.write('supabase-env-for-compose: supabase status に失敗しました。先に task supabase-start を実行してください。\n');
   process.exit(1);
 }

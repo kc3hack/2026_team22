@@ -46,8 +46,22 @@ tasks:
     cmds:
       - pnpm supabase stop
 
-  # 開発環境をまとめて起動（Expo は含まない。別ターミナルで pnpm start）
+  # 開発環境をまとめて起動（Expo は含まない。別ターミナルで task expo-start）
   # 注意: "container name already in use" が出たら docker rm -f sleepsupport-db sleepsupport-api してから再実行
+
+  # Expo 開発サーバーを起動（別ターミナルで実行。.env.expo.local を読む）
+  expo-start:
+    desc: Expo 開発サーバーを起動（pnpm start）
+    cmds:
+      - pnpm start
+
+  # Android で Development Build をビルド・起動（JAVA_HOME=Java 17 で実行）
+  expo-android:
+    desc: Android でビルド＆起動（Java 17 使用。エミュレータ or 実機を接続してから）
+    cmds:
+      - |
+        export JAVA_HOME=$(/usr/libexec/java_home -v 17 2>/dev/null) || true
+        npx expo run:android
 
   # 実機用: EXPO_PUBLIC_API_URL に PC の LAN IP を設定（実機と PC は同じ Wi‑Fi に接続すること）
   # 毎回 DB をゼロから構築するため、docker-compose down -v でボリューム削除してから up
@@ -66,7 +80,7 @@ tasks:
       - |
         echo ""
         echo "[実機用] API: http://localhost:${API_PORT:-8000}  Supabase Studio: http://127.0.0.1:54323"
-        echo "Expo: 別ターミナルで pnpm start（.env.expo.local を読む）"
+        echo "Expo: 別ターミナルで task expo-start または pnpm start（.env.expo.local を読む）"
         echo "WiFi を変えたら task dev-up を再実行してください。"
 
   # エミュレータ用: EXPO_PUBLIC_API_URL を 10.0.2.2 に固定（Android エミュレータからホスト PC へ接続）
@@ -86,7 +100,7 @@ tasks:
       - |
         echo ""
         echo "[エミュレータ用] API: http://10.0.2.2:${API_PORT:-8000}  Supabase Studio: http://127.0.0.1:54323"
-        echo "Expo: 別ターミナルで pnpm start（.env.expo.local を読む）"
+        echo "Expo: 別ターミナルで task expo-start または pnpm start（.env.expo.local を読む）"
         echo "Android エミュレータで実行する場合は task dev-up-emulator を使ってください。"
 
   # バックエンドテスト実行（uv で pytest）

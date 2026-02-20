@@ -52,7 +52,7 @@ function main() {
       cwd: root,
     });
     statusEnv = parseEnv(out);
-  } catch (e) {
+  } catch (_e) {
     process.stderr.write('write-expo-env: supabase status に失敗しました。先に task supabase-start を実行してください。\n');
     process.exit(1);
   }

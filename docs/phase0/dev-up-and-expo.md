@@ -14,10 +14,11 @@
 - Supabase ローカル（**Auth 用**・Studio 等）
 - docker-compose（API + **アプリ用 PostgreSQL**）
 
-Expo は **別ターミナルで `pnpm start`** する運用にしています。
+Expo は **別ターミナルで `task expo-start` または `pnpm start`** する運用にしています。
 
 - Expo は対話的（リロードやメニュー操作）なので、task に含めると扱いづらい
 - 1 ターミナル: バックエンド系、1 ターミナル: Expo の分けが一般的
+- Android で Development Build をビルド・起動する場合は **`task expo-android`**（Java 17 を自動で使用）
 
 ## Expo の環境変数: .env から読む（推奨）
 

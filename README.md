@@ -73,12 +73,24 @@ pnpm run setup
 ```
 
 # ビルド
-```
-# javaを入れる
+
+**Android ビルドには Java 17 が必須です。** システムのデフォルトが Java 21/25 などの場合、Gradle が「Unsupported class file major version 69」で失敗します。
+
+```bash
+# 1. Java 17 を入れる（未導入の場合）
 brew install --cask temurin@17
-npx expo install expo-dev-client```
+
+# 2. ビルド時に Java 17 を使う（毎回実行するか、~/.zshrc に追記）
+export JAVA_HOME=$(/usr/libexec/java_home -v 17)
+
+# 3. スマホ or エミュレータを繋いでビルド
+npx expo run:android
 ```
-2. app.jsonに追記
+
+（expo-dev-client は既に package.json に入っている想定。app.json の `expo.android.package` は `com.kc3.sleepsupport` に設定済みなら省略可。）
+
+```
+2. app.jsonに追記（未設定の場合）
 ```JSON
 {
   "expo": {
@@ -393,12 +405,14 @@ docs: READMEにセットアップ手順を追加
 
 ## 利用可能なスクリプト
 
-| コマンド                  | 説明                                           |
-| ------------------------- | ---------------------------------------------- |
-| `pnpm start` / `pnpm dev` | Expo開発サーバーを起動                         |
-| `pnpm run android`        | Androidで実行                                  |
-| `pnpm run ios`            | iOSで実行                                      |
-| `pnpm run setup`          | 環境チェック（初心者向け）                     |
+| コマンド                    | 説明                                                         |
+| --------------------------- | ------------------------------------------------------------ |
+| `pnpm start` / `pnpm dev`   | Expo開発サーバーを起動                                       |
+| `pnpm run expo:start`       | Expo開発サーバーを起動（同上）                               |
+| `pnpm run expo:android`     | Androidでビルド・起動（Java 17 推奨。Mac では `task expo-android` が便利） |
+| `pnpm run android`         | Androidで実行（同上）                                        |
+| `pnpm run ios`              | iOSで実行                                                    |
+| `pnpm run setup`            | 環境チェック（初心者向け。Java 17 の有無も表示）             |
 | `pnpm run check`          | lint + 型チェック + フォーマット確認を一括実行 |
 | `pnpm run reset`          | 詰まったときのリセット（node_modules 再構築）  |
 | `pnpm run start:clear`    | キャッシュをクリアして起動（挙動が怪しいとき） |
