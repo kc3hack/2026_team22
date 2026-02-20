@@ -8,4 +8,6 @@ export {
   fetchSleepLogsFromApi,
   createSleepLogViaApi,
   updateSleepLogMoodViaApi,
+  updateSleepLogViaApi,
 } from './sleepLogApi';
+export type { SleepLogEntryUpdate } from './sleepLogApi';

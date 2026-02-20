@@ -36,6 +36,16 @@ class SleepLogRepository:
         )
         return result.scalar_one_or_none()
 
+    async def get_by_user_and_date(self, user_id: str, log_date: date) -> SleepLog | None:
+        """user_id と date で 1 件取得（1日1ログ制約の重複チェック用）"""
+        result = await self.db.execute(
+            select(SleepLog).where(
+                SleepLog.user_id == user_id,
+                SleepLog.date == log_date,
+            )
+        )
+        return result.scalar_one_or_none()
+
     async def create(
         self,
         user_id: str,
@@ -75,6 +85,50 @@ class SleepLogRepository:
         if row is None:
             return None
         row.mood = mood
+        await self.db.flush()
+        await self.db.refresh(row)
+        return row
+
+    async def update(
+        self,
+        log_id: str,
+        user_id: str,
+        *,
+        date: date | None = None,
+        score: int | None = None,
+        scheduled_sleep_time: datetime | None = None,
+        usage_penalty: int | None = None,
+        environment_penalty: int | None = None,
+        phase1_warning: bool | None = None,
+        phase2_warning: bool | None = None,
+        light_exceeded: bool | None = None,
+        noise_exceeded: bool | None = None,
+        mood: int | None = None,
+    ) -> SleepLog | None:
+        """指定ログを部分更新（指定したフィールドのみ上書き）"""
+        row = await self.get_by_id(log_id, user_id)
+        if row is None:
+            return None
+        if date is not None:
+            row.date = date
+        if score is not None:
+            row.score = score
+        if scheduled_sleep_time is not None:
+            row.scheduled_sleep_time = scheduled_sleep_time
+        if usage_penalty is not None:
+            row.usage_penalty = usage_penalty
+        if environment_penalty is not None:
+            row.environment_penalty = environment_penalty
+        if phase1_warning is not None:
+            row.phase1_warning = phase1_warning
+        if phase2_warning is not None:
+            row.phase2_warning = phase2_warning
+        if light_exceeded is not None:
+            row.light_exceeded = light_exceeded
+        if noise_exceeded is not None:
+            row.noise_exceeded = noise_exceeded
+        if mood is not None:
+            row.mood = mood
         await self.db.flush()
         await self.db.refresh(row)
         return row

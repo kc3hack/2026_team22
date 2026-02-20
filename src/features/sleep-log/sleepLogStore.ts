@@ -1,9 +1,11 @@
 import { create } from 'zustand';
 import type { SleepLogEntry } from './types';
+import type { SleepLogEntryUpdate } from './sleepLogApi';
 import {
   fetchSleepLogsFromApi,
   createSleepLogViaApi,
   updateSleepLogMoodViaApi,
+  updateSleepLogViaApi,
 } from './sleepLogApi';
 
 interface SleepLogState {
@@ -24,6 +26,8 @@ interface SleepLogActions {
   addLog: (entry: Omit<SleepLogEntry, 'id' | 'createdAt' | 'mood'>) => Promise<void>;
   /** ログの気分を設定（API PATCH → store 更新） */
   setMood: (logId: string, mood: number) => Promise<void>;
+  /** ログを部分更新（API PATCH → store 更新） */
+  updateLog: (logId: string, updates: SleepLogEntryUpdate) => Promise<void>;
   /** ログを削除（ローカルのみ） */
   removeLog: (id: string) => void;
   /** 全ログをクリア（ローカルのみ） */
@@ -74,6 +78,18 @@ export const useSleepLogStore = create<SleepLogState & SleepLogActions>((set, _g
       }));
     } catch (err) {
       console.warn('[sleepLogStore] setMood failed:', err);
+      throw err;
+    }
+  },
+
+  updateLog: async (logId, updates) => {
+    try {
+      const updated = await updateSleepLogViaApi(logId, updates);
+      set(state => ({
+        logs: state.logs.map(log => (log.id === updated.id ? updated : log)),
+      }));
+    } catch (err) {
+      console.warn('[sleepLogStore] updateLog failed:', err);
       throw err;
     }
   },
