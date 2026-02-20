@@ -90,10 +90,9 @@ tasks:
       - docker-compose down -v
       - |
         eval "$(node scripts/supabase-env-for-compose.mjs)" && docker-compose up -d --build
-      - |
-        echo "DB 起動待機ののちマイグレーション実行..."
-        sleep 3
-        cd backend && DATABASE_URL=postgresql://postgres:postgres@localhost:${DB_PORT:-5432}/sleepsupport uv run alembic upgrade head
+      - echo "DB 起動待機ののちマイグレーション実行..."
+      - node scripts/wait-for-db.mjs
+      - cd backend && DATABASE_URL=postgresql://postgres:postgres@localhost:${DB_PORT:-5432}/sleepsupport uv run alembic upgrade head
       - node scripts/write-expo-env.mjs
       - |
         echo ""
@@ -115,10 +114,9 @@ tasks:
       - docker-compose down -v
       - |
         eval "$(node scripts/supabase-env-for-compose.mjs)" && docker-compose up -d --build
-      - |
-        echo "DB 起動待機ののちマイグレーション実行..."
-        sleep 3
-        cd backend && DATABASE_URL=postgresql://postgres:postgres@localhost:${DB_PORT:-5432}/sleepsupport uv run alembic upgrade head
+      - echo "DB 起動待機ののちマイグレーション実行..."
+      - node scripts/wait-for-db.mjs
+      - cd backend && DATABASE_URL=postgresql://postgres:postgres@localhost:${DB_PORT:-5432}/sleepsupport uv run alembic upgrade head
       - EXPO_PUBLIC_API_URL=http://10.0.2.2:8000 node scripts/write-expo-env.mjs
       - |
         echo ""
@@ -141,9 +139,7 @@ tasks:
     desc: DB を起動してからバックエンドのテストを実行
     cmds:
       - docker-compose up -d db
-      - |
-        echo "DB 起動待機..."
-        sleep 5
+      - node scripts/wait-for-db.mjs
       - |
         cd backend && DATABASE_URL=postgresql://postgres:postgres@localhost:${DB_PORT:-5432}/sleepsupport uv run pytest tests/ -v
 
