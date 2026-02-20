@@ -1,11 +1,31 @@
-import { Tabs } from 'expo-router';
+import { useEffect } from 'react';
+import { Tabs, useRouter } from 'expo-router';
 import { Text } from 'react-native';
+import { useAuthStore } from '@features/auth/authStore';
 
 /**
  * Tab Layout
- * タブナビゲーションの設定
+ * タブナビゲーションの設定。
+ * 未認証の場合はログインへリダイレクトする。
  */
 export default function TabLayout() {
+  const router = useRouter();
+  const isAuthenticated = useAuthStore(s => s.isAuthenticated);
+
+  useEffect(() => {
+    if (!isAuthenticated) {
+      // ルートのナビゲータがマウントした後に遷移するよう遅延する
+      const t = setTimeout(() => {
+        router.replace('/(auth)/login');
+      }, 0);
+      return () => clearTimeout(t);
+    }
+  }, [isAuthenticated, router]);
+
+  if (!isAuthenticated) {
+    return null;
+  }
+
   return (
     <Tabs
       screenOptions={{
