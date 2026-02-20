@@ -44,8 +44,32 @@ let adbOk = false;
 try {
   execSync('adb --version', { stdio: 'pipe' });
   adbOk = true;
-} catch {}
+} catch {
+  // 未設定時はスキップ
+}
 check('Android SDK', true, adbOk ? '設定済み (adb 使用可)' : '未設定 (Expo Go実機なら不要)');
+
+// Java 17（Android ビルド用。expo run:android で必須）
+let javaOk = false;
+let javaVersion = '';
+try {
+  const javaHome = execSync('/usr/libexec/java_home -v 17 2>/dev/null', {
+    encoding: 'utf8',
+    shell: true,
+  }).trim();
+  if (javaHome) {
+    const out = execSync('java -version 2>&1', {
+      encoding: 'utf8',
+      env: { ...process.env, JAVA_HOME: javaHome },
+    });
+    const m = out.match(/version "(\d+)/);
+    javaVersion = m ? `Java ${m[1]}` : '17';
+    javaOk = true;
+  }
+} catch {
+  // Mac 以外や java_home がない場合はスキップ
+}
+check('Java 17', true, javaOk ? javaVersion : '未確認 (Android ビルド時は export JAVA_HOME=$(/usr/libexec/java_home -v 17) を推奨)');
 
 // 依存関係
 const nodeModulesOk = existsSync('node_modules');

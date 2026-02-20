@@ -66,7 +66,7 @@ async function main() {
   const stdin = readFileSync(0, 'utf8');
   const lines = stdin.split(/\r?\n/).filter((line) => line.trim());
   for (const line of lines) {
-    const [localRef, localSha, remoteRef, remoteSha] = line.split(/\s+/);
+    const [localRef, _localSha, remoteRef, remoteSha] = line.split(/\s+/);
     if (!localRef) continue;
 
     const localBranch = localRef.replace(/^refs\/heads\//, '');

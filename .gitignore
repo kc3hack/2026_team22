@@ -40,6 +40,7 @@ package-lock.json
 # local env files
 .env
 .env*.local
+.env.expo.local
 
 # typescript
 *.tsbuildinfo

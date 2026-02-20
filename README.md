@@ -72,6 +72,39 @@ pnpm install
 pnpm run setup
 ```
 
+# ビルド
+
+**Android ビルドには Java 17 が必須です。** システムのデフォルトが Java 21/25 などの場合、Gradle が「Unsupported class file major version 69」で失敗します。
+
+```bash
+# 1. Java 17 を入れる（未導入の場合）
+brew install --cask temurin@17
+
+# 2. ビルド時に Java 17 を使う（毎回実行するか、~/.zshrc に追記）
+export JAVA_HOME=$(/usr/libexec/java_home -v 17)
+
+# 3. スマホ or エミュレータを繋いでビルド
+npx expo run:android
+```
+
+（expo-dev-client は既に package.json に入っている想定。app.json の `expo.android.package` は `com.kc3.sleepsupport` に設定済みなら省略可。）
+
+```
+2. app.jsonに追記（未設定の場合）
+```JSON
+{
+  "expo": {
+    "android": {
+      "package": "com.kc3.sleepsupport" 
+    }
+  }
+}
+```
+```
+# 3. スマホを繋いでビルド
+npx expo run:android
+```
+進まない場合：```npx expo start --dev-client```
 
 ### 環境変数の設定（任意）
 
@@ -105,6 +138,99 @@ pnpm run android
 # iOSで実行（Macのみ）
 pnpm run ios
 ```
+
+Expo の**ローカル用**環境変数（Supabase の URL など）は **`.env.expo.local`** に書きます。`task dev-up` を実行するとこのファイルが自動で更新されます。詳細は [docs/supabase-local.md](docs/supabase-local.md) を参照。
+
+### バックグラウンド光センサー機能について
+
+v1.1.0 より、画面がオフの状態でも光センサーで照度情報を取得し続けることができる **バックグラウンド計測機能** が追加されました。
+
+#### 対応プラットフォーム
+
+- **Android**: ✅ フル対応
+- **iOS**: ❌ 非対応（ネイティブ実装が必要）
+- **Web**: ❌ 非対応
+
+#### 必要な設定
+
+**バックグラウンド機能を使用するには、Expo Development Build が必須です**。
+
+##### Development Build の構築方法
+
+```bash
+# Development Build を構築
+eas build --platform android --profile preview
+
+# または、クラウド上でビルド後、QRコードでEAS Goアプリからインストール
+eas build --platform android --profile preview --wait
+
+# ローカルでビルド（EAS アカウント不要）
+npx expo prebuild --clean
+npx expo run:android
+```
+
+> **注意**: 通常の `pnpm start` + Expo Go では、`react-native-background-actions` は動作しません。  
+> Development Build が必要な理由は、ネイティブモジュールの初期化が必要なためです。
+
+#### 使用方法
+
+Light Sensor画面で以下の2つのボタンが表示されます:
+
+1. **フォアグラウンド計測開始/停止**
+   - 通常のセンサー読み込み（画面が見える状態で動作）
+   - Expo Go でも動作
+
+2. **バックグラウンド計測開始/停止** (Android のみ)
+   - 画面をオフにしても照度情報を取得し続ける
+   - **Development Build で実行した場合のみ有効**
+   - デバイスの通知バーに「Light Sensor Monitoring」という通知が表示される
+
+#### 技術仕様
+
+| 項目                         | 値                                        |
+| ---------------------------- | ----------------------------------------- |
+| パッケージ                   | `react-native-background-actions` ^1.0.27 |
+| 更新間隔（フォアグラウンド） | 500ms                                     |
+| 更新間隔（バックグラウンド） | 2000ms                                    |
+| 対応OS                       | Android 6.0+                              |
+| 通知チャネルID               | `light_sensor_channel`                    |
+| タスク名                     | `LightSensorBackgroundTask`               |
+
+#### 実装詳細
+
+**変更されたファイル:**
+
+1. **package.json** - `react-native-background-actions` を追加
+2. **app.json** - Androidパーミッション設定、プラグイン登録
+3. **constants.ts** - バックグラウンド関連定数を追加
+4. **LightSensorStore.ts** （新規）- Zustand ストアで背景タスク状態を管理
+5. **useLightSensor.ts** - `startBackgroundTask()`, `stopBackgroundTask()` 関数を追加
+6. **LightSensorScreen.tsx** - バックグラウンドボタンのUI追加
+
+**権限設定（app.json の android.permissions）:**
+
+```json
+"permissions": [
+  "android.permission.CAMERA",
+  "android.permission.SCHEDULE_EXACT_ALARM",
+  "android.permission.POST_NOTIFICATIONS"
+]
+```
+
+#### トラブルシューティング
+
+| 症状                                 | 原因・対処                                            |
+| ------------------------------------ | ----------------------------------------------------- |
+| バックグラウンドボタンが表示されない | iOS またはWeb を使用している（Android のみ対応）      |
+| バックグラウンド計測が開始できない   | Expo Go で実行している場合は Development Build が必要 |
+| 通知が表示されない                   | Android の通知権限が許可されているか確認              |
+| バックグラウンドタスク開始時にエラー | Development Build を使用しているか確認                |
+
+#### 今後の対応予定
+
+- iOS でのバックグラウンド計測実装（ネイティブコード統合が必要）
+- AsyncStorage を利用したバックグラウンドデータ永続化
+- バックグラウンドタスク実行時のデータ同期機能
 
 ## プロジェクト構成
 
@@ -140,7 +266,7 @@ SleepSupportApp/
 
 ## バックエンド (Docker)
 
-バックエンドはFastAPI + PostgreSQL（開発環境）/ Supabase（本番環境）で構成されています。
+バックエンドは FastAPI + PostgreSQL で構成されています。**Supabase は認証（Auth）専用**で、アプリのテーブル（users, sleep_plan_cache 等）は **別の PostgreSQL**（開発時は docker-compose の DB）で管理します。
 
 ### 前提条件
 
@@ -191,6 +317,17 @@ SUPABASE_ANON_KEY=[YOUR-ANON-KEY]
 SUPABASE_SERVICE_ROLE_KEY=[YOUR-SERVICE-ROLE-KEY]
 ```
 
+### DB マイグレーション（Alembic）
+
+テーブルは **Alembic** で管理しています。**task dev-up** 実行時に `alembic upgrade head` が走り、マイグレーションが適用されます。
+
+```bash
+# 手動でマイグレーションのみ実行する場合（DB 起動後）
+cd backend && DATABASE_URL=postgresql://postgres:postgres@localhost:5432/sleepsupport uv run alembic upgrade head
+```
+
+新規テーブル追加時は `alembic revision --autogenerate -m "説明"` でリビジョンを作成し、`alembic upgrade head` で適用してください。
+
 ### バックエンドのローカル開発（uv）
 
 Pythonパッケージ管理に [uv](https://docs.astral.sh/uv/) を使用しています。
@@ -202,7 +339,7 @@ curl -LsSf https://astral.sh/uv/install.sh | sh
 # 依存関係のインストール
 cd backend && uv sync
 
-# テスト実行
+# テスト実行（単体〜統合。統合テストは PostgreSQL 起動中に実行）
 uv run pytest tests/ -v
 ```
 
@@ -268,12 +405,14 @@ docs: READMEにセットアップ手順を追加
 
 ## 利用可能なスクリプト
 
-| コマンド                  | 説明                                           |
-| ------------------------- | ---------------------------------------------- |
-| `pnpm start` / `pnpm dev` | Expo開発サーバーを起動                         |
-| `pnpm run android`        | Androidで実行                                  |
-| `pnpm run ios`            | iOSで実行                                      |
-| `pnpm run setup`          | 環境チェック（初心者向け）                     |
+| コマンド                    | 説明                                                         |
+| --------------------------- | ------------------------------------------------------------ |
+| `pnpm start` / `pnpm dev`   | Expo開発サーバーを起動                                       |
+| `pnpm run expo:start`       | Expo開発サーバーを起動（同上）                               |
+| `pnpm run expo:android`     | Androidでビルド・起動（Java 17 推奨。Mac では `task expo-android` が便利） |
+| `pnpm run android`         | Androidで実行（同上）                                        |
+| `pnpm run ios`              | iOSで実行                                                    |
+| `pnpm run setup`            | 環境チェック（初心者向け。Java 17 の有無も表示）             |
 | `pnpm run check`          | lint + 型チェック + フォーマット確認を一括実行 |
 | `pnpm run reset`          | 詰まったときのリセット（node_modules 再構築）  |
 | `pnpm run start:clear`    | キャッシュをクリアして起動（挙動が怪しいとき） |

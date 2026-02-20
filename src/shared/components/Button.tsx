@@ -69,7 +69,7 @@ const styles = StyleSheet.create({
   },
   text: {
     color: COLORS.text.dark,
-    fontSize: 16,
+    fontSize: 21,
     fontWeight: '600',
   },
   outlineText: {
