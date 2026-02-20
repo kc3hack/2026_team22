@@ -4,6 +4,7 @@
 """
 
 from functools import lru_cache
+from pydantic import field_validator
 from pydantic_settings import BaseSettings
 
 
@@ -22,15 +23,33 @@ class Settings(BaseSettings):
     # データベース設定
     # 開発環境: ローカルPostgreSQL (docker-compose)
     # 本番環境: Supabase PostgreSQL
+    # 注: alembic 実行時に postgresql:// が渡っても、create_async_engine 用に postgresql+asyncpg:// に変換する
     DATABASE_URL: str = "postgresql+asyncpg://postgres:postgres@localhost:5432/sleepsupport"
+
+    @field_validator("DATABASE_URL", mode="before")
+    @classmethod
+    def ensure_async_driver(cls, v: str) -> str:
+        """postgresql:// が渡された場合、create_async_engine 用に postgresql+asyncpg:// に変換"""
+        if v and v.startswith("postgresql://") and "+asyncpg" not in v:
+            return v.replace("postgresql://", "postgresql+asyncpg://", 1)
+        return v
 
     # Supabase設定 (本番環境用)
     SUPABASE_URL: str = ""
     SUPABASE_ANON_KEY: str = ""
     SUPABASE_SERVICE_ROLE_KEY: str = ""
 
-    # CORS設定
-    CORS_ORIGINS: list[str] = ["http://localhost:8081", "http://localhost:19006"]
+    # CORS設定（環境変数はカンマ区切り文字列で渡す。list のままでも可）
+    CORS_ORIGINS: str | list[str] = ["http://localhost:8081", "http://localhost:19006"]
+
+    @field_validator("CORS_ORIGINS", mode="before")
+    @classmethod
+    def parse_cors_origins(cls, v: str | list[str]) -> list[str]:
+        if isinstance(v, list):
+            return v
+        if isinstance(v, str):
+            return [x.strip() for x in v.split(",") if x.strip()]
+        return []
 
     # OpenRouter（LLM）設定
     # https://openrouter.ai/docs

@@ -6,12 +6,12 @@
 
 ## 完了条件
 
-- [ ] `GetOrCreatePlanUseCase`（または同等）が存在する
-- [ ] 入力: カレンダー予定・睡眠ログ・設定（と user_id）
-- [ ] 02 のハッシュで DB を検索し、同一 hash のプランがあればそれを返す（Cache Hit）
-- [ ] なければ OpenRouter（`app.services.llm.openrouter_client`）を呼び出し、Temperature=0 で週間睡眠プラン JSON を取得
-- [ ] 取得したプランとハッシュを 01 のキャッシュテーブルに保存し、プランを返す（Cache Miss）
-- [ ] リポジトリ層でキャッシュの取得・保存を行う
+- [x] `GetOrCreatePlanUseCase`（または同等）が存在する
+- [x] 入力: カレンダー予定・睡眠ログ・設定（と user_id）
+- [x] 02 のハッシュで DB を検索し、同一 hash のプランがあればそれを返す（Cache Hit）
+- [x] なければ OpenRouter（`app.services.llm.openrouter_client`）を呼び出し、Temperature=0 で週間睡眠プラン JSON を取得
+- [x] 取得したプランとハッシュを 01 のキャッシュテーブルに保存し、プランを返す（Cache Miss）
+- [x] リポジトリ層（`SleepPlanCacheRepository`）でキャッシュの取得・保存を行う
 
 ## メモ
 

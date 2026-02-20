@@ -17,6 +17,13 @@ services:
       - DATABASE_URL=postgresql+asyncpg://postgres:postgres@db:5432/sleepsupport
       - API_HOST=0.0.0.0
       - API_PORT=8000
+      # 以下は task dev-up で渡す環境変数（Supabase ローカル・OpenRouter 等）
+      - SUPABASE_URL=${SUPABASE_URL:-}
+      - SUPABASE_ANON_KEY=${SUPABASE_ANON_KEY:-}
+      - SUPABASE_JWT_SECRET=${SUPABASE_JWT_SECRET:-}
+      - OPENROUTER_API_KEY=${OPENROUTER_API_KEY:-}
+      - OPENROUTER_MODEL=${OPENROUTER_MODEL:-openai/gpt-4o-mini}
+      - CORS_ORIGINS=${CORS_ORIGINS:-http://localhost:8081,http://localhost:19006}
     volumes:
       # 開発時のホットリロード用
       - ./backend/app:/app/app

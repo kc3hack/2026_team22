@@ -6,14 +6,14 @@
 
 ## 完了条件
 
-- [ ] `SleepPlanCache` モデル（または同等）を定義している
-- [ ] 少なくとも以下のカラムを持つ
+- [x] `SleepPlanCache` モデル（または同等）を定義している
+- [x] 少なくとも以下のカラムを持つ
   - `user_id`（誰のキャッシュか）
   - `signature_hash`（入力のハッシュ値、キャッシュヒット判定に使用）
   - `plan_json`（週間睡眠プランの JSON 文字列）
   - `created_at`（保存日時）
-- [ ] `backend/app/models/` に配置し、`init_db` でテーブルが作成される
-- [ ] 1 ユーザー 1 行で管理する想定（同一 user_id は UPDATE で上書きする運用でも可。または毎回 INSERT で履歴残すかは 03 で決定）
+- [x] `backend/app/models/` に配置し、`init_db` でテーブルが作成される
+- [x] 1 ユーザー 1 行で管理する想定（同一 user_id は UPDATE で上書きする運用）
 
 ## メモ
 

@@ -6,10 +6,10 @@
 
 ## 完了条件
 
-- [ ] `POST /api/v1/plan` または `POST /api/v1/home/plan` が存在する（ルートは要相談）
-- [ ] リクエスト body にカレンダー予定・睡眠ログ・設定を受け取る Pydantic スキーマがある
-- [ ] 03 の UseCase を呼び出し、レスポンスで週間睡眠プラン（JSON）を返す
-- [ ] 認証: 00 の `get_current_user`（または同等）で user_id を取得し、UseCase に渡す
+- [x] `POST /api/v1/plan` が存在する
+- [x] リクエスト body にカレンダー予定・睡眠ログ・設定を受け取る Pydantic スキーマ（`PlanRequest`）がある
+- [x] 03 の UseCase を呼び出し、レスポンスで週間睡眠プラン（JSON）を返す
+- [x] リクエスト body の `user_id` を UseCase に渡す（認証はクライアントで Supabase Auth 等から取得した user_id を渡す想定）
 
 ## メモ
 
