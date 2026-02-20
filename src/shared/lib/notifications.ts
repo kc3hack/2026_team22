@@ -14,8 +14,6 @@
  * ```
  */
 
-import type * as Notifications from 'expo-notifications';
-
 /** クールダウン管理用のタイムスタンプマップ */
 const lastSentMap = new Map<string, number>();
 

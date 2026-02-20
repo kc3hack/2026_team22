@@ -24,7 +24,7 @@ function run(cmd, options = {}) {
       stdio: ['pipe', 'pipe', 'pipe'],
       ...options,
     }).trim();
-  } catch (e) {
+  } catch (_e) {
     return null;
   }
 }

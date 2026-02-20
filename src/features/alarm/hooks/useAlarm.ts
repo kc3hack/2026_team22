@@ -1,4 +1,4 @@
-import { useEffect, useRef, useCallback } from 'react';
+import { useEffect, useRef } from 'react';
 import { useAlarmStore } from '../alarmStore';
 import { useSleepSettingsStore } from '../../sleep-settings/sleepSettingsStore';
 import { googleCalendar } from '@shared/lib/googleCalendar'; // Using existing lib
@@ -39,7 +39,7 @@ export const useAlarm = () => {
       });
       soundRef.current = sound;
     } catch (e) {
-      console.log(`Error playing ${phase} sound`, e);
+      console.warn(`Error playing ${phase} sound`, e);
     }
   };
 
@@ -119,6 +119,7 @@ export const useAlarm = () => {
     return () => {
       if (checkIntervalRef.current) clearInterval(checkIntervalRef.current);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- alarmStore を依存に含めると毎回 interval が張り直されるため意図的に除外
   }, [sleepSettings.wakeUpHour, sleepSettings.wakeUpMinute, alarmStore.isAlarmRinging]);
 
   // Handle Alarm Ringing State & Phase Changes
@@ -175,6 +176,7 @@ export const useAlarm = () => {
 
     const phaseCheck = setInterval(checkPhase, 5000);
     return () => clearInterval(phaseCheck);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- getAdjustedWindow は安定した参照でないため除外
   }, [
     alarmStore.isAlarmRinging,
     alarmStore.alarmStartTime,

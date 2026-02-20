@@ -141,7 +141,7 @@ class GeminiClient {
       }
 
       const text = data?.candidates?.[0]?.content?.parts?.[0]?.text?.trim().toUpperCase();
-      console.log(`[Gemini Vision] Target: ${targetLabel}, Result: ${text}`);
+      console.warn(`[Gemini Vision] Target: ${targetLabel}, Result: ${text}`);
 
       return text?.includes('YES');
     } catch (error) {

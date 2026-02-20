@@ -63,9 +63,7 @@ function responseToCamel(res: SleepLogApiResponse): SleepLogEntry {
     id: res.id,
     date: res.date,
     score: res.score,
-    scheduledSleepTime: res.scheduled_sleep_time
-      ? new Date(res.scheduled_sleep_time).getTime()
-      : 0,
+    scheduledSleepTime: res.scheduled_sleep_time ? new Date(res.scheduled_sleep_time).getTime() : 0,
     usagePenalty: res.usage_penalty,
     environmentPenalty: res.environment_penalty,
     phase1Warning: res.phase1_warning,
@@ -104,9 +102,7 @@ function entryToSnake(
 /**
  * GET /api/v1/sleep-logs — 睡眠ログ一覧を取得する（日付降順）。
  */
-export async function fetchSleepLogsFromApi(
-  limit = 7
-): Promise<SleepLogEntry[]> {
+export async function fetchSleepLogsFromApi(limit = 7): Promise<SleepLogEntry[]> {
   const res = await apiV1Fetch(`/sleep-logs?limit=${limit}`);
   if (!res.ok) {
     throw new Error(`GET /sleep-logs failed: ${res.status}`);

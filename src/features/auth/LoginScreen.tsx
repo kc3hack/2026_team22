@@ -25,10 +25,7 @@ export interface LoginScreenProps {
  * Supabase Auth でメール/パスワード認証を行い、セッションを取得する。
  * 取得したトークンは apiClient 経由の API 呼び出しで自動付与される。
  */
-export const LoginScreen: React.FC<LoginScreenProps> = ({
-  onLoginSuccess,
-  onNavigateToSignup,
-}) => {
+export const LoginScreen: React.FC<LoginScreenProps> = ({ onLoginSuccess, onNavigateToSignup }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const { setUser, setLoading, setError, isLoading, error } = useAuthStore();

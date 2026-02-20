@@ -21,13 +21,6 @@ interface WeeklyTrendChartProps {
   logs: SleepLogEntry[];
 }
 
-/** 気分アイコン */
-const getMoodEmoji = (mood: number | null): string => {
-  if (mood === null) return '–';
-  const emojis: Record<number, string> = { 1: '😫', 2: '😟', 3: '😐', 4: '🙂', 5: '😊' };
-  return emojis[mood] ?? '–';
-};
-
 /** スコアに応じた色 */
 const getBarColor = (score: number) => {
   if (score >= 80) return COLORS.success;

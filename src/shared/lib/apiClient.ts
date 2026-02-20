@@ -37,8 +37,7 @@ export async function getAccessToken(): Promise<string | null> {
   const now = Math.floor(Date.now() / 1000);
   const bufferSeconds = 60;
   if (expiresAt != null && expiresAt < now + bufferSeconds) {
-    const { data: refreshed, error: refreshError } =
-      await supabase.auth.refreshSession();
+    const { data: refreshed, error: refreshError } = await supabase.auth.refreshSession();
     if (refreshError || !refreshed.session) return null;
     return refreshed.session.access_token;
   }

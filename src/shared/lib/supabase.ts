@@ -18,7 +18,7 @@ const supabaseUrl = (extra.supabaseUrl ?? '').trim();
 const supabaseAnonKey = (extra.supabaseAnonKey ?? '').trim();
 
 if (__DEV__ && (supabaseUrl || supabaseAnonKey)) {
-  console.log('[supabase] using url:', supabaseUrl || '(missing)');
+  console.warn('[supabase] using url:', supabaseUrl || '(missing)');
 }
 if (!supabaseUrl || !supabaseAnonKey) {
   console.warn(

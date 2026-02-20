@@ -62,7 +62,6 @@ export const LightSensorScreen: React.FC = () => {
     stopSensor,
     startBackgroundTask,
     stopBackgroundTask,
-    error,
   } = useAmbientLight();
 
   const sleepEnvironment = lux !== null ? evaluateSleepEnvironment(lux) : null;

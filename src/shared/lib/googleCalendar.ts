@@ -67,7 +67,7 @@ class GoogleCalendarClient {
    */
   private async fetchAndParseIcs(url: string): Promise<CalendarEvent[]> {
     try {
-      console.log(`[GoogleCalendar] Fetching ICS from: ${url}`);
+      console.warn(`[GoogleCalendar] Fetching ICS from: ${url}`);
       const response = await fetch(url);
       if (!response.ok) {
         throw new Error(`Failed to fetch ICS: ${response.statusText}`);

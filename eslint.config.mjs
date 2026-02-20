@@ -31,6 +31,11 @@ export default [
         clearInterval: 'readonly',
         fetch: 'readonly',
         __DEV__: 'readonly',
+        RequestInit: 'readonly',
+        Headers: 'readonly',
+        Response: 'readonly',
+        process: 'readonly',
+        require: 'readonly',
       },
     },
     plugins: {
@@ -86,6 +91,26 @@ export default [
     },
   },
   {
-    ignores: ['node_modules/', '.expo/', 'dist/', 'build/', '*.config.js', '*.config.mjs'],
+    files: ['*.js'],
+    languageOptions: {
+      ecmaVersion: 'latest',
+      sourceType: 'commonjs',
+      globals: {
+        require: 'readonly',
+        module: 'writable',
+        exports: 'writable',
+      },
+    },
+  },
+  {
+    ignores: [
+      'node_modules/',
+      '.expo/',
+      'dist/',
+      'build/',
+      'backend/.venv/',
+      '*.config.js',
+      '*.config.mjs',
+    ],
   },
 ];

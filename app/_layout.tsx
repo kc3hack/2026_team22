@@ -20,7 +20,9 @@ export default function RootLayout() {
     let cancelled = false;
     (async () => {
       if (!supabase) return;
-      const { data: { session } } = await supabase.auth.getSession();
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
       if (cancelled) return;
       if (session?.user) {
         setUser({
@@ -34,7 +36,9 @@ export default function RootLayout() {
         router.replace('/(auth)/login');
       }
     })();
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+    };
   }, [router, setUser]);
 
   // Global Alarm Logic

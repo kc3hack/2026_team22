@@ -117,7 +117,7 @@ const toSnakeCaseBody = (req: SleepPlanRequest): Record<string, unknown> => {
  */
 export const fetchSleepPlan = async (
   request: SleepPlanRequest,
-  force = false,
+  force = false
 ): Promise<WeeklySleepPlan> => {
   const path = force ? '/sleep-plans?force=true' : '/sleep-plans';
   const body = toSnakeCaseBody(request);

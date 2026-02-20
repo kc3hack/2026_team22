@@ -123,9 +123,7 @@ export async function fetchSettingsFromApi(): Promise<Partial<SleepSettings>> {
  * PUT /api/v1/settings — 設定をバックエンドに保存し、レスポンスを camelCase で返す。
  * 失敗時は Error を throw する。
  */
-export async function saveSettingsToApi(
-  settings: SleepSettings
-): Promise<Partial<SleepSettings>> {
+export async function saveSettingsToApi(settings: SleepSettings): Promise<Partial<SleepSettings>> {
   const body = settingsToSnake(settings);
   const res = await apiV1Fetch('/settings', {
     method: 'PUT',

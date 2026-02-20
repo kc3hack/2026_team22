@@ -1,5 +1,5 @@
 declare module 'react-native-background-actions' {
-  interface TaskOptions {
+  export interface TaskOptions {
     taskName: string;
     taskTitle: string;
     taskDesc: string;

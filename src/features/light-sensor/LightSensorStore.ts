@@ -1,5 +1,4 @@
 import { create } from 'zustand';
-import { BACKGROUND_CONSTANTS } from './constants';
 
 /**
  * バックグラウンドタスクの状態を管理するストア

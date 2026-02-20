@@ -215,6 +215,7 @@ export const useSleepMonitor = (): UseSleepMonitorReturn => {
         phaseUpdateRef.current = null;
       }
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- store を依存に含めると不要な再実行が増えるため除外
   }, [
     store.isMonitoring,
     store.sleepTime,
@@ -274,6 +275,7 @@ export const useSleepMonitor = (): UseSleepMonitorReturn => {
     }
 
     store.recalculateScore();
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- store を依存に含めると不要な再実行が増えるため除外
   }, [lightSensor.data?.illuminance, noiseSensor.noiseDb, store.isMonitoring, store.currentPhase]);
 
   // 使用時間の警告チェック
@@ -341,6 +343,7 @@ export const useSleepMonitor = (): UseSleepMonitorReturn => {
           });
       });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- store を依存に含めると不要な再実行が増えるため除外
   }, [usageTracker.usageMinutes, store.currentPhase, store.isMonitoring]);
 
   return {

@@ -79,9 +79,7 @@ export const SignupScreen: React.FC<SignupScreenProps> = ({
         onSignupSuccess?.();
         return;
       }
-      setMessage(
-        '確認メールを送信しました。メール内のリンクから認証を完了してください。'
-      );
+      setMessage('確認メールを送信しました。メール内のリンクから認証を完了してください。');
     } finally {
       setIsLoading(false);
     }
@@ -99,9 +97,7 @@ export const SignupScreen: React.FC<SignupScreenProps> = ({
         >
           <View style={styles.header}>
             <Text style={styles.title}>アカウント作成</Text>
-            <Text style={styles.subtitle}>
-              メールアドレスとパスワードで新規登録
-            </Text>
+            <Text style={styles.subtitle}>メールアドレスとパスワードで新規登録</Text>
           </View>
 
           <View style={styles.form}>
@@ -161,9 +157,7 @@ export const SignupScreen: React.FC<SignupScreenProps> = ({
               onPress={handleSignup}
               disabled={isLoading}
             >
-              <Text style={styles.buttonText}>
-                {isLoading ? '登録中...' : '登録する'}
-              </Text>
+              <Text style={styles.buttonText}>{isLoading ? '登録中...' : '登録する'}</Text>
             </TouchableOpacity>
 
             {onNavigateToLogin && (
@@ -172,9 +166,7 @@ export const SignupScreen: React.FC<SignupScreenProps> = ({
                 onPress={onNavigateToLogin}
                 disabled={isLoading}
               >
-                <Text style={styles.linkText}>
-                  すでにアカウントがある → ログイン
-                </Text>
+                <Text style={styles.linkText}>すでにアカウントがある → ログイン</Text>
               </TouchableOpacity>
             )}
           </View>

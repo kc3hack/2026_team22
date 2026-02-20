@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { Platform } from 'react-native';
 import { LightSensor } from 'expo-sensors';
-import BackgroundActions from 'react-native-background-actions';
+import BackgroundActions, { type TaskOptions } from 'react-native-background-actions';
 import { LIGHT_CONSTANTS, BACKGROUND_CONSTANTS } from '../constants';
 import { useLightSensorStore } from '../LightSensorStore';
 import type { LightSensorData, SleepEnvironment } from '../types';
@@ -68,14 +68,15 @@ const evaluateSleepEnvironment = (lux: number): SleepEnvironment => {
 // 上部にスリープ関数を追加
 const sleep = (time: number) => new Promise<void>(resolve => setTimeout(resolve, time));
 
-const backgroundSensorTask = async (taskDataArguments: any): Promise<void> => {
-  // パラメータからdelayを取得（デフォルト1000ms）
-  const { delay = 1000 } = taskDataArguments;
+const BACKGROUND_DELAY_MS = 1000;
+
+const backgroundSensorTask = async (_options: TaskOptions): Promise<void> => {
+  const delay = BACKGROUND_DELAY_MS;
 
   try {
     LightSensor.setUpdateInterval(BACKGROUND_CONSTANTS.BACKGROUND_SENSOR_UPDATE_INTERVAL);
     const subscription = LightSensor.addListener(sensorData => {
-      console.log('[Background] illuminance:', sensorData.illuminance, 'lux');
+      console.warn('[Background] illuminance:', sensorData.illuminance, 'lux');
       // ※ZustandやAsyncStorageに保存する処理をここに記述
     });
     let count = 0;
@@ -84,7 +85,7 @@ const backgroundSensorTask = async (taskDataArguments: any): Promise<void> => {
       await sleep(delay);
       count++;
       // ★ 生存確認用のログを追加
-      console.log(`[Alive Check] Task is running... ${count} seconds`);
+      console.warn(`[Alive Check] Task is running... ${count} seconds`);
     }
 
     // ループを抜けたら（タスクが停止されたら）クリーンアップ
@@ -137,7 +138,7 @@ export const useLightSensor = (): UseLightSensorReturn => {
 
     subscriptionRef.current = LightSensor.addListener(sensorData => {
       // [実験用] フォアグラウンド時のセンサー値をログ出力（後ほど削除）
-      console.log('[Foreground] illuminance:', sensorData.illuminance, 'lux');
+      console.warn('[Foreground] illuminance:', sensorData.illuminance, 'lux');
       setData({ illuminance: sensorData.illuminance });
       setSleepEnvironment(evaluateSleepEnvironment(sensorData.illuminance));
     });

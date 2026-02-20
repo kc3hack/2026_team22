@@ -125,7 +125,7 @@ export const useSleepPlanStore = create<SleepPlanState & SleepPlanActions>((set,
           },
           todayOverride,
         },
-        force,
+        force
       );
 
       set({

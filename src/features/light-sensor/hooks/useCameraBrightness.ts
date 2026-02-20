@@ -31,7 +31,7 @@ export function useCameraBrightness(enabled: boolean): UseCameraBrightnessReturn
     try {
       const indicator: number = await Camera2Brightness.captureAverageBrightness();
       const lux = luminanceToLux(indicator);
-      console.log(`[Camera] AE indicator=${indicator.toFixed(4)} → lux=${lux.toFixed(1)}`);
+      console.warn(`[Camera] AE indicator=${indicator.toFixed(4)} → lux=${lux.toFixed(1)}`);
       setEstimatedLux(lux);
     } catch (e) {
       console.warn('[useCameraBrightness] Capture error:', e);
