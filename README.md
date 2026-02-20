@@ -73,15 +73,13 @@ pnpm run setup
 ```
 
 # ビルド
-0. javaを入れる
 ```
+# javaを入れる
 brew install --cask temurin@17
+npx expo install expo-dev-client```
 ```
-1. ```npx expo install expo-dev-client```
 2. app.jsonに追記
-```
-
-JSON
+```JSON
 {
   "expo": {
     "android": {
@@ -90,8 +88,8 @@ JSON
   }
 }
 ```
-3. スマホを繋いでビルド
 ```
+# 3. スマホを繋いでビルド
 npx expo run:android
 ```
 進まない場合：```npx expo start --dev-client```
