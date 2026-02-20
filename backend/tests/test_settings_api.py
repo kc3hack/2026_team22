@@ -4,29 +4,25 @@ GET /api/v1/settings と PUT /api/v1/settings の統合テスト（認証必須�
 
 from httpx import AsyncClient
 
-from app.main import app
+from app.main import web_app as app
 from app.presentation.dependencies.auth import get_current_user_id
 
 
 class TestSettingsAPIAuth:
     """認証必須の挙動"""
 
-    async def test_get_settings_returns_401_without_authorization(
-        self, client: AsyncClient
-    ):
+    async def test_get_settings_returns_401_without_authorization(self, client: AsyncClient):
         """Authorization なしで GET /settings すると 401"""
         app.dependency_overrides.pop(get_current_user_id, None)
         try:
             res = await client.get("/api/v1/settings")
             assert res.status_code == 401
         finally:
-            app.dependency_overrides[get_current_user_id] = (
-                lambda: "11111111-1111-1111-1111-111111111111"
+            app.dependency_overrides[get_current_user_id] = lambda: (
+                "11111111-1111-1111-1111-111111111111"
             )
 
-    async def test_put_settings_returns_401_without_authorization(
-        self, client: AsyncClient
-    ):
+    async def test_put_settings_returns_401_without_authorization(self, client: AsyncClient):
         """Authorization なしで PUT /settings すると 401"""
         app.dependency_overrides.pop(get_current_user_id, None)
         try:
@@ -40,8 +36,8 @@ class TestSettingsAPIAuth:
             )
             assert res.status_code == 401
         finally:
-            app.dependency_overrides[get_current_user_id] = (
-                lambda: "11111111-1111-1111-1111-111111111111"
+            app.dependency_overrides[get_current_user_id] = lambda: (
+                "11111111-1111-1111-1111-111111111111"
             )
 
 
@@ -75,9 +71,7 @@ class TestSettingsAPICRUD:
         finally:
             app.dependency_overrides.pop(get_current_user_id, None)
 
-    async def test_put_then_get_settings(
-        self, client: AsyncClient, unique_email: str
-    ):
+    async def test_put_then_get_settings(self, client: AsyncClient, unique_email: str):
         """PUT で保存 → GET で同じ内容が返る"""
         create_res = await client.post(
             "/api/v1/users",
@@ -126,9 +120,7 @@ class TestSettingsAPICRUD:
         finally:
             app.dependency_overrides.pop(get_current_user_id, None)
 
-    async def test_put_then_clear_today_override(
-        self, client: AsyncClient, unique_email: str
-    ):
+    async def test_put_then_clear_today_override(self, client: AsyncClient, unique_email: str):
         """today_override を null にして PUT するとオーバーライドが消える"""
         create_res = await client.post(
             "/api/v1/users",

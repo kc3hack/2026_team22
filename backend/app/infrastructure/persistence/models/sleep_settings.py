@@ -24,41 +24,19 @@ class SleepSettings(Base):
     )
     wake_up_hour: Mapped[int] = mapped_column(Integer, nullable=False, default=7)
     wake_up_minute: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
-    sleep_duration_hours: Mapped[int] = mapped_column(
-        Integer, nullable=False, default=8
-    )
-    resilience_window_minutes: Mapped[int] = mapped_column(
-        Integer, nullable=False, default=20
-    )
-    mission_enabled: Mapped[bool] = mapped_column(
-        Boolean, nullable=False, default=False
-    )
-    mission_target: Mapped[str | None] = mapped_column(
-        String(255), nullable=True, default=None
-    )
-    preparation_minutes: Mapped[int] = mapped_column(
-        Integer, nullable=False, default=30
-    )
-    ics_url: Mapped[str | None] = mapped_column(
-        String(2048), nullable=True, default=None
-    )
+    sleep_duration_hours: Mapped[int] = mapped_column(Integer, nullable=False, default=8)
+    resilience_window_minutes: Mapped[int] = mapped_column(Integer, nullable=False, default=20)
+    mission_enabled: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
+    mission_target: Mapped[str | None] = mapped_column(String(255), nullable=True, default=None)
+    preparation_minutes: Mapped[int] = mapped_column(Integer, nullable=False, default=30)
+    ics_url: Mapped[str | None] = mapped_column(String(2048), nullable=True, default=None)
 
     # 今日のオーバーライド（nullable）
-    override_date: Mapped[date | None] = mapped_column(
-        Date, nullable=True, default=None
-    )
-    override_sleep_hour: Mapped[int | None] = mapped_column(
-        Integer, nullable=True, default=None
-    )
-    override_sleep_minute: Mapped[int | None] = mapped_column(
-        Integer, nullable=True, default=None
-    )
-    override_wake_hour: Mapped[int | None] = mapped_column(
-        Integer, nullable=True, default=None
-    )
-    override_wake_minute: Mapped[int | None] = mapped_column(
-        Integer, nullable=True, default=None
-    )
+    override_date: Mapped[date | None] = mapped_column(Date, nullable=True, default=None)
+    override_sleep_hour: Mapped[int | None] = mapped_column(Integer, nullable=True, default=None)
+    override_sleep_minute: Mapped[int | None] = mapped_column(Integer, nullable=True, default=None)
+    override_wake_hour: Mapped[int | None] = mapped_column(Integer, nullable=True, default=None)
+    override_wake_minute: Mapped[int | None] = mapped_column(Integer, nullable=True, default=None)
 
     updated_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),

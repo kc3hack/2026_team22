@@ -6,11 +6,11 @@ app の Base とモデルを読み込み、DATABASE_URL を同期用に変換し
 from logging.config import fileConfig
 
 from sqlalchemy import create_engine, pool
-from alembic import context
 
+import app.infrastructure.persistence.models  # noqa: F401 - metadata 登録
+from alembic import context
 from app.config import settings
 from app.infrastructure.persistence.database import Base
-import app.infrastructure.persistence.models  # noqa: F401 - metadata 登録
 
 config = context.config
 if config.config_file_name is not None:

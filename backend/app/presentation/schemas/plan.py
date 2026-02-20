@@ -21,12 +21,8 @@ class PlanRequest(BaseModel):
     calendar_events: list[dict[str, Any]] = Field(
         default_factory=list, description="カレンダー予定のリスト"
     )
-    sleep_logs: list[dict[str, Any]] = Field(
-        default_factory=list, description="睡眠ログのリスト"
-    )
-    settings: dict[str, Any] = Field(
-        default_factory=dict, description="睡眠関連設定"
-    )
+    sleep_logs: list[dict[str, Any]] = Field(default_factory=list, description="睡眠ログのリスト")
+    settings: dict[str, Any] = Field(default_factory=dict, description="睡眠関連設定")
     today_override: TodayOverride | None = Field(
         default=None, description="今日だけの就寝・起床オーバーライド（null 可）"
     )

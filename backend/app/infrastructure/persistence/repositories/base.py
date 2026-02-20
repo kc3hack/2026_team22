@@ -2,7 +2,8 @@
 Repository 基底クラス（Infrastructure 層）
 """
 
-from typing import Generic, Optional, Sequence, Type, TypeVar
+from collections.abc import Sequence
+from typing import Generic, TypeVar
 
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -15,24 +16,18 @@ ModelT = TypeVar("ModelT", bound=Base)
 class BaseRepository(Generic[ModelT]):
     """Repository 基底クラス"""
 
-    def __init__(self, model: Type[ModelT], db: AsyncSession):
+    def __init__(self, model: type[ModelT], db: AsyncSession):
         self.model = model
         self.db = db
 
-    async def get_by_id(self, id: str) -> Optional[ModelT]:
+    async def get_by_id(self, id: str) -> ModelT | None:
         """ID で 1 件取得"""
-        result = await self.db.execute(
-            select(self.model).where(self.model.id == id)
-        )
+        result = await self.db.execute(select(self.model).where(self.model.id == id))
         return result.scalar_one_or_none()
 
-    async def get_all(
-        self, skip: int = 0, limit: int = 100
-    ) -> Sequence[ModelT]:
+    async def get_all(self, skip: int = 0, limit: int = 100) -> Sequence[ModelT]:
         """全件取得（ページネーション付き）"""
-        result = await self.db.execute(
-            select(self.model).offset(skip).limit(limit)
-        )
+        result = await self.db.execute(select(self.model).offset(skip).limit(limit))
         return result.scalars().all()
 
     async def create(self, obj: ModelT) -> ModelT:

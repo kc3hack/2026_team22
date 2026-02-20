@@ -11,10 +11,10 @@ import json
 import logging
 from typing import Any
 
+from app.application.base import BaseUseCase
+from app.application.plan.ports import IPlanGenerator
 from app.domain.plan.repositories import IPlanCacheRepository
 from app.domain.plan.value_objects import build_signature_hash
-from app.application.plan.ports import IPlanGenerator
-from app.application.base import BaseUseCase
 
 logger = logging.getLogger(__name__)
 
@@ -71,9 +71,7 @@ class GetOrCreatePlanUseCase(BaseUseCase[GetOrCreatePlanInput, dict[str, Any]]):
 
         # force=True でなければキャッシュを検索
         if not input.force:
-            cached = await self.cache_repo.get_by_user_and_hash(
-                input.user_id, signature_hash
-            )
+            cached = await self.cache_repo.get_by_user_and_hash(input.user_id, signature_hash)
             if cached:
                 logger.info("plan cache_hit signature_hash=%s", signature_hash)
                 plan = json.loads(cached.plan_json)

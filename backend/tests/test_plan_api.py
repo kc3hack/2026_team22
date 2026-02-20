@@ -8,7 +8,7 @@ from unittest.mock import AsyncMock
 import pytest
 from httpx import AsyncClient
 
-from app.main import app
+from app.main import web_app as app
 from app.presentation.api.plan import get_plan_generator
 from app.presentation.dependencies.auth import get_current_user_id
 
@@ -16,9 +16,7 @@ from app.presentation.dependencies.auth import get_current_user_id
 class TestPlanAPIAuth:
     """認証ミドルウェアの挙動（401）"""
 
-    async def test_plan_returns_401_without_authorization(
-        self, client: AsyncClient
-    ):
+    async def test_plan_returns_401_without_authorization(self, client: AsyncClient):
         """Authorization ヘッダーなしで POST /sleep-plans すると 401"""
         # このテストだけ認証オーバーライドを外す
         app.dependency_overrides.pop(get_current_user_id, None)
@@ -33,8 +31,8 @@ class TestPlanAPIAuth:
             )
             assert res.status_code == 401
         finally:
-            app.dependency_overrides[get_current_user_id] = (
-                lambda: "11111111-1111-1111-1111-111111111111"
+            app.dependency_overrides[get_current_user_id] = lambda: (
+                "11111111-1111-1111-1111-111111111111"
             )
 
 
@@ -45,8 +43,18 @@ class TestPlanAPI:
     def mock_llm_plan(self):
         return {
             "week_plan": [
-                {"day": "月曜", "recommended_bedtime": "22:00", "recommended_wakeup": "06:30", "advice": "テスト"},
-                {"day": "火曜", "recommended_bedtime": "22:00", "recommended_wakeup": "06:30", "advice": "テスト"},
+                {
+                    "day": "月曜",
+                    "recommended_bedtime": "22:00",
+                    "recommended_wakeup": "06:30",
+                    "advice": "テスト",
+                },
+                {
+                    "day": "火曜",
+                    "recommended_bedtime": "22:00",
+                    "recommended_wakeup": "06:30",
+                    "advice": "テスト",
+                },
             ]
         }
 

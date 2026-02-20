@@ -4,8 +4,8 @@ UpdateUserUseCase - ユーザー更新のビジネスロジック
 
 from fastapi import HTTPException, status
 
-from app.domain.user.repositories import IUserRepository
 from app.application.base import BaseUseCase
+from app.domain.user.repositories import IUserRepository
 
 
 class UpdateUserUseCase(BaseUseCase[tuple[str, dict], object]):
@@ -30,6 +30,6 @@ class UpdateUserUseCase(BaseUseCase[tuple[str, dict], object]):
             )
 
         if data.get("name") is not None:
-            setattr(user, "name", data["name"])
+            user.name = data["name"]
 
         return await self.user_repo.update(user)

@@ -33,9 +33,7 @@ class SleepPlanCacheRepository:
         )
         return result.scalar_one_or_none()
 
-    async def upsert(
-        self, user_id: str, signature_hash: str, plan_json: str
-    ) -> SleepPlanCache:
+    async def upsert(self, user_id: str, signature_hash: str, plan_json: str) -> SleepPlanCache:
         """同一 user_id の行を上書き（なければ INSERT）"""
         row = await self.get_by_user_id(user_id)
         if row:

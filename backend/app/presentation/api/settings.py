@@ -4,8 +4,8 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.application.settings import GetSettingsUseCase, PutSettingsUseCase
-from app.infrastructure.persistence.database import get_db
 from app.application.settings.put_settings import PutSettingsPayload, TodayOverrideInput
+from app.infrastructure.persistence.database import get_db
 from app.infrastructure.persistence.repositories.sleep_settings_repository import (
     SleepSettingsRepository,
 )

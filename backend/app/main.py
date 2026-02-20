@@ -7,10 +7,11 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+import app.infrastructure.persistence.models  # noqa: F401 - metadata 登録
 from app.config import settings
 from app.database import init_db
-import app.infrastructure.persistence.models  # noqa: F401 - metadata 登録
-from app.presentation.api import health, plan, settings as settings_api, sleep_logs, users
+from app.presentation.api import health, plan, sleep_logs, users
+from app.presentation.api import settings as settings_api
 
 
 @asynccontextmanager
@@ -22,7 +23,7 @@ async def lifespan(app: FastAPI):
     print("👋 Shutting down SleepSupportApp API")
 
 
-app = FastAPI(
+web_app = FastAPI(
     title="SleepSupportApp API",
     description="睡眠サポートアプリのバックエンドAPI",
     version="0.1.0",
@@ -33,7 +34,7 @@ app = FastAPI(
 
 _cors_origins = ["*"] if settings.ENV == "development" else settings.CORS_ORIGINS
 _cors_credentials = settings.ENV != "development"
-app.add_middleware(
+web_app.add_middleware(
     CORSMiddleware,
     allow_origins=_cors_origins,
     allow_credentials=_cors_credentials,
@@ -41,14 +42,14 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.include_router(health.router, prefix=settings.API_PREFIX, tags=["health"])
-app.include_router(users.router, prefix=settings.API_PREFIX)
-app.include_router(plan.router, prefix=settings.API_PREFIX)
-app.include_router(settings_api.router, prefix=settings.API_PREFIX)
-app.include_router(sleep_logs.router, prefix=settings.API_PREFIX)
+web_app.include_router(health.router, prefix=settings.API_PREFIX, tags=["health"])
+web_app.include_router(users.router, prefix=settings.API_PREFIX)
+web_app.include_router(plan.router, prefix=settings.API_PREFIX)
+web_app.include_router(settings_api.router, prefix=settings.API_PREFIX)
+web_app.include_router(sleep_logs.router, prefix=settings.API_PREFIX)
 
 
-@app.get("/")
+@web_app.get("/")
 async def root():
     """ルートエンドポイント"""
     return {

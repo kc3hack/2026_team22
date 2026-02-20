@@ -71,9 +71,7 @@ class TestGetOrCreatePlanUseCase:
         assert kwargs["signature_hash"]
         assert '"week_plan"' in kwargs["plan_json"]
 
-    async def test_force_skips_cache(
-        self, mock_cache_repo, mock_plan_generator
-    ):
+    async def test_force_skips_cache(self, mock_cache_repo, mock_plan_generator):
         """force=True の場合はキャッシュを検索せず LLM を呼ぶ"""
         llm_plan = {"week_plan": [{"day": "月曜", "advice": "強制再生成"}]}
         mock_plan_generator.generate_week_plan = AsyncMock(return_value=llm_plan)
@@ -95,9 +93,7 @@ class TestGetOrCreatePlanUseCase:
         mock_cache_repo.get_by_user_and_hash.assert_not_called()
         mock_cache_repo.upsert.assert_called_once()
 
-    async def test_today_override_passed_to_generator(
-        self, mock_cache_repo, mock_plan_generator
-    ):
+    async def test_today_override_passed_to_generator(self, mock_cache_repo, mock_plan_generator):
         """todayOverride が LLM ジェネレータに渡されること"""
         mock_cache_repo.get_by_user_and_hash.return_value = None
         llm_plan = {"week_plan": [{"day": "月曜", "advice": "オーバーライド反映"}]}
@@ -124,9 +120,7 @@ class TestGetOrCreatePlanUseCase:
         call_kwargs = mock_plan_generator.generate_week_plan.call_args[1]
         assert call_kwargs["today_override"] == override
 
-    async def test_today_override_changes_signature(
-        self, mock_cache_repo, mock_plan_generator
-    ):
+    async def test_today_override_changes_signature(self, mock_cache_repo, mock_plan_generator):
         """todayOverride が異なると署名ハッシュも変わるため、キャッシュ検索のハッシュが異なる"""
         mock_cache_repo.get_by_user_and_hash.return_value = None
         llm_plan = {"week_plan": []}
@@ -135,7 +129,10 @@ class TestGetOrCreatePlanUseCase:
         usecase = GetOrCreatePlanUseCase(mock_cache_repo, mock_plan_generator)
 
         input_no_override = GetOrCreatePlanInput(
-            user_id="user-001", calendar_events=[], sleep_logs=[], settings={},
+            user_id="user-001",
+            calendar_events=[],
+            sleep_logs=[],
+            settings={},
         )
         await usecase.execute(input_no_override)
         hash_no_override = mock_cache_repo.get_by_user_and_hash.call_args[0][1]
@@ -146,8 +143,17 @@ class TestGetOrCreatePlanUseCase:
         mock_plan_generator.generate_week_plan = AsyncMock(return_value=llm_plan)
 
         input_with_override = GetOrCreatePlanInput(
-            user_id="user-001", calendar_events=[], sleep_logs=[], settings={},
-            today_override={"date": "2026-02-20", "sleepHour": 23, "sleepMinute": 0, "wakeHour": 7, "wakeMinute": 0},
+            user_id="user-001",
+            calendar_events=[],
+            sleep_logs=[],
+            settings={},
+            today_override={
+                "date": "2026-02-20",
+                "sleepHour": 23,
+                "sleepMinute": 0,
+                "wakeHour": 7,
+                "wakeMinute": 0,
+            },
         )
         await usecase.execute(input_with_override)
         hash_with_override = mock_cache_repo.get_by_user_and_hash.call_args[0][1]

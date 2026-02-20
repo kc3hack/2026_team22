@@ -7,17 +7,20 @@ from pydantic import BaseModel, EmailStr
 
 class UserCreate(BaseModel):
     """ユーザー作成リクエスト"""
+
     email: EmailStr
     name: str
 
 
 class UserUpdate(BaseModel):
     """ユーザー更新リクエスト"""
+
     name: str | None = None
 
 
 class UserResponse(BaseModel):
     """ユーザーレスポンス"""
+
     id: str
     email: str
     name: str
@@ -29,5 +32,6 @@ class UserResponse(BaseModel):
 
 class UserListResponse(BaseModel):
     """ユーザー一覧レスポンス"""
+
     users: list[UserResponse]
     total: int

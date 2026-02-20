@@ -2,8 +2,6 @@
 署名ハッシュ生成の単体テスト（DB 不要）
 """
 
-import pytest
-
 from app.domain.plan.value_objects import build_signature_hash
 
 
@@ -97,8 +95,20 @@ class TestBuildSignatureHash:
 
     def test_today_override_different_date_changes_hash(self):
         """todayOverride の date が違えばハッシュも違う"""
-        override1 = {"date": "2026-02-20", "sleepHour": 23, "sleepMinute": 0, "wakeHour": 7, "wakeMinute": 0}
-        override2 = {"date": "2026-02-21", "sleepHour": 23, "sleepMinute": 0, "wakeHour": 7, "wakeMinute": 0}
+        override1 = {
+            "date": "2026-02-20",
+            "sleepHour": 23,
+            "sleepMinute": 0,
+            "wakeHour": 7,
+            "wakeMinute": 0,
+        }
+        override2 = {
+            "date": "2026-02-21",
+            "sleepHour": 23,
+            "sleepMinute": 0,
+            "wakeHour": 7,
+            "wakeMinute": 0,
+        }
         h1 = build_signature_hash([], [], {}, today_override=override1)
         h2 = build_signature_hash([], [], {}, today_override=override2)
         assert h1 != h2
@@ -112,9 +122,15 @@ class TestBuildSignatureHash:
     def test_iso_datetime_normalized_same_hash(self):
         """ISO 日時のミリ秒・タイムゾーン表記が違っても同じハッシュになる（キャッシュ安定）"""
         cal1 = [{"title": "A", "start": "2026-02-18T09:00:00.000Z", "end": "2026-02-18T10:00:00Z"}]
-        cal2 = [{"title": "A", "start": "2026-02-18T09:00:00.123Z", "end": "2026-02-18T10:00:00.000Z"}]
-        logs1 = [{"date": "2026-02-17", "score": 80, "scheduled_sleep_time": "2026-02-17T23:00:00Z"}]
-        logs2 = [{"date": "2026-02-17", "score": 80, "scheduled_sleep_time": "2026-02-17T23:00:00.456Z"}]
+        cal2 = [
+            {"title": "A", "start": "2026-02-18T09:00:00.123Z", "end": "2026-02-18T10:00:00.000Z"}
+        ]
+        logs1 = [
+            {"date": "2026-02-17", "score": 80, "scheduled_sleep_time": "2026-02-17T23:00:00Z"}
+        ]
+        logs2 = [
+            {"date": "2026-02-17", "score": 80, "scheduled_sleep_time": "2026-02-17T23:00:00.456Z"}
+        ]
         h_cal1 = build_signature_hash(cal1, [], {})
         h_cal2 = build_signature_hash(cal2, [], {})
         h_logs1 = build_signature_hash([], logs1, {})
