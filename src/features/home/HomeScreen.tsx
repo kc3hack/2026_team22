@@ -100,8 +100,69 @@ export const HomeScreen: React.FC = () => {
         </View>
 
         <View style={styles.content}>
+          {/* 朝の振り返りカード */}
+          {showMorningReview && latestLog && latestScore !== null && (
+            <MorningReviewCard
+              score={latestScore}
+              onSelectMood={(mood) => setMood(latestLog.id, mood)}
+            />
+          )}
+
           {/* レコメンド */}
           <SleepAdvice />
+
+          {/* 今日の睡眠プラン (AIプラン) */}
+          {todayPlan && (
+            <TouchableOpacity
+              style={styles.planCard}
+              onPress={() => router.push('/sleep-plan' as never)}
+            >
+              <View style={styles.planCardHeader}>
+                <Text style={styles.cardTitle}>✨ 今日のAIプラン</Text>
+                <View
+                  style={[
+                    styles.importanceBadge,
+                    {
+                      backgroundColor:
+                        todayPlan.importance === 'high'
+                          ? 'rgba(239, 68, 68, 0.15)'
+                          : todayPlan.importance === 'medium'
+                            ? 'rgba(245, 158, 11, 0.15)'
+                            : 'rgba(16, 185, 129, 0.15)',
+                    },
+                  ]}
+                >
+                  <Text
+                    style={[styles.importanceText, { color: importanceColor[todayPlan.importance] }]}
+                  >
+                    {todayPlan.importance === 'high'
+                      ? '重要'
+                      : todayPlan.importance === 'medium'
+                        ? '普通'
+                        : '軽め'}
+                  </Text>
+                </View>
+              </View>
+              <View style={styles.planTimeRow}>
+                <View style={styles.planTimeItem}>
+                  <Text style={styles.planTimeLabel}>推奨就寝</Text>
+                  <Text style={styles.planTimeValue}>{todayPlan.recommendedSleepTime}</Text>
+                </View>
+                <Text style={styles.planArrow}>→</Text>
+                <View style={styles.planTimeItem}>
+                  <Text style={styles.planTimeLabel}>推奨起床</Text>
+                  <Text style={styles.planTimeValue}>{todayPlan.recommendedWakeTime}</Text>
+                </View>
+              </View>
+              {todayPlan.nextDayEvent && (
+                <Text style={styles.planEventText}>📅 明日: {todayPlan.nextDayEvent}</Text>
+              )}
+              <Text style={styles.planAdvice} numberOfLines={2}>
+                💡 {todayPlan.advice}
+              </Text>
+            </TouchableOpacity>
+          )}
+
           {/* スケジュールカード */}
           <TouchableOpacity
             style={[styles.scheduleCard, isOverridden && styles.scheduleCardOverridden]}
