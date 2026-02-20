@@ -34,3 +34,71 @@ tasks:
     cmds:
       - task: pre-commit
       - task: pre-push
+
+  # Supabase ローカル起動（認証用）。Docker が起動している必要あり
+  supabase-start:
+    desc: Supabase をローカルで起動（Auth, Studio 等）
+    cmds:
+      - pnpm supabase start
+
+  supabase-stop:
+    desc: Supabase ローカルを停止
+    cmds:
+      - pnpm supabase stop
+
+  # 開発環境をまとめて起動（Expo は含まない。別ターミナルで pnpm start）
+  # 注意: "container name already in use" が出たら docker rm -f sleepsupport-db sleepsupport-api してから再実行
+
+  # 実機用: EXPO_PUBLIC_API_URL に PC の LAN IP を設定（実機と PC は同じ Wi‑Fi に接続すること）
+  # 毎回 DB をゼロから構築するため、docker-compose down -v でボリューム削除してから up
+  dev-up:
+    desc: 実機用 - Supabase・docker-compose・マイグレーション・.env.expo.local 更新（LAN IP）
+    cmds:
+      - pnpm supabase start
+      - docker-compose down -v
+      - |
+        eval "$(node scripts/supabase-env-for-compose.mjs)" && docker-compose up -d
+      - |
+        echo "DB 起動待機ののちマイグレーション実行..."
+        sleep 3
+        cd backend && DATABASE_URL=postgresql://postgres:postgres@localhost:${DB_PORT:-5432}/sleepsupport uv run alembic upgrade head
+      - node scripts/write-expo-env.mjs
+      - |
+        echo ""
+        echo "[実機用] API: http://localhost:${API_PORT:-8000}  Supabase Studio: http://127.0.0.1:54323"
+        echo "Expo: 別ターミナルで pnpm start（.env.expo.local を読む）"
+        echo "WiFi を変えたら task dev-up を再実行してください。"
+
+  # エミュレータ用: EXPO_PUBLIC_API_URL を 10.0.2.2 に固定（Android エミュレータからホスト PC へ接続）
+  # 毎回 DB をゼロから構築するため、docker-compose down -v でボリューム削除してから up
+  dev-up-emulator:
+    desc: エミュレータ用 - 上記と同じだが .env.expo.local の API URL を 10.0.2.2 に設定
+    cmds:
+      - pnpm supabase start
+      - docker-compose down -v
+      - |
+        eval "$(node scripts/supabase-env-for-compose.mjs)" && docker-compose up -d
+      - |
+        echo "DB 起動待機ののちマイグレーション実行..."
+        sleep 3
+        cd backend && DATABASE_URL=postgresql://postgres:postgres@localhost:${DB_PORT:-5432}/sleepsupport uv run alembic upgrade head
+      - EXPO_PUBLIC_API_URL=http://10.0.2.2:8000 node scripts/write-expo-env.mjs
+      - |
+        echo ""
+        echo "[エミュレータ用] API: http://10.0.2.2:${API_PORT:-8000}  Supabase Studio: http://127.0.0.1:54323"
+        echo "Expo: 別ターミナルで pnpm start（.env.expo.local を読む）"
+        echo "Android エミュレータで実行する場合は task dev-up-emulator を使ってください。"
+
+  # バックエンドテスト実行（uv で pytest）
+  test:
+    desc: バックエンドのテストを実行
+    dir: backend
+    cmds:
+      - uv run pytest tests/ -v
+
+  # 開発環境をまとめて停止
+  dev-down:
+    desc: docker-compose と Supabase を停止
+    cmds:
+      - docker-compose down
+      - pnpm supabase stop

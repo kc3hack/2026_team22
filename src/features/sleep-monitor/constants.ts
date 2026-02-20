@@ -67,3 +67,9 @@ export const NOISE_CONFIG = {
   /** サンプリング間隔（ミリ秒） */
   SAMPLE_INTERVAL_MS: 3000,
 } as const;
+
+/** 通知設定 */
+export const NOTIFICATION_CONFIG = {
+  /** 通知クールダウン（ミリ秒）= 1分 */
+  COOLDOWN_MS: 60 * 1000,
+} as const;
