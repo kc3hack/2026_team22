@@ -5,10 +5,14 @@
  * 現状はスタブ（モックデータ）を返す。
  */
 
+import Constants from 'expo-constants';
 import type { SleepPlanRequest, WeeklySleepPlan, DailyPlan } from '../types';
 
-/** バックエンドAPIのベースURL（将来的に.envから取得） */
-const API_BASE_URL = 'http://localhost:8000/api/v1';
+/** バックエンドAPIのベースURL（.env.expo.local の EXPO_PUBLIC_API_URL → app.config.js extra.apiUrl） */
+const base = (Constants.expoConfig?.extra?.apiUrl as string | undefined)?.trim();
+const API_BASE_URL = base
+  ? `${base.replace(/\/$/, '')}/api/v1`
+  : 'http://localhost:8000/api/v1';
 
 /**
  * 今日から7日分の日付を生成
