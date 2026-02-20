@@ -105,6 +105,8 @@ pnpm run android
 pnpm run ios
 ```
 
+Expo の**ローカル用**環境変数（Supabase の URL など）は **`.env.expo.local`** に書きます。`task dev-up` を実行するとこのファイルが自動で更新されます。詳細は [docs/supabase-local.md](docs/supabase-local.md) を参照。
+
 ## プロジェクト構成
 
 FSD Lite（Feature-Sliced Design の簡易版）を採用しています。
@@ -139,7 +141,7 @@ SleepSupportApp/
 
 ## バックエンド (Docker)
 
-バックエンドはFastAPI + PostgreSQL（開発環境）/ Supabase（本番環境）で構成されています。
+バックエンドは FastAPI + PostgreSQL で構成されています。**Supabase は認証（Auth）専用**で、アプリのテーブル（users, sleep_plan_cache 等）は **別の PostgreSQL**（開発時は docker-compose の DB）で管理します。
 
 ### 前提条件
 
@@ -190,6 +192,17 @@ SUPABASE_ANON_KEY=[YOUR-ANON-KEY]
 SUPABASE_SERVICE_ROLE_KEY=[YOUR-SERVICE-ROLE-KEY]
 ```
 
+### DB マイグレーション（Alembic）
+
+テーブルは **Alembic** で管理しています。**task dev-up** 実行時に `alembic upgrade head` が走り、マイグレーションが適用されます。
+
+```bash
+# 手動でマイグレーションのみ実行する場合（DB 起動後）
+cd backend && DATABASE_URL=postgresql://postgres:postgres@localhost:5432/sleepsupport uv run alembic upgrade head
+```
+
+新規テーブル追加時は `alembic revision --autogenerate -m "説明"` でリビジョンを作成し、`alembic upgrade head` で適用してください。
+
 ### バックエンドのローカル開発（uv）
 
 Pythonパッケージ管理に [uv](https://docs.astral.sh/uv/) を使用しています。
@@ -201,7 +214,7 @@ curl -LsSf https://astral.sh/uv/install.sh | sh
 # 依存関係のインストール
 cd backend && uv sync
 
-# テスト実行
+# テスト実行（単体〜統合。統合テストは PostgreSQL 起動中に実行）
 uv run pytest tests/ -v
 ```
 
