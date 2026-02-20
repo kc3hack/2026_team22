@@ -43,7 +43,7 @@
         {
           "cameraPermission": "環境の明るさを検出するためにカメラを使用します。"
         }
-      ]
+      ],
       "./withBackgroundActions",
       [
         "expo-build-properties",
