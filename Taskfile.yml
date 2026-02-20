@@ -93,6 +93,8 @@ tasks:
       - echo "DB 起動待機ののちマイグレーション実行..."
       - node scripts/wait-for-db.mjs
       - cd backend && DATABASE_URL=postgresql://postgres:postgres@localhost:${DB_PORT:-5432}/sleepsupport uv run alembic upgrade head
+      - echo "テストユーザーと睡眠ログを登録..."
+      - DATABASE_URL=postgresql://postgres:postgres@localhost:${DB_PORT:-5432}/sleepsupport node scripts/seed-dev-user.mjs
       - node scripts/write-expo-env.mjs
       - |
         echo ""
@@ -117,6 +119,8 @@ tasks:
       - echo "DB 起動待機ののちマイグレーション実行..."
       - node scripts/wait-for-db.mjs
       - cd backend && DATABASE_URL=postgresql://postgres:postgres@localhost:${DB_PORT:-5432}/sleepsupport uv run alembic upgrade head
+      - echo "テストユーザーと睡眠ログを登録..."
+      - DATABASE_URL=postgresql://postgres:postgres@localhost:${DB_PORT:-5432}/sleepsupport node scripts/seed-dev-user.mjs
       - EXPO_PUBLIC_API_URL=http://10.0.2.2:8000 node scripts/write-expo-env.mjs
       - |
         echo ""
