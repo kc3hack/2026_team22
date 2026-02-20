@@ -6,11 +6,8 @@ from pydantic import BaseModel, Field
 
 
 class PlanRequest(BaseModel):
-    """週間プラン取得リクエスト"""
+    """週間プラン取得リクエスト（user_id は認証トークンから注入されるため不要）"""
 
-    user_id: str = Field(
-        ..., description="ユーザーID（認証済みの user_id を渡す）"
-    )
     calendar_events: list[dict[str, Any]] = Field(
         default_factory=list, description="カレンダー予定のリスト"
     )

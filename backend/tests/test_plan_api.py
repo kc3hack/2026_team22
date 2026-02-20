@@ -9,6 +9,32 @@ from httpx import AsyncClient
 
 from app.main import app
 from app.presentation.api.plan import get_plan_generator
+from app.presentation.dependencies.auth import get_current_user_id
+
+
+class TestPlanAPIAuth:
+    """認証ミドルウェアの挙動（401）"""
+
+    async def test_plan_returns_401_without_authorization(
+        self, client: AsyncClient
+    ):
+        """Authorization ヘッダーなしで POST /plan すると 401"""
+        # このテストだけ認証オーバーライドを外す
+        app.dependency_overrides.pop(get_current_user_id, None)
+        try:
+            res = await client.post(
+                "/api/v1/plan",
+                json={
+                    "calendar_events": [],
+                    "sleep_logs": [],
+                    "settings": {},
+                },
+            )
+            assert res.status_code == 401
+        finally:
+            app.dependency_overrides[get_current_user_id] = (
+                lambda: "11111111-1111-1111-1111-111111111111"
+            )
 
 
 class TestPlanAPI:
@@ -46,9 +72,10 @@ class TestPlanAPI:
             )
             assert create_res.status_code == 201
             user_id = create_res.json()["id"]
+            # sleep_plan_cache の FK を満たすため、認証オーバーライドを作成ユーザー ID に
+            app.dependency_overrides[get_current_user_id] = lambda: user_id
 
             body = {
-                "user_id": user_id,
                 "calendar_events": [],
                 "sleep_logs": [],
                 "settings": {},
@@ -82,9 +109,9 @@ class TestPlanAPI:
             )
             assert create_res.status_code == 201
             user_id = create_res.json()["id"]
+            app.dependency_overrides[get_current_user_id] = lambda: user_id
 
             body = {
-                "user_id": user_id,
                 "calendar_events": [{"title": "会議"}],
                 "sleep_logs": [],
                 "settings": {},
