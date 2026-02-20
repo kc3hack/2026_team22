@@ -1,0 +1,52 @@
+diff --git a/android/src/main/java/expo/modules/sensors/SensorProxy.kt b/android/src/main/java/expo/modules/sensors/SensorProxy.kt
+index 4bface74e6f2b787dace27ecb81c68fef3d30a12..d6d6f922d92c1cbebbb569a6af9e7bf70261eb58 100644
+--- a/android/src/main/java/expo/modules/sensors/SensorProxy.kt
++++ b/android/src/main/java/expo/modules/sensors/SensorProxy.kt
+@@ -53,15 +53,15 @@ class SensorProxy(
+   }
+ 
+   fun onHostResume() {
+-    if (isObserving) {
+-      sensorKernelServiceSubscription.startObserving()
+-    }
++    // if (isObserving) {
++    //  sensorKernelServiceSubscription.startObserving()
++    //}
+   }
+ 
+   fun onHostPause() {
+-    if (isObserving) {
+-      sensorKernelServiceSubscription.stopObserving()
+-    }
++    //if (isObserving) {
++    //  sensorKernelServiceSubscription.stopObserving()
++    //}
+   }
+ 
+   fun onHostDestroy() {
+diff --git a/android/src/main/java/expo/modules/sensors/modules/DeviceMotionModule.kt b/android/src/main/java/expo/modules/sensors/modules/DeviceMotionModule.kt
+index 21ad6672c93e2d33a0c25eca6cfb0841993e3948..b43e6dfb819acedab7bb1f02154a97cf8698d278 100644
+--- a/android/src/main/java/expo/modules/sensors/modules/DeviceMotionModule.kt
++++ b/android/src/main/java/expo/modules/sensors/modules/DeviceMotionModule.kt
+@@ -109,15 +109,15 @@ class DeviceMotionModule : Module(), SensorEventListener2 {
+     }
+ 
+     OnActivityEntersForeground {
+-      if (isObserving) {
+-        subscriptions.forEach { it.startObserving() }
+-      }
++      //if (isObserving) {
++      //  subscriptions.forEach { it.startObserving() }
++      //}
+     }
+ 
+     OnActivityEntersBackground {
+-      if (isObserving) {
+-        subscriptions.forEach { it.stopObserving() }
+-      }
++      //if (isObserving) {
++      //  subscriptions.forEach { it.stopObserving() }
++      //}
+     }
+ 
+     OnStopObserving {
