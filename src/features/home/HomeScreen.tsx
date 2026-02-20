@@ -102,92 +102,34 @@ export const HomeScreen: React.FC = () => {
         <View style={styles.content}>
           {/* レコメンド */}
           <SleepAdvice />
-
-          {/* 朝の振り返りカード */}
-          {showMorningReview && latestLog && (
-            <MorningReviewCard
-              score={latestLog.score}
-              onSelectMood={(mood) => setMood(latestLog.id, mood)}
-            />
-          )}
-
-          {/* 今日の睡眠プラン */}
-          {todayPlan && (
-            <TouchableOpacity
-              style={styles.planCard}
-              onPress={() => router.push('/sleep-plan' as never)}
-            >
-              <View style={styles.planCardHeader}>
-                <Text style={styles.cardTitle}>✨ 今日のAIプラン</Text>
-                <View
-                  style={[
-                    styles.importanceBadge,
-                    {
-                      backgroundColor:
-                        todayPlan.importance === 'high'
-                          ? 'rgba(239, 68, 68, 0.15)'
-                          : todayPlan.importance === 'medium'
-                            ? 'rgba(245, 158, 11, 0.15)'
-                            : 'rgba(16, 185, 129, 0.15)',
-                    },
-                  ]}
-                >
-                  <Text
-                    style={[styles.importanceText, { color: importanceColor[todayPlan.importance] }]}
-                  >
-                    {todayPlan.importance === 'high'
-                      ? '重要'
-                      : todayPlan.importance === 'medium'
-                        ? '普通'
-                        : '軽め'}
-                  </Text>
-                </View>
-              </View>
-              <View style={styles.planTimeRow}>
-                <View style={styles.planTimeItem}>
-                  <Text style={styles.planTimeLabel}>推奨就寝</Text>
-                  <Text style={styles.planTimeValue}>{todayPlan.recommendedSleepTime}</Text>
-                </View>
-                <Text style={styles.planArrow}>→</Text>
-                <View style={styles.planTimeItem}>
-                  <Text style={styles.planTimeLabel}>推奨起床</Text>
-                  <Text style={styles.planTimeValue}>{todayPlan.recommendedWakeTime}</Text>
-                </View>
-              </View>
-              {todayPlan.nextDayEvent && (
-                <Text style={styles.planEventText}>📅 明日: {todayPlan.nextDayEvent}</Text>
-              )}
-              <Text style={styles.planAdvice} numberOfLines={2}>
-                💡 {todayPlan.advice}
-              </Text>
-            </TouchableOpacity>
-          )}
-
-          {/* 今夜の予定 */}
+          {/* スケジュールカード */}
           <TouchableOpacity
             style={[styles.scheduleCard, isOverridden && styles.scheduleCardOverridden]}
-            onPress={() => setEditingSchedule(!editingSchedule)}
-            activeOpacity={0.8}
+            onPress={() => !editingSchedule && setEditingSchedule(true)}
+            activeOpacity={editingSchedule ? 1 : 0.7}
           >
             <View style={styles.scheduleHeader}>
-              <Text style={styles.cardTitle}>🌙 今夜のスケジュール</Text>
+              <Text style={styles.cardTitle}>📅 今日のスケジュール</Text>
               {isOverridden && (
                 <View style={styles.overrideBadge}>
-                  <Text style={styles.overrideBadgeText}>今日だけ</Text>
+                  <Text style={styles.overrideBadgeText}>変更あり</Text>
                 </View>
               )}
             </View>
-            <View style={styles.scheduleRow}>
-              <View style={styles.scheduleItem}>
-                <Text style={styles.scheduleLabel}>就寝</Text>
-                <Text style={styles.scheduleTime}>{sleepTimeStr}</Text>
+
+            {!editingSchedule && (
+              <View style={styles.scheduleRow}>
+                <View style={styles.scheduleItem}>
+                  <Text style={styles.scheduleLabel}>就寝</Text>
+                  <Text style={styles.scheduleTime}>{sleepTimeStr}</Text>
+                </View>
+                <Text style={styles.arrow}>→</Text>
+                <View style={styles.scheduleItem}>
+                  <Text style={styles.scheduleLabel}>起床</Text>
+                  <Text style={styles.scheduleTime}>{wakeTimeStr}</Text>
+                </View>
               </View>
-              <Text style={styles.arrow}>→</Text>
-              <View style={styles.scheduleItem}>
-                <Text style={styles.scheduleLabel}>起床</Text>
-                <Text style={styles.scheduleTime}>{wakeTimeStr}</Text>
-              </View>
-            </View>
+            )}
 
             {/* 編集モード */}
             {editingSchedule && (
@@ -315,8 +257,8 @@ export const HomeScreen: React.FC = () => {
             </TouchableOpacity>
           )}
         </View>
-      </ScrollView>
-    </SafeAreaView>
+      </ScrollView >
+    </SafeAreaView >
   );
 };
 
