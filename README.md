@@ -72,6 +72,7 @@ pnpm install
 pnpm run setup
 ```
 
+
 ### 環境変数の設定（任意）
 
 LLM連携やGoogle Calendar連携を使用する場合は、環境変数を設定してください。
