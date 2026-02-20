@@ -7,18 +7,20 @@
 
 つまり「Supabase Auth で誰か判定 → アプリ用 DB にデータを保存」という構成です。
 
-## dev-up では Expo は起動しない
+## dev-up / dev-up-emulator の役割
 
-**task dev-up** が起動するのは次のだけです。
+**task dev-up**（実機用）および **task dev-up-emulator**（エミュレータ用）は次の順で実行します。
 
 - Supabase ローカル（**Auth 用**・Studio 等）
 - docker-compose（API + **アプリ用 PostgreSQL**）
+- DB マイグレーション
+- **write-expo-env.mjs** で `.env.expo.local` を更新
+- **Android Development Build のビルド＆起動**（`expo run:android`、Java 17 使用）
 
-Expo は **別ターミナルで `task expo-start` または `pnpm start`** する運用にしています。
+実機の場合は **実機を USB 接続してから**、エミュレータの場合は **エミュレータを起動してから** それぞれのタスクを実行してください。環境構築からアプリのビルド・起動まで一括で行われます。
 
-- Expo は対話的（リロードやメニュー操作）なので、task に含めると扱いづらい
-- 1 ターミナル: バックエンド系、1 ターミナル: Expo の分けが一般的
-- Android で Development Build をビルド・起動する場合は **`task expo-android`**（Java 17 を自動で使用）
+- **アプリのコードだけ変更してビルドし直したいとき**は **`task expo-android`** を実行する（環境はそのまま。事前に一度 `dev-up` または `dev-up-emulator` で `.env.expo.local` を作っておくこと）。
+- Expo 開発サーバー（Metro）のみ起動したい場合は、別ターミナルで **`task expo-start`** または **`pnpm start`** を実行する。
 
 ## Expo の環境変数: .env から読む（推奨）
 
@@ -35,7 +37,7 @@ Expo は **別ターミナルで `task expo-start` または `pnpm start`** す�
 
 ## .env の Supabase 値をどうするか
 
-**task dev-up** の最後で **scripts/write-expo-env.mjs** を実行しており、Supabase の接続情報（と `EXPO_PUBLIC_API_URL`）を **`.env.expo.local`** に書き出します。
+**task dev-up** / **task dev-up-emulator** のなかで **scripts/write-expo-env.mjs** を実行しており、Supabase の接続情報（と `EXPO_PUBLIC_API_URL`）を **`.env.expo.local`** に書き出します。そののち Android のビルドが走るため、ビルド時にもこのファイルが参照されます。
 
 - どのターミナルで `pnpm start` しても、Expo は app.config.js 経由で `.env.expo.local` を読むのでそのまま動く。
-- dev-up するたびに `.env.expo.local` が更新される。このファイルは .gitignore 済み。
+- dev-up / dev-up-emulator するたびに `.env.expo.local` が更新される。このファイルは .gitignore 済み。

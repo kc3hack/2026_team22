@@ -87,8 +87,8 @@ backend/
 | 目的 | コマンド | 備考 |
 |------|----------|------|
 | **バックエンドのテスト** | `task test` | リポジトリルートで実行。内部で `dir: backend` かつ `uv run pytest tests/ -v` を実行する。 |
-| **開発環境の起動（実機用）** | `task dev-up` | Supabase 起動 → docker-compose up → **backend でマイグレーション**（`cd backend && DATABASE_URL=... uv run alembic upgrade head`）→ Expo 用 .env 更新。 |
-| **開発環境の起動（エミュレータ用）** | `task dev-up-emulator` | 上記と同様だが .env の API URL が 10.0.2.2。 |
+| **開発環境の起動（実機用）** | `task dev-up` | Supabase 起動 → docker-compose up → **backend でマイグレーション**（`cd backend && DATABASE_URL=... uv run alembic upgrade head`）→ Expo 用 .env 更新 → **Android ビルド＆起動**（実機を接続してから実行）。 |
+| **開発環境の起動（エミュレータ用）** | `task dev-up-emulator` | 上記と同様だが .env の API URL が 10.0.2.2。最後に **Android ビルド＆起動**（エミュレータを起動してから実行）。 |
 | **開発環境の停止** | `task dev-down` | docker-compose down, supabase stop。 |
 | **Supabase のみ起動** | `task supabase-start` | 認証用。Docker 必須。 |
 
