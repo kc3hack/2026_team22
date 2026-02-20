@@ -339,7 +339,9 @@ curl -LsSf https://astral.sh/uv/install.sh | sh
 # 依存関係のインストール
 cd backend && uv sync
 
-# テスト実行（単体〜統合。統合テストは PostgreSQL 起動中に実行）
+# テスト実行（単体〜統合）
+# 統合テスト（DB 利用）を含める場合: リポジトリルートで task test:db（DB を起動してから実行）
+# DB 起動済みなら: リポジトリルートで task test、または backend 内で:
 uv run pytest tests/ -v
 ```
 

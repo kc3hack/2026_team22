@@ -191,7 +191,10 @@ export const WeeklyPlanCard: React.FC<WeeklyPlanCardProps> = ({
             <View style={styles.eventIconWrap}>
               <Text style={styles.eventIcon}>📅</Text>
             </View>
-            <Text style={styles.eventText}>{plan.nextDayEvent}</Text>
+            <View style={{ flex: 1 }}>
+              <Text style={styles.eventLabel}>翌日の予定</Text>
+              <Text style={styles.eventText}>{plan.nextDayEvent}</Text>
+            </View>
           </View>
         )}
 
@@ -395,6 +398,13 @@ const styles = StyleSheet.create({
   },
   eventIcon: {
     fontSize: 17,
+  },
+  eventLabel: {
+    fontSize: 13,
+    color: '#64748B',
+    fontWeight: '600',
+    marginBottom: 2,
+    letterSpacing: 0.5,
   },
   eventText: {
     fontSize: 17,

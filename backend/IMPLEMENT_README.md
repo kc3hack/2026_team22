@@ -22,7 +22,7 @@
 
 4. **Issue の「成果物」に沿って実装する**  
    - 本 README の §2 以降（ディレクトリ構成・ビルド・実装の流れ）に従う。  
-   - 完了したら **`task test`** でテストが通ることを確認する。
+   - 完了したら **`task test`** でテストが通ることを確認する（DB を未起動のまま一括で確認したい場合は **`task test:db`**）。
 
 5. **コミット・PR で Issue を参照する**  
    - コミットメッセージや PR の説明に `Closes #18` のように書くと、マージ時に Issue が自動で閉じる。  
@@ -86,7 +86,8 @@ backend/
 
 | 目的 | コマンド | 備考 |
 |------|----------|------|
-| **バックエンドのテスト** | `task test` | リポジトリルートで実行。内部で `dir: backend` かつ `uv run pytest tests/ -v` を実行する。 |
+| **バックエンドのテスト** | `task test` | リポジトリルートで実行。内部で `dir: backend` かつ `uv run pytest tests/ -v`。**DB 利用の統合テストを含む場合は DB が起動済みであること。** |
+| **DB を起動してテスト** | `task test:db` | docker-compose で DB のみ起動してから `task test` と同様に pytest を実行。DB 環境を使ったテストを手軽に実行したいときに使う。 |
 | **開発環境の起動（実機用）** | `task dev-up` | Supabase 起動 → docker-compose up → **backend でマイグレーション**（`cd backend && DATABASE_URL=... uv run alembic upgrade head`）→ Expo 用 .env 更新 → **Android ビルド＆起動**（実機を接続してから実行）。 |
 | **開発環境の起動（エミュレータ用）** | `task dev-up-emulator` | 上記と同様だが .env の API URL が 10.0.2.2。最後に **Android ビルド＆起動**（エミュレータを起動してから実行）。 |
 | **開発環境の停止** | `task dev-down` | docker-compose down, supabase stop。 |
@@ -120,7 +121,7 @@ docker-compose up -d
 # その後、マイグレーションは上記の DATABASE_URL で backend 内で alembic upgrade head
 ```
 
-- **テスト時の DB**: `tests/conftest.py` では `engine` を使い、`Base.metadata.create_all` でテーブルを作成している。`DATABASE_URL` が未設定や別 URL の場合は、環境に応じて PostgreSQL が動いている必要がある（docker-compose の db を使うか、テスト用 URL を conftest で上書きする運用）。
+- **テスト時の DB**: `tests/conftest.py` では `engine` を使い、`Base.metadata.create_all` でテーブルを作成している。統合テスト（Users CRUD・キャッシュリポジトリ等）は実 DB 接続が必要。**DB を立ち上げずに一括実行したいときはリポジトリルートで `task test:db`**（DB を起動してから pytest を実行）。DB がすでに起動している場合は `task test` または backend 内で `uv run pytest tests/ -v` でよい。
 
 ---
 
@@ -156,7 +157,7 @@ docker-compose up -d
 
 8. **テスト**  
    - `tests/` に統合テストを追加。`conftest.py` の `client` フィクスチャで `AsyncClient` を利用。  
-   - 実行: リポジトリルートで **`task test`**、または backend 内で **`uv run pytest tests/ -v`**。
+   - 実行: リポジトリルートで **`task test`**（DB 起動済みの場合）または **`task test:db`**（DB から起動してテストする場合）、または backend 内で **`uv run pytest tests/ -v`**（DB 起動済みであること）。
 
 ---
 
@@ -180,5 +181,5 @@ docker-compose up -d
 ## 8. まとめ
 
 - 仕様は **`docs/backend-design.md`** と **`docs/implementation-plan.md`** を参照する。  
-- ビルド・テスト・DB 反映は **Taskfile**（`task test`, `task dev-up`）および **backend 内の `uv` / `alembic`** を使う。  
+- ビルド・テスト・DB 反映は **Taskfile**（`task test`, `task test:db`, `task dev-up`）および **backend 内の `uv` / `alembic`** を使う。  
 - 新機能は **Issue をチェックアウトしてから**、**モデル → マイグレーション → リポジトリ → ユースケース → スキーマ → ルーター** の順で実装し、認証を全 API に掛ける。
