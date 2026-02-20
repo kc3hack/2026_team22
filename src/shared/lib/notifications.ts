@@ -28,39 +28,39 @@ const lastSentMap = new Map<string, number>();
  * @returns 権限が許可されたかどうか
  */
 export const initializeNotifications = async (): Promise<boolean> => {
-    try {
-        const NotificationsModule = await import('expo-notifications');
+  try {
+    const NotificationsModule = await import('expo-notifications');
 
-        // フォアグラウンドでも通知を表示
-        NotificationsModule.setNotificationHandler({
-            handleNotification: async () => ({
-                shouldShowAlert: true,
-                shouldPlaySound: true,
-                shouldSetBadge: false,
-                shouldShowBanner: true,
-                shouldShowList: true,
-            }),
-        });
+    // フォアグラウンドでも通知を表示
+    NotificationsModule.setNotificationHandler({
+      handleNotification: async () => ({
+        shouldShowAlert: true,
+        shouldPlaySound: true,
+        shouldSetBadge: false,
+        shouldShowBanner: true,
+        shouldShowList: true,
+      }),
+    });
 
-        // 権限をリクエスト
-        const { status: existingStatus } = await NotificationsModule.getPermissionsAsync();
-        let finalStatus = existingStatus;
+    // 権限をリクエスト
+    const { status: existingStatus } = await NotificationsModule.getPermissionsAsync();
+    let finalStatus = existingStatus;
 
-        if (existingStatus !== 'granted') {
-            const { status } = await NotificationsModule.requestPermissionsAsync();
-            finalStatus = status;
-        }
-
-        if (finalStatus !== 'granted') {
-            console.warn('[Notifications] 通知権限が許可されませんでした');
-            return false;
-        }
-
-        return true;
-    } catch (error) {
-        console.warn('[Notifications] 通知機能はこの環境では利用できません (Expo Goなど):', error);
-        return false;
+    if (existingStatus !== 'granted') {
+      const { status } = await NotificationsModule.requestPermissionsAsync();
+      finalStatus = status;
     }
+
+    if (finalStatus !== 'granted') {
+      console.warn('[Notifications] 通知権限が許可されませんでした');
+      return false;
+    }
+
+    return true;
+  } catch (error) {
+    console.warn('[Notifications] 通知機能はこの環境では利用できません (Expo Goなど):', error);
+    return false;
+  }
 };
 
 /**
@@ -69,24 +69,21 @@ export const initializeNotifications = async (): Promise<boolean> => {
  * @param title - 通知タイトル
  * @param body - 通知本文
  */
-export const sendLocalNotification = async (
-    title: string,
-    body: string
-): Promise<void> => {
-    try {
-        const NotificationsModule = await import('expo-notifications');
+export const sendLocalNotification = async (title: string, body: string): Promise<void> => {
+  try {
+    const NotificationsModule = await import('expo-notifications');
 
-        await NotificationsModule.scheduleNotificationAsync({
-            content: {
-                title,
-                body,
-                sound: true,
-            },
-            trigger: null, // 即時送信
-        });
-    } catch (error) {
-        console.error('[Notifications] 通知の送信に失敗しました (Expo Goなど):', error);
-    }
+    await NotificationsModule.scheduleNotificationAsync({
+      content: {
+        title,
+        body,
+        sound: true,
+      },
+      trigger: null, // 即時送信
+    });
+  } catch (error) {
+    console.error('[Notifications] 通知の送信に失敗しました (Expo Goなど):', error);
+  }
 };
 
 /**
@@ -100,15 +97,15 @@ export const sendLocalNotification = async (
  * @returns 送信可能かどうか
  */
 export const canSendNotification = (key: string, cooldownMs: number): boolean => {
-    const now = Date.now();
-    const lastSent = lastSentMap.get(key);
+  const now = Date.now();
+  const lastSent = lastSentMap.get(key);
 
-    if (lastSent && now - lastSent < cooldownMs) {
-        return false;
-    }
+  if (lastSent && now - lastSent < cooldownMs) {
+    return false;
+  }
 
-    lastSentMap.set(key, now);
-    return true;
+  lastSentMap.set(key, now);
+  return true;
 };
 
 /**
@@ -117,5 +114,5 @@ export const canSendNotification = (key: string, cooldownMs: number): boolean =>
  * 監視を停止する際に呼び出す。
  */
 export const resetNotificationCooldowns = (): void => {
-    lastSentMap.clear();
+  lastSentMap.clear();
 };

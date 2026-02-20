@@ -18,8 +18,6 @@ interface SleepLogActions {
   clearLogs: () => void;
 }
 
-
-
 /**
  * 睡眠ログストア
  * スコア履歴の保存と取得を管理
@@ -47,9 +45,7 @@ export const useSleepLogStore = create<SleepLogState & SleepLogActions>(set => (
 
   setMood: (logId, mood) =>
     set(state => ({
-      logs: state.logs.map(log =>
-        log.id === logId ? { ...log, mood } : log,
-      ),
+      logs: state.logs.map(log => (log.id === logId ? { ...log, mood } : log)),
     })),
 
   clearLogs: () => set({ logs: [] }),

@@ -24,18 +24,12 @@ interface UseAmbientLightReturn {
  */
 export function useAmbientLight(): UseAmbientLightReturn {
   const { orientation } = useDeviceOrientation();
-  const {
-    data,
-    isAvailable: sensorAvailable,
-    isActive,
-    startSensor,
-  } = useLightSensor();
+  const { data, isAvailable: sensorAvailable, isActive, startSensor } = useLightSensor();
   const sensorLux = data?.illuminance ?? null;
 
   // face_up の時はカメラを起動しない（バッテリー節約）
   const cameraEnabled = orientation !== 'face_up';
-  const { estimatedLux: cameraLux, active: cameraActive } =
-    useCameraBrightness(cameraEnabled);
+  const { estimatedLux: cameraLux, active: cameraActive } = useCameraBrightness(cameraEnabled);
 
   const result = useMemo((): { lux: number | null; source: AmbientLightSource } => {
     switch (orientation) {

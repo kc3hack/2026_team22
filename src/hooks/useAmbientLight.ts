@@ -28,8 +28,7 @@ export function useAmbientLight(): UseAmbientLightReturn {
 
   // face_up の時はカメラを起動しない（バッテリー節約）
   const cameraEnabled = orientation !== 'face_up';
-  const { estimatedLux: cameraLux, active: cameraActive } =
-    useCameraBrightness(cameraEnabled);
+  const { estimatedLux: cameraLux, active: cameraActive } = useCameraBrightness(cameraEnabled);
 
   const result = useMemo((): { lux: number | null; source: AmbientLightSource } => {
     switch (orientation) {

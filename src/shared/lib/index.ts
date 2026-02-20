@@ -11,8 +11,8 @@ export { geminiClient } from './gemini';
 export type { GeminiConfig, WarningContext } from './gemini';
 
 export {
-    initializeNotifications,
-    sendLocalNotification,
-    canSendNotification,
-    resetNotificationCooldowns,
+  initializeNotifications,
+  sendLocalNotification,
+  canSendNotification,
+  resetNotificationCooldowns,
 } from './notifications';

@@ -137,7 +137,6 @@ export const useSleepMonitorStore = create<MonitorState & MonitorActions>((set, 
       let usagePenalty = 0;
       let environmentPenalty = 0;
 
-
       const phase1Warning = state.warnings.some(w => w.phase === 'phase1');
       const phase2Warning = state.warnings.some(w => w.phase === 'phase2');
 
@@ -150,8 +149,6 @@ export const useSleepMonitorStore = create<MonitorState & MonitorActions>((set, 
       const noiseExceeded = state.environment.isNoiseExceeded;
       if (lightExceeded) environmentPenalty += Math.abs(SCORE_POINTS.LIGHT_PENALTY);
       if (noiseExceeded) environmentPenalty += Math.abs(SCORE_POINTS.NOISE_PENALTY);
-
-
 
       const total = Math.max(
         SCORE_POINTS.MIN_SCORE,

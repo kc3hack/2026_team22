@@ -22,17 +22,11 @@ export const SleepLogScreen: React.FC = () => {
         <Text style={styles.subtitle}>睡眠準備の振り返り</Text>
       </View>
 
-      <ScrollView
-        contentContainerStyle={styles.scrollContent}
-        showsVerticalScrollIndicator={false}
-      >
+      <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
         {/* 最新スコア */}
         {latestLog && (
           <View style={styles.latestCard}>
-            <SleepScoreDisplay
-              score={latestLog.score}
-              dateLabel={`最新: ${latestLog.date}`}
-            />
+            <SleepScoreDisplay score={latestLog.score} dateLabel={`最新: ${latestLog.date}`} />
           </View>
         )}
 
@@ -43,9 +37,7 @@ export const SleepLogScreen: React.FC = () => {
         <View style={styles.listContainer}>
           <View style={styles.sectionHeader}>
             <Text style={styles.sectionTitle}>📋 履歴</Text>
-            <Text style={styles.logCount}>
-              {logs.length}件
-            </Text>
+            <Text style={styles.logCount}>{logs.length}件</Text>
           </View>
           <SleepLogList logs={logs} />
         </View>

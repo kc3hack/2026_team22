@@ -18,7 +18,6 @@ const getScoreColor = (score: number): string => {
 
 /** スコアに応じた評価テキスト */
 
-
 /**
  * 睡眠準備スコアカード
  * リアルタイムのスコアとスマホ操作時間を表示
@@ -36,7 +35,6 @@ export const ScoreCard: React.FC<ScoreCardProps> = ({ score, usageMinutes }) => 
             <Text style={[styles.scoreValue, { color: scoreColor }]}>{score}</Text>
             <Text style={styles.scoreMax}>/100</Text>
           </View>
-
         </View>
 
         {/* 操作時間 */}
