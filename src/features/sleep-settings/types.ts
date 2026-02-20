@@ -24,6 +24,9 @@ export interface SleepSettings {
   /** 起床〜出発までの所要時間（分） */
   preparationMinutes: number;
 
+  /** Google Calendar ICS URL */
+  icsUrl?: string;
+
   /** 今日だけの一時的なオーバーライド */
   todayOverride: TodayOverride | null;
 }

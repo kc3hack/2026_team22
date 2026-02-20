@@ -9,13 +9,16 @@ interface SleepAdvice {
 }
 
 export const useSleepSchedule = () => {
-    const { sleepDurationHours, preparationMinutes } = useSleepSettingsStore();
+    const { sleepDurationHours, preparationMinutes, icsUrl } = useSleepSettingsStore();
     const [advice, setAdvice] = useState<SleepAdvice | null>(null);
     const [loading, setLoading] = useState(false);
 
     const fetchAdvice = useCallback(async () => {
         setLoading(true);
         try {
+            if (icsUrl) {
+                googleCalendar.configure({ icsUrl });
+            }
             const events = await googleCalendar.getEvents();
 
             // Simple logic: Find earliest event tomorrow

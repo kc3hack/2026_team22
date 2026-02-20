@@ -14,6 +14,8 @@ interface SleepSettingsActions {
   setMissionSettings: (enabled: boolean, target: string) => void;
   /** 起床〜出発までの所要時間を設定 */
   setPreparationTime: (minutes: number) => void;
+  /** ICS URLを設定 */
+  setIcsUrl: (url: string) => void;
 
   /** 今日だけのオーバーライドを設定 */
   setTodayOverride: (override: Omit<TodayOverride, 'date'>) => void;
@@ -59,6 +61,7 @@ export const useSleepSettingsStore = create<SleepSettings & SleepSettingsActions
   const defaultMissionEnabled = false;
   const defaultMissionTarget = 'washroom';
   const defaultPreparationMinutes = 60; // 1 hour default
+  const defaultIcsUrl = 'https://calendar.google.com/calendar/ical/e640656856d5f692768a50a4d0c65492146a4353ba65bfe23aa4796492b360ba%40group.calendar.google.com/private-aa715fd8bcfa902595f47d5aeb095b9c/basic.ics';
 
   return {
     wakeUpHour: defaultWakeUp.hour,
@@ -70,8 +73,11 @@ export const useSleepSettingsStore = create<SleepSettings & SleepSettingsActions
     missionEnabled: defaultMissionEnabled,
     missionTarget: defaultMissionTarget,
     preparationMinutes: defaultPreparationMinutes,
+    icsUrl: defaultIcsUrl,
 
     todayOverride: null as TodayOverride | null,
+
+    setIcsUrl: (url: string) => set({ icsUrl: url }),
 
     setWakeUpTime: (hour: number, minute: number) => {
       const sleep = calculateSleepTime(hour, minute, get().sleepDurationHours);
