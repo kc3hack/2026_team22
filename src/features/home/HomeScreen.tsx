@@ -53,24 +53,62 @@ export const HomeScreen: React.FC = () => {
   const [selectedHour, setSelectedHour] = useState(0);
   const [selectedMinute, setSelectedMinute] = useState(0);
 
+  // 選択肢の生成 (10周分用意して無限スクロール風にする)
+  const HOURS_MAX = 24;
+  const MINUTES_MAX = 60;
+  const MINUTE_INTERVAL = 5;
+  const LOOPS = 10;
+
+  const hours = Array.from({ length: HOURS_MAX * LOOPS }, (_, i) => {
+    const realHour = i % HOURS_MAX;
+    return {
+      label: realHour.toString().padStart(2, '0'),
+      // valueをユニークにするため、インデックスをそのまま値として扱う
+      value: i,
+      realValue: realHour,
+    };
+  });
+
+  const minutes = Array.from({ length: (MINUTES_MAX / MINUTE_INTERVAL) * LOOPS }, (_, i) => {
+    const realMinute = (i % (MINUTES_MAX / MINUTE_INTERVAL)) * MINUTE_INTERVAL;
+    return {
+      label: realMinute.toString().padStart(2, '0'),
+      value: i,
+      realValue: realMinute,
+    };
+  });
+
+  // モーダルを開くとき、真ん中の周回付近からスタートさせるための関数
+  const getCenterIndex = (realValue: number, isHour: boolean) => {
+    const max = isHour ? HOURS_MAX : MINUTES_MAX / MINUTE_INTERVAL;
+    const valueIndex = isHour ? realValue : realValue / MINUTE_INTERVAL;
+    const centerLoop = Math.floor(LOOPS / 2); // 真ん中の周回
+    return centerLoop * max + valueIndex;
+  };
+
   const openPicker = (target: 'sleep' | 'wake') => {
     setPickerTarget(target);
     if (target === 'sleep') {
-      setSelectedHour(effectiveSleep.hour);
-      setSelectedMinute(effectiveSleep.minute);
+      setSelectedHour(getCenterIndex(effectiveSleep.hour, true));
+      setSelectedMinute(getCenterIndex(effectiveSleep.minute, false));
     } else {
-      setSelectedHour(effectiveWake.hour);
-      setSelectedMinute(effectiveWake.minute);
+      setSelectedHour(getCenterIndex(effectiveWake.hour, true));
+      setSelectedMinute(getCenterIndex(effectiveWake.minute, false));
     }
     setPickerVisible(true);
   };
 
   const handleConfirmTime = () => {
     setPickerVisible(false);
+
+    // value は単なるインデックスになっているので realValue を取り出す
+    const realSelectedHour = hours[selectedHour]?.realValue ?? 0;
+    const realSelectedMinute = minutes[selectedMinute]?.realValue ?? 0;
+
     if (pickerTarget === 'sleep') {
       settings.setTodayOverride({
-        sleepHour: selectedHour,
-        sleepMinute: selectedMinute,
+        sleepHour: realSelectedHour,
+        sleepMinute: realSelectedMinute,
         wakeHour: effectiveWake.hour,
         wakeMinute: effectiveWake.minute,
       });
@@ -78,19 +116,15 @@ export const HomeScreen: React.FC = () => {
       settings.setTodayOverride({
         sleepHour: effectiveSleep.hour,
         sleepMinute: effectiveSleep.minute,
-        wakeHour: selectedHour,
-        wakeMinute: selectedMinute,
+        wakeHour: realSelectedHour,
+        wakeMinute: realSelectedMinute,
       });
     }
   };
 
-  // 選択肢の生成
-  const hours = Array.from({ length: 24 }, (_, i) => ({ label: i.toString().padStart(2, '0'), value: i }));
-  const minutes = Array.from({ length: 12 }, (_, i) => ({ label: (i * 5).toString().padStart(2, '0'), value: i * 5 }));
-
   // 朝の振り返りカードの表示条件
   const showMorningReview = useMemo(() => {
-    if (!latestLog || latestLog.mood !== null) return false;
+    if (!latestLog) return false;
     const now = new Date();
     const currentMinutes = now.getHours() * 60 + now.getMinutes();
     const wakeMinutes = settings.wakeUpHour * 60 + settings.wakeUpMinute;
@@ -116,6 +150,7 @@ export const HomeScreen: React.FC = () => {
           {showMorningReview && latestLog && latestScore !== null && (
             <MorningReviewCard
               score={latestScore}
+              initialMood={latestLog.mood}
               onSelectMood={mood => setMood(latestLog.id, mood)}
             />
           )}
