@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Animated } from 'react-native';
 import { COLORS } from '@shared/constants';
 
@@ -14,6 +14,8 @@ const MOOD_OPTIONS = [
 interface MorningReviewCardProps {
     /** 昨夜の睡眠スコア */
     score: number;
+    /** 初期の気分 */
+    initialMood?: number | null;
     /** 気分選択時のコールバック */
     onSelectMood: (mood: number) => void;
 }
@@ -24,9 +26,16 @@ interface MorningReviewCardProps {
  */
 export const MorningReviewCard: React.FC<MorningReviewCardProps> = ({
     score,
+    initialMood = null,
     onSelectMood,
 }) => {
-    const [selected, setSelected] = useState<number | null>(null);
+    const [selected, setSelected] = useState<number | null>(initialMood);
+
+    useEffect(() => {
+        if (initialMood !== undefined) {
+            setSelected(initialMood);
+        }
+    }, [initialMood]);
 
     const handleSelect = (mood: number) => {
         setSelected(mood);
@@ -70,7 +79,6 @@ export const MorningReviewCard: React.FC<MorningReviewCardProps> = ({
                                 isSelected && styles.moodButtonSelected,
                             ]}
                             onPress={() => handleSelect(option.value)}
-                            disabled={selected !== null}
                             activeOpacity={0.7}
                         >
                             <Text
@@ -97,7 +105,7 @@ export const MorningReviewCard: React.FC<MorningReviewCardProps> = ({
             {/* 選択後メッセージ */}
             {selected !== null && (
                 <Text style={styles.thanksText}>
-                    ありがとう！記録しました ✨
+                    記録しました ✨（タップで変更可能）
                 </Text>
             )}
         </View>
