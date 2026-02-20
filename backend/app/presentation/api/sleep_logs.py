@@ -13,7 +13,7 @@ from app.infrastructure.persistence.database import get_db
 from app.infrastructure.persistence.repositories.sleep_log_repository import (
     SleepLogRepository,
 )
-from app.presentation.dependencies.auth import get_current_user_id
+from app.presentation.dependencies.auth import ensure_current_user
 from app.presentation.schemas.sleep_log import (
     SleepLogCreate,
     SleepLogListResponse,
@@ -32,7 +32,7 @@ def get_sleep_log_repository(
 
 @router.get("", response_model=SleepLogListResponse)
 async def get_sleep_logs(
-    user_id: str = Depends(get_current_user_id),
+    user_id: str = Depends(ensure_current_user),
     limit: int = Query(7, ge=1, le=100, description="取得件数"),
     repo: SleepLogRepository = Depends(get_sleep_log_repository),
 ):
@@ -45,7 +45,7 @@ async def get_sleep_logs(
 @router.post("", response_model=SleepLogResponse, status_code=201)
 async def create_sleep_log(
     body: SleepLogCreate,
-    user_id: str = Depends(get_current_user_id),
+    user_id: str = Depends(ensure_current_user),
     repo: SleepLogRepository = Depends(get_sleep_log_repository),
 ):
     """睡眠ログを新規作成する。認証必須。"""
@@ -71,7 +71,7 @@ async def create_sleep_log(
 async def update_sleep_log_mood(
     log_id: str,
     body: SleepLogMoodUpdate,
-    user_id: str = Depends(get_current_user_id),
+    user_id: str = Depends(ensure_current_user),
     repo: SleepLogRepository = Depends(get_sleep_log_repository),
 ):
     """睡眠ログの気分を更新する（朝の振り返り用）。認証必須。"""

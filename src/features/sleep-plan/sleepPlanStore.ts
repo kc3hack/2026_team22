@@ -2,11 +2,9 @@
  * 週間睡眠プラン Zustand ストア
  * プランの取得・キャッシュ管理を一元化
  *
- * §4.0 タイミング制御:
+ * タイミング制御:
  *   - force=true → 必ず API 呼び出し
- *   - 日付跨ぎ（lastFetchedDate !== 今日）→ スロットル無視して API 呼び出し
- *   - スロットル（同日 5 分以内）→ スキップ
- *   - それ以外 → API 呼び出し
+ *   - それ以外 → 毎回 API 呼び出し（バックエンドで同じ入力ならキャッシュを返すためスロットル不要）
  */
 
 import { create } from 'zustand';
@@ -21,9 +19,6 @@ import { fetchSleepPlan } from './api/sleepPlanApi';
 import { googleCalendar } from '@shared/lib/googleCalendar';
 import { useSleepSettingsStore } from '../sleep-settings/sleepSettingsStore';
 import { useSleepLogStore } from '../sleep-log/sleepLogStore';
-
-/** リクエスト間の最小間隔（ミリ秒）: 5分 */
-const MIN_FETCH_INTERVAL = 5 * 60 * 1000;
 
 /** 端末ローカルの今日の日付を YYYY-MM-DD で返す */
 const getTodayDateStr = (): string => {
@@ -43,8 +38,12 @@ interface SleepPlanActions {
   reset: () => void;
 }
 
+/** この時間（ms）を超えて応答が返らなければ「AI生成中」とみなしローディングを表示する */
+const LOADING_DELAY_MS = 1000;
+
 const initialState: SleepPlanState = {
   plan: null,
+  isFetching: false,
   isLoading: false,
   error: null,
   lastFetchedAt: null,
@@ -58,21 +57,15 @@ export const useSleepPlanStore = create<SleepPlanState & SleepPlanActions>((set,
     const state = get();
 
     // 重複リクエスト防止
-    if (state.isLoading) return;
+    if (state.isFetching) return;
 
     const todayStr = getTodayDateStr();
+    set({ isFetching: true, error: null });
 
-    // §4.0 タイミング制御
-    if (!force) {
-      const dateChanged = state.lastFetchedDate !== todayStr;
-      if (!dateChanged && state.lastFetchedAt && Date.now() - state.lastFetchedAt < MIN_FETCH_INTERVAL) {
-        // 同日かつスロットル内 → スキップ
-        return;
-      }
-      // dateChanged の場合はスロットルを無視して再取得
-    }
-
-    set({ isLoading: true, error: null });
+    // キャッシュヒット（短時間で返る）ではローディングを出さず、AI生成（長時間）のときだけ表示
+    const loadingDelayId = setTimeout(() => {
+      if (get().isFetching) set({ isLoading: true });
+    }, LOADING_DELAY_MS);
 
     try {
       // ── 設定ストアから実データを取得 ──
@@ -137,6 +130,7 @@ export const useSleepPlanStore = create<SleepPlanState & SleepPlanActions>((set,
 
       set({
         plan,
+        isFetching: false,
         isLoading: false,
         error: null,
         lastFetchedAt: Date.now(),
@@ -144,7 +138,9 @@ export const useSleepPlanStore = create<SleepPlanState & SleepPlanActions>((set,
       });
     } catch (e) {
       const message = e instanceof Error ? e.message : 'プランの取得に失敗しました';
-      set({ isLoading: false, error: message });
+      set({ isFetching: false, isLoading: false, error: message });
+    } finally {
+      clearTimeout(loadingDelayId);
     }
   },
 

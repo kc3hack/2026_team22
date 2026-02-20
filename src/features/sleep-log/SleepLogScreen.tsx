@@ -1,5 +1,13 @@
 import React, { useEffect } from 'react';
-import { View, Text, StyleSheet, SafeAreaView, ScrollView, ActivityIndicator } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  SafeAreaView,
+  ScrollView,
+  ActivityIndicator,
+  TouchableOpacity,
+} from 'react-native';
 import { COLORS } from '@shared/constants';
 import { useSleepLogStore } from './sleepLogStore';
 import { SleepScoreDisplay } from './components/SleepScoreDisplay';
@@ -11,7 +19,7 @@ import { WeeklyTrendChart } from './components/WeeklyTrendChart';
  * 過去の睡眠準備スコアの履歴を表示
  */
 export const SleepLogScreen: React.FC = () => {
-  const { logs, isLoading, fetchLogs } = useSleepLogStore();
+  const { logs, isLoading, error, fetchLogs, clearError } = useSleepLogStore();
 
   useEffect(() => {
     void fetchLogs();
@@ -27,8 +35,23 @@ export const SleepLogScreen: React.FC = () => {
       </View>
 
       <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
+        {/* エラー表示・再読み込み */}
+        {error && !isLoading && (
+          <View style={styles.errorCard}>
+            <Text style={styles.errorText}>{error}</Text>
+            <TouchableOpacity
+              style={styles.retryButton}
+              onPress={() => {
+                clearError();
+                void fetchLogs();
+              }}
+            >
+              <Text style={styles.retryButtonText}>再読み込み</Text>
+            </TouchableOpacity>
+          </View>
+        )}
         {/* ローディング */}
-        {isLoading && logs.length === 0 && (
+        {isLoading && logs.length === 0 && !error && (
           <View style={styles.loadingContainer}>
             <ActivityIndicator size="large" color={COLORS.primary} />
           </View>
@@ -111,5 +134,31 @@ const styles = StyleSheet.create({
   loadingContainer: {
     paddingVertical: 40,
     alignItems: 'center',
+  },
+  errorCard: {
+    marginHorizontal: 16,
+    marginBottom: 16,
+    padding: 16,
+    backgroundColor: 'rgba(239, 68, 68, 0.15)',
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: COLORS.error,
+  },
+  errorText: {
+    color: COLORS.error,
+    fontSize: 15,
+    marginBottom: 12,
+  },
+  retryButton: {
+    alignSelf: 'flex-start',
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    backgroundColor: COLORS.primary,
+    borderRadius: 8,
+  },
+  retryButtonText: {
+    color: '#fff',
+    fontSize: 15,
+    fontWeight: '600',
   },
 });

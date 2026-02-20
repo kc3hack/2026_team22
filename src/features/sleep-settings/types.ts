@@ -38,6 +38,8 @@ export interface SleepSettings {
   isSaving: boolean;
   /** 最後に API から取得した時刻 (ms) */
   lastFetchedAt: number | null;
+  /** 取得失敗時のエラーメッセージ */
+  error: string | null;
 }
 
 /** 今日だけの一時的な時刻オーバーライド */

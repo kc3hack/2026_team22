@@ -1,14 +1,14 @@
-import React, { useEffect, useCallback, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
   View,
   Text,
   StyleSheet,
   SafeAreaView,
   ScrollView,
-  RefreshControl,
   Animated,
   Easing,
 } from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
 import { COLORS } from '@shared/constants';
 import { useSleepPlanStore } from './sleepPlanStore';
 import { WeeklyPlanCard } from './components/WeeklyPlanCard';
@@ -20,8 +20,7 @@ import { DayDetailModal } from './components/DayDetailModal';
  * AIが生成した7日分の睡眠プランを美しく表示
  */
 export const SleepPlanScreen: React.FC = () => {
-  const { plan, isLoading, error, fetchPlan } = useSleepPlanStore();
-  const [refreshing, setRefreshing] = React.useState(false);
+  const { plan, isFetching, isLoading, error, fetchPlan } = useSleepPlanStore();
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
 
   // アニメーション
@@ -36,10 +35,12 @@ export const SleepPlanScreen: React.FC = () => {
   const dd = String(today.getDate()).padStart(2, '0');
   const todayStr = `${yyyy}-${mm}-${dd}`;
 
-  // 初回取得
-  useEffect(() => {
-    void fetchPlan();
-  }, [fetchPlan]);
+  // 画面がフォーカスされるたびにプランを取得（設定変更後にタブで戻ってきたときも再取得される）
+  useFocusEffect(
+    useCallback(() => {
+      void fetchPlan();
+    }, [fetchPlan]),
+  );
 
   // ヘッダーアニメーション
   useEffect(() => {
@@ -83,15 +84,8 @@ export const SleepPlanScreen: React.FC = () => {
     }
   }, [plan, contentFade]);
 
-  /** プルダウンリフレッシュ */
-  const handleRefresh = useCallback(async () => {
-    setRefreshing(true);
-    await fetchPlan(true);
-    setRefreshing(false);
-  }, [fetchPlan]);
-
-  // ローディング / エラー表示
-  if (!plan && (isLoading || error)) {
+  // プラン未取得時はローディング or エラー表示（初回は isLoading が false の一瞬があるため !plan でまとめて表示）
+  if (!plan) {
     return (
       <SafeAreaView style={styles.container}>
         {/* 背景装飾 */}
@@ -120,11 +114,16 @@ export const SleepPlanScreen: React.FC = () => {
             <Text style={styles.title}>週間睡眠プラン</Text>
           </View>
         </Animated.View>
-        <PlanStatus isLoading={isLoading} error={error} onRetry={() => void fetchPlan(true)} />
+        <PlanStatus
+          isLoading={isFetching || !error}
+          error={error}
+          onRetry={() => void fetchPlan()}
+        />
       </SafeAreaView>
     );
   }
 
+  // プラン取得済み: キャッシュならそのまま表示、AI生成中（1秒経過後）はローディングオーバーレイ
   return (
     <SafeAreaView style={styles.container}>
       {/* 背景装飾 */}
@@ -149,13 +148,6 @@ export const SleepPlanScreen: React.FC = () => {
       <ScrollView
         style={styles.scrollView}
         contentContainerStyle={styles.scrollContent}
-        refreshControl={
-          <RefreshControl
-            refreshing={refreshing}
-            onRefresh={() => void handleRefresh()}
-            tintColor={COLORS.primary}
-          />
-        }
       >
         {/* ── ヘッダー ── */}
         <Animated.View style={[styles.header, { opacity: headerFade }]}>
@@ -204,6 +196,13 @@ export const SleepPlanScreen: React.FC = () => {
           )}
         </Animated.View>
       </ScrollView>
+
+      {/* AI生成中（1秒経過後）のローディングオーバーレイ。キャッシュの場合は表示されない */}
+      {isLoading && (
+        <View style={styles.loadingOverlay}>
+          <PlanStatus isLoading={true} error={null} onRetry={() => {}} />
+        </View>
+      )}
 
       {/* 曜日詳細モーダル */}
       {plan && (
@@ -301,5 +300,12 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#64748B',
     marginBottom: 14,
+  },
+  loadingOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(30, 41, 59, 0.92)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 10,
   },
 });

@@ -97,7 +97,12 @@ export interface SleepSettingsSummary {
 export interface SleepPlanState {
   /** 現在の週間プラン */
   plan: WeeklySleepPlan | null;
-  /** ローディング中かどうか */
+  /** 取得リクエスト中かどうか */
+  isFetching: boolean;
+  /**
+   * ローディングアニメーションを表示するか。
+   * キャッシュヒット（短時間で返る）では true にならず、AI生成（長時間）のときのみ true になる。
+   */
   isLoading: boolean;
   /** エラーメッセージ */
   error: string | null;

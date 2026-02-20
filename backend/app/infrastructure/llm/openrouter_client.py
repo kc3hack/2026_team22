@@ -6,11 +6,17 @@ https://openrouter.ai/docs
 from __future__ import annotations
 
 import json
+import logging
 from typing import Any
 
 import httpx
 
 from app.config import settings
+
+logger = logging.getLogger(__name__)
+
+# デバッグ用: LLM ペイロードログの最大文字数（超えたら省略表示）
+LLM_PAYLOAD_LOG_MAX_CHARS = 12000
 
 
 class OpenRouterClient:
@@ -132,6 +138,15 @@ class OpenRouterClient:
             },
             {"role": "user", "content": user_content},
         ]
+        # デバッグ: LLM に投げるペイロード（プロンプト内容）をログ
+        if len(user_content) <= LLM_PAYLOAD_LOG_MAX_CHARS:
+            logger.info("plan llm payload (user_content): %s", user_content)
+        else:
+            logger.info(
+                "plan llm payload (user_content, truncated): %s ... (truncated, total %d chars)",
+                user_content[:LLM_PAYLOAD_LOG_MAX_CHARS],
+                len(user_content),
+            )
         result = await self.chat_json(
             messages=messages,
             temperature=0,

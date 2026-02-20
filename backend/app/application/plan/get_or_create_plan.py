@@ -8,12 +8,15 @@ todayOverride を署名ハッシュと LLM 入力に含める。
 from __future__ import annotations
 
 import json
+import logging
 from typing import Any
 
 from app.domain.plan.repositories import IPlanCacheRepository
 from app.domain.plan.value_objects import build_signature_hash
 from app.application.plan.ports import IPlanGenerator
 from app.application.base import BaseUseCase
+
+logger = logging.getLogger(__name__)
 
 
 class GetOrCreatePlanInput:
@@ -54,6 +57,17 @@ class GetOrCreatePlanUseCase(BaseUseCase[GetOrCreatePlanInput, dict[str, Any]]):
             input.settings,
             input.today_override,
         )
+        # デバッグ: リクエスト概要と signature_hash をログ（キャッシュ効きの切り分け用）
+        logger.info(
+            "plan request user_id=%s force=%s signature_hash=%s n_calendar_events=%s n_sleep_logs=%s settings_keys=%s today_override=%s",
+            input.user_id[:8] + "..." if len(input.user_id) > 8 else input.user_id,
+            input.force,
+            signature_hash,
+            len(input.calendar_events),
+            len(input.sleep_logs),
+            list(input.settings.keys()) if input.settings else [],
+            input.today_override is not None,
+        )
 
         # force=True でなければキャッシュを検索
         if not input.force:
@@ -61,10 +75,12 @@ class GetOrCreatePlanUseCase(BaseUseCase[GetOrCreatePlanInput, dict[str, Any]]):
                 input.user_id, signature_hash
             )
             if cached:
+                logger.info("plan cache_hit signature_hash=%s", signature_hash)
                 plan = json.loads(cached.plan_json)
                 plan["cache_hit"] = True
                 return plan
 
+        logger.info("plan cache_miss (or force) signature_hash=%s", signature_hash)
         # キャッシュミス（または force）: LLM で週間プラン生成
         plan = await self.plan_generator.generate_week_plan(
             input.calendar_events,

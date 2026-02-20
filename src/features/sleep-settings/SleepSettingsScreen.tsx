@@ -37,6 +37,11 @@ export const SleepSettingsScreen: React.FC = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const handleRetryLoad = () => {
+    settings.clearError();
+    settings.fetchSettings();
+  };
+
   // ── 保存ハンドラ ──
   const handleSave = async () => {
     try {
@@ -66,6 +71,15 @@ export const SleepSettingsScreen: React.FC = () => {
       </View>
 
       <ScrollView style={styles.content}>
+        {/* 取得失敗時のエラー表示・再読み込み */}
+        {settings.error && (
+          <View style={styles.errorCard}>
+            <Text style={styles.errorText}>{settings.error}</Text>
+            <TouchableOpacity style={styles.retryButton} onPress={handleRetryLoad}>
+              <Text style={styles.retryButtonText}>再読み込み</Text>
+            </TouchableOpacity>
+          </View>
+        )}
         {/* 睡眠時間 */}
         <View style={styles.settingCard}>
           <Text style={styles.settingLabel}>😴 睡眠時間</Text>
@@ -306,6 +320,34 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     width: '100%',
   },
+  /* ── エラー表示 ── */
+  errorCard: {
+    marginHorizontal: 16,
+    marginBottom: 16,
+    padding: 16,
+    backgroundColor: 'rgba(239, 68, 68, 0.15)',
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: COLORS.error,
+  },
+  errorText: {
+    color: COLORS.error,
+    fontSize: 15,
+    marginBottom: 12,
+  },
+  retryButton: {
+    alignSelf: 'flex-start',
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    backgroundColor: COLORS.primary,
+    borderRadius: 8,
+  },
+  retryButtonText: {
+    color: '#fff',
+    fontSize: 15,
+    fontWeight: '600',
+  },
+
   /* ── ローディング ── */
   loadingContainer: {
     flex: 1,

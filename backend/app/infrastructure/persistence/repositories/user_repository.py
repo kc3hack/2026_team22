@@ -31,3 +31,19 @@ class UserRepository(BaseRepository[User]):
         """新規ユーザー作成"""
         user = User(email=email, name=name)
         return await self.create(user)
+
+    async def ensure_user_exists(self, user_id: str) -> None:
+        """
+        認証済み user_id に対応する users 行が存在することを保証する。
+        存在しなければ id=user_id で 1 件挿入する（Supabase Auth の uid と整合させるため）。
+        """
+        existing = await self.get_by_id(user_id)
+        if existing is not None:
+            return
+        # 同一 id で Supabase Auth と紐づく行を挿入（email は unique のためプレースホルダー）
+        user = User(
+            id=user_id,
+            email=f"auth-{user_id}@placeholder.local",
+            name="ユーザー",
+        )
+        await self.create(user)

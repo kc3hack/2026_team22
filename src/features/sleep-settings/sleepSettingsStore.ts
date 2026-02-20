@@ -33,6 +33,8 @@ interface SleepSettingsActions {
   fetchSettings: () => Promise<void>;
   /** 現在の store の値をバックエンドに保存 */
   saveSettings: () => Promise<void>;
+  /** エラーをクリア */
+  clearError: () => void;
 }
 
 /**
@@ -90,6 +92,7 @@ export const useSleepSettingsStore = create<SleepSettings & SleepSettingsActions
     isLoading: false,
     isSaving: false,
     lastFetchedAt: null,
+    error: null,
 
     setIcsUrl: (url: string) => set({ icsUrl: url }),
 
@@ -158,7 +161,7 @@ export const useSleepSettingsStore = create<SleepSettings & SleepSettingsActions
     /* ── API 連携アクション ── */
 
     fetchSettings: async () => {
-      set({ isLoading: true });
+      set({ isLoading: true, error: null });
       try {
         const data = await fetchSettingsFromApi();
         const wakeH = data.wakeUpHour ?? get().wakeUpHour;
@@ -171,12 +174,16 @@ export const useSleepSettingsStore = create<SleepSettings & SleepSettingsActions
           calculatedSleepMinute: sleep.minute,
           isLoading: false,
           lastFetchedAt: Date.now(),
+          error: null,
         });
       } catch (err) {
+        const message = err instanceof Error ? err.message : '設定の取得に失敗しました';
         console.warn('[sleepSettingsStore] fetchSettings failed:', err);
-        set({ isLoading: false });
+        set({ isLoading: false, error: message });
       }
     },
+
+    clearError: () => set({ error: null }),
 
     saveSettings: async () => {
       const state = get();

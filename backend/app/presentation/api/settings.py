@@ -9,7 +9,7 @@ from app.application.settings.put_settings import PutSettingsPayload, TodayOverr
 from app.infrastructure.persistence.repositories.sleep_settings_repository import (
     SleepSettingsRepository,
 )
-from app.presentation.dependencies.auth import get_current_user_id
+from app.presentation.dependencies.auth import ensure_current_user
 from app.presentation.schemas.settings import (
     SettingsPutRequest,
     SettingsResponse,
@@ -58,7 +58,7 @@ def _default_response() -> SettingsResponse:
 
 @router.get("", response_model=SettingsResponse)
 async def get_settings(
-    user_id: str = Depends(get_current_user_id),
+    user_id: str = Depends(ensure_current_user),
     repo: SleepSettingsRepository = Depends(_settings_repo),
 ):
     """
@@ -75,7 +75,7 @@ async def get_settings(
 @router.put("", response_model=SettingsResponse)
 async def put_settings(
     body: SettingsPutRequest,
-    user_id: str = Depends(get_current_user_id),
+    user_id: str = Depends(ensure_current_user),
     repo: SleepSettingsRepository = Depends(_settings_repo),
 ):
     """

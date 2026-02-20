@@ -13,6 +13,8 @@ interface SleepLogState {
   isLoading: boolean;
   /** 最終取得日時 */
   lastFetchedAt: number | null;
+  /** 取得失敗時のエラーメッセージ */
+  error: string | null;
 }
 
 interface SleepLogActions {
@@ -26,6 +28,8 @@ interface SleepLogActions {
   removeLog: (id: string) => void;
   /** 全ログをクリア（ローカルのみ） */
   clearLogs: () => void;
+  /** エラーをクリア */
+  clearError: () => void;
 }
 
 /**
@@ -36,15 +40,17 @@ export const useSleepLogStore = create<SleepLogState & SleepLogActions>((set, ge
   logs: [],
   isLoading: false,
   lastFetchedAt: null,
+  error: null,
 
   fetchLogs: async (limit = 7) => {
-    set({ isLoading: true });
+    set({ isLoading: true, error: null });
     try {
       const logs = await fetchSleepLogsFromApi(limit);
-      set({ logs, isLoading: false, lastFetchedAt: Date.now() });
+      set({ logs, isLoading: false, lastFetchedAt: Date.now(), error: null });
     } catch (err) {
+      const message = err instanceof Error ? err.message : 'ログの取得に失敗しました';
       console.warn('[sleepLogStore] fetchLogs failed:', err);
-      set({ isLoading: false });
+      set({ isLoading: false, error: message });
     }
   },
 
@@ -78,4 +84,5 @@ export const useSleepLogStore = create<SleepLogState & SleepLogActions>((set, ge
     })),
 
   clearLogs: () => set({ logs: [] }),
+  clearError: () => set({ error: null }),
 }));

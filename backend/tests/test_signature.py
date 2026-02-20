@@ -36,6 +36,25 @@ class TestBuildSignatureHash:
         h2 = build_signature_hash(cal2, [], {})
         assert h1 == h2
 
+    def test_list_order_independent(self):
+        """リストの要素順に依存しない（ソートしてからハッシュするのでキャッシュが安定する）"""
+        cal1 = [
+            {"title": "B", "start": "2026-02-19T10:00:00"},
+            {"title": "A", "start": "2026-02-18T09:00:00"},
+        ]
+        cal2 = [
+            {"title": "A", "start": "2026-02-18T09:00:00"},
+            {"title": "B", "start": "2026-02-19T10:00:00"},
+        ]
+        logs1 = [{"date": "2026-02-18", "score": 80}, {"date": "2026-02-17", "score": 70}]
+        logs2 = [{"date": "2026-02-17", "score": 70}, {"date": "2026-02-18", "score": 80}]
+        h_cal1 = build_signature_hash(cal1, [], {})
+        h_cal2 = build_signature_hash(cal2, [], {})
+        h_logs1 = build_signature_hash([], logs1, {})
+        h_logs2 = build_signature_hash([], logs2, {})
+        assert h_cal1 == h_cal2
+        assert h_logs1 == h_logs2
+
     def test_empty_input_deterministic(self):
         """空入力でも決定的なハッシュが返る"""
         h = build_signature_hash([], [], {})
@@ -89,3 +108,16 @@ class TestBuildSignatureHash:
         h1 = build_signature_hash([], [], {})
         h2 = build_signature_hash([], [], {}, today_override=None)
         assert h1 == h2
+
+    def test_iso_datetime_normalized_same_hash(self):
+        """ISO 日時のミリ秒・タイムゾーン表記が違っても同じハッシュになる（キャッシュ安定）"""
+        cal1 = [{"title": "A", "start": "2026-02-18T09:00:00.000Z", "end": "2026-02-18T10:00:00Z"}]
+        cal2 = [{"title": "A", "start": "2026-02-18T09:00:00.123Z", "end": "2026-02-18T10:00:00.000Z"}]
+        logs1 = [{"date": "2026-02-17", "score": 80, "scheduled_sleep_time": "2026-02-17T23:00:00Z"}]
+        logs2 = [{"date": "2026-02-17", "score": 80, "scheduled_sleep_time": "2026-02-17T23:00:00.456Z"}]
+        h_cal1 = build_signature_hash(cal1, [], {})
+        h_cal2 = build_signature_hash(cal2, [], {})
+        h_logs1 = build_signature_hash([], logs1, {})
+        h_logs2 = build_signature_hash([], logs2, {})
+        assert h_cal1 == h_cal2
+        assert h_logs1 == h_logs2
