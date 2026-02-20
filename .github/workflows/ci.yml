@@ -118,9 +118,7 @@ jobs:
           uv run ruff format --check .
 
       - name: Type check (mypy)
-        continue-on-error: true
         run: cd backend && uv run mypy app
-        # 型エラー解消後に continue-on-error を外す
 
       - name: Pytest
         run: |

@@ -3,7 +3,7 @@ Repository 基底クラス（Infrastructure 層）
 """
 
 from collections.abc import Sequence
-from typing import Generic, TypeVar
+from typing import Any, Generic, TypeVar
 
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -11,6 +11,11 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.infrastructure.persistence.database import Base
 
 ModelT = TypeVar("ModelT", bound=Base)
+
+
+def _id_column(model: type[Base]) -> Any:
+    """ORM モデルの id カラムを取得（mypy 用に切り出し）"""
+    return getattr(model, "id")
 
 
 class BaseRepository(Generic[ModelT]):
@@ -22,7 +27,8 @@ class BaseRepository(Generic[ModelT]):
 
     async def get_by_id(self, id: str) -> ModelT | None:
         """ID で 1 件取得"""
-        result = await self.db.execute(select(self.model).where(self.model.id == id))
+        id_col = _id_column(self.model)
+        result = await self.db.execute(select(self.model).where(id_col == id))
         return result.scalar_one_or_none()
 
     async def get_all(self, skip: int = 0, limit: int = 100) -> Sequence[ModelT]:

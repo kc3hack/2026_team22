@@ -1,5 +1,7 @@
 """Users API（認証必須）"""
 
+from typing import cast
+
 from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -10,6 +12,7 @@ from app.application.user import (
     GetUserUseCase,
     UpdateUserUseCase,
 )
+from app.domain.user.repositories import IUserRepository
 from app.infrastructure.persistence.database import get_db
 from app.infrastructure.persistence.repositories.user_repository import (
     UserRepository,
@@ -38,9 +41,9 @@ async def create_user(
     user_repo: UserRepository = Depends(get_user_repository),
 ):
     """ユーザーを作成（認証必須）"""
-    usecase = CreateUserUseCase(user_repo)
+    usecase = CreateUserUseCase(cast(IUserRepository, user_repo))
     user = await usecase.execute({"email": data.email, "name": data.name})
-    return user
+    return UserResponse.model_validate(user)
 
 
 @router.get("", response_model=UserListResponse)
@@ -49,9 +52,11 @@ async def get_users(
     user_repo: UserRepository = Depends(get_user_repository),
 ):
     """ユーザー一覧を取得（認証必須）"""
-    usecase = GetAllUsersUseCase(user_repo)
+    usecase = GetAllUsersUseCase(cast(IUserRepository, user_repo))
     users = await usecase.execute()
-    return UserListResponse(users=list(users), total=len(users))
+    return UserListResponse(
+        users=[UserResponse.model_validate(u) for u in users], total=len(users)
+    )
 
 
 @router.get("/{user_id}", response_model=UserResponse)
@@ -61,9 +66,9 @@ async def get_user(
     user_repo: UserRepository = Depends(get_user_repository),
 ):
     """ユーザーを取得（認証必須）"""
-    usecase = GetUserUseCase(user_repo)
+    usecase = GetUserUseCase(cast(IUserRepository, user_repo))
     user = await usecase.execute(user_id)
-    return user
+    return UserResponse.model_validate(user)
 
 
 @router.put("/{user_id}", response_model=UserResponse)
@@ -74,10 +79,10 @@ async def update_user(
     user_repo: UserRepository = Depends(get_user_repository),
 ):
     """ユーザーを更新（認証必須）"""
-    usecase = UpdateUserUseCase(user_repo)
+    usecase = UpdateUserUseCase(cast(IUserRepository, user_repo))
     update_data = {"name": data.name}
     user = await usecase.execute((user_id, update_data))
-    return user
+    return UserResponse.model_validate(user)
 
 
 @router.delete("/{user_id}", status_code=204)
@@ -87,5 +92,5 @@ async def delete_user(
     user_repo: UserRepository = Depends(get_user_repository),
 ):
     """ユーザーを削除（認証必須）"""
-    usecase = DeleteUserUseCase(user_repo)
+    usecase = DeleteUserUseCase(cast(IUserRepository, user_repo))
     await usecase.execute(user_id)

@@ -4,6 +4,8 @@
 本番環境: Supabase PostgreSQL
 """
 
+from collections.abc import AsyncGenerator
+
 from sqlalchemy.ext.asyncio import (
     AsyncSession,
     async_sessionmaker,
@@ -32,7 +34,7 @@ class Base(DeclarativeBase):
     pass
 
 
-async def get_db() -> AsyncSession:
+async def get_db() -> AsyncGenerator[AsyncSession, None]:
     """データベースセッションを取得する Dependency"""
     async with AsyncSessionLocal() as session:
         try:

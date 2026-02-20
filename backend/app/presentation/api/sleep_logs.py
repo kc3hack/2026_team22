@@ -39,7 +39,10 @@ async def get_sleep_logs(
     """睡眠ログ一覧を取得する（日付降順）。認証必須。"""
     usecase = GetSleepLogsUseCase(repo)
     logs = await usecase.execute(user_id, limit)
-    return SleepLogListResponse(logs=logs, total=len(logs))
+    return SleepLogListResponse(
+        logs=[SleepLogResponse.model_validate(log) for log in logs],
+        total=len(logs),
+    )
 
 
 @router.post("", response_model=SleepLogResponse, status_code=201)
