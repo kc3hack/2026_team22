@@ -3,9 +3,9 @@ import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, ScrollView } fr
 import { useRouter } from 'expo-router';
 import { COLORS } from '@shared/constants';
 import { useSleepSettingsStore } from '@features/sleep-settings';
-import { useSleepMonitorStore } from '@features/sleep-monitor';
+
 import { useSleepLogStore } from '@features/sleep-log';
-import { SleepAdvice } from '@features/sleep-schedule';
+
 import { useSleepPlanStore } from '@features/sleep-plan';
 import { useEffect } from 'react';
 import { MorningReviewCard } from './components/MorningReviewCard';
@@ -17,7 +17,6 @@ import { MorningReviewCard } from './components/MorningReviewCard';
 export const HomeScreen: React.FC = () => {
   const router = useRouter();
   const settings = useSleepSettingsStore();
-  const monitor = useSleepMonitorStore();
   const { logs, setMood } = useSleepLogStore();
   const latestLog = logs[0] ?? null;
   const latestScore = latestLog?.score ?? null;
@@ -108,8 +107,7 @@ export const HomeScreen: React.FC = () => {
             />
           )}
 
-          {/* レコメンド */}
-          <SleepAdvice />
+
 
           {/* 今日の睡眠プラン (AIプラン) */}
           {todayPlan && (
@@ -265,58 +263,7 @@ export const HomeScreen: React.FC = () => {
             )}
           </TouchableOpacity>
 
-          {/* モニタリング状態 */}
-          <TouchableOpacity
-            style={[styles.monitorCard, monitor.isMonitoring && styles.monitorCardActive]}
-            onPress={() => router.push('/sleep-monitor' as never)}
-          >
-            <Text style={styles.cardTitle}>{monitor.isMonitoring ? '🟢 監視中' : '⚪ 待機中'}</Text>
-            <Text style={styles.monitorText}>
-              {monitor.isMonitoring
-                ? `${monitor.currentPhase.toUpperCase()} - タップして確認`
-                : 'タップして睡眠モニターを開始'}
-            </Text>
-          </TouchableOpacity>
 
-          {/* 最新スコア */}
-          <TouchableOpacity
-            style={styles.scoreCard}
-            onPress={() => router.push('/sleep-log' as never)}
-          >
-            <Text style={styles.cardTitle}>📊 最新スコア</Text>
-            {latestScore !== null ? (
-              <View style={styles.scoreRow}>
-                <Text
-                  style={[
-                    styles.scoreValue,
-                    {
-                      color:
-                        latestScore >= 80
-                          ? COLORS.success
-                          : latestScore >= 50
-                            ? COLORS.warning
-                            : COLORS.error,
-                    },
-                  ]}
-                >
-                  {latestScore}
-                </Text>
-                <Text style={styles.scoreUnit}>/ 100</Text>
-              </View>
-            ) : (
-              <Text style={styles.noDataText}>まだデータがありません</Text>
-            )}
-          </TouchableOpacity>
-
-          {/* 週間プランへのリンク */}
-          {plan && (
-            <TouchableOpacity
-              style={styles.weeklyLinkCard}
-              onPress={() => router.push('/sleep-plan' as never)}
-            >
-              <Text style={styles.weeklyLinkText}>📋 週間プランを確認する →</Text>
-            </TouchableOpacity>
-          )}
         </View>
       </ScrollView >
     </SafeAreaView >
@@ -356,17 +303,15 @@ const styles = StyleSheet.create({
   },
   // AI プランカード
   planCard: {
-    backgroundColor: 'rgba(99, 102, 241, 0.08)',
+    backgroundColor: '#0F172A',
     borderRadius: 16,
     padding: 20,
-    borderWidth: 1,
-    borderColor: COLORS.primary,
   },
   planCardHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 12,
+    marginBottom: 16,
   },
   importanceBadge: {
     borderRadius: 8,
@@ -381,27 +326,26 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 16,
+    gap: 20,
     marginBottom: 12,
   },
   planTimeItem: {
     alignItems: 'center',
   },
   planTimeLabel: {
-    fontSize: 14,
+    fontSize: 16,
     color: '#94A3B8',
-    marginBottom: 2,
+    marginBottom: 4,
   },
   planTimeValue: {
-    fontSize: 36,
-    fontWeight: '300',
-    color: COLORS.primary,
+    fontSize: 47,
+    fontWeight: '200',
+    color: COLORS.text.dark,
     fontVariant: ['tabular-nums'],
   },
   planArrow: {
-    fontSize: 21,
-    color: '#475569',
-    marginTop: 12,
+    fontSize: 26,
+    color: '#64748B',
   },
   planEventText: {
     fontSize: 17,

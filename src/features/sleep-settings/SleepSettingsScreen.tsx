@@ -1,5 +1,14 @@
 import React from 'react';
-import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, Switch, TextInput, ScrollView } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  SafeAreaView,
+  TouchableOpacity,
+  Switch,
+  TextInput,
+  ScrollView,
+} from 'react-native';
 import { COLORS } from '@shared/constants';
 import { useSleepSettingsStore } from './sleepSettingsStore';
 
@@ -17,54 +26,6 @@ export const SleepSettingsScreen: React.FC = () => {
       </View>
 
       <ScrollView style={styles.content}>
-        {/* 起床時刻 */}
-        <View style={styles.settingCard}>
-          <Text style={styles.settingLabel}>⏰ 起床時刻</Text>
-          <View style={styles.timePickerRow}>
-            <TouchableOpacity
-              style={styles.timeButton}
-              onPress={() =>
-                settings.setWakeUpTime((settings.wakeUpHour - 1 + 24) % 24, settings.wakeUpMinute)
-              }
-            >
-              <Text style={styles.timeButtonText}>▲</Text>
-            </TouchableOpacity>
-            <Text style={styles.timeDisplay}>
-              {settings.wakeUpHour.toString().padStart(2, '0')}
-            </Text>
-            <TouchableOpacity
-              style={styles.timeButton}
-              onPress={() =>
-                settings.setWakeUpTime((settings.wakeUpHour + 1) % 24, settings.wakeUpMinute)
-              }
-            >
-              <Text style={styles.timeButtonText}>▼</Text>
-            </TouchableOpacity>
-
-            <Text style={styles.timeSeparator}>:</Text>
-
-            <TouchableOpacity
-              style={styles.timeButton}
-              onPress={() =>
-                settings.setWakeUpTime(settings.wakeUpHour, (settings.wakeUpMinute - 5 + 60) % 60)
-              }
-            >
-              <Text style={styles.timeButtonText}>▲</Text>
-            </TouchableOpacity>
-            <Text style={styles.timeDisplay}>
-              {settings.wakeUpMinute.toString().padStart(2, '0')}
-            </Text>
-            <TouchableOpacity
-              style={styles.timeButton}
-              onPress={() =>
-                settings.setWakeUpTime(settings.wakeUpHour, (settings.wakeUpMinute + 5) % 60)
-              }
-            >
-              <Text style={styles.timeButtonText}>▼</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-
         {/* 睡眠時間 */}
         <View style={styles.settingCard}>
           <Text style={styles.settingLabel}>😴 睡眠時間</Text>
@@ -123,7 +84,7 @@ export const SleepSettingsScreen: React.FC = () => {
             <Text style={styles.rowLabel}>モーニングミッション</Text>
             <Switch
               value={settings.missionEnabled}
-              onValueChange={(val) => settings.setMissionSettings(val, settings.missionTarget)}
+              onValueChange={val => settings.setMissionSettings(val, settings.missionTarget)}
             />
           </View>
 
@@ -133,7 +94,7 @@ export const SleepSettingsScreen: React.FC = () => {
               <TextInput
                 style={styles.input}
                 value={settings.missionTarget}
-                onChangeText={(text) => settings.setMissionSettings(true, text)}
+                onChangeText={text => settings.setMissionSettings(true, text)}
                 placeholder="撮影対象を入力"
                 placeholderTextColor="#94A3B8"
               />
@@ -141,42 +102,32 @@ export const SleepSettingsScreen: React.FC = () => {
           )}
         </View>
 
-
         {/* 準備時間設定 */}
-        <View style={[styles.row, { marginTop: 16 }]}>
-          <Text style={styles.rowLabel}>お支度時間（起床〜出発）</Text>
-          <View style={styles.counter}>
+        <View style={styles.settingCard}>
+          <Text style={styles.settingLabel}>🎒 お支度時間</Text>
+          <View style={styles.durationRow}>
             <TouchableOpacity
-              style={styles.smallButton}
+              style={styles.durationButton}
               onPress={() =>
                 settings.setPreparationTime(Math.max(15, settings.preparationMinutes - 15))
               }
             >
-              <Text style={styles.smallButtonText}>−</Text>
+              <Text style={styles.durationButtonText}>−</Text>
             </TouchableOpacity>
-            <Text style={styles.valueText}>{settings.preparationMinutes}分</Text>
+            <Text style={styles.durationValue}>{settings.preparationMinutes}</Text>
+            <Text style={styles.durationUnit}>分</Text>
             <TouchableOpacity
-              style={styles.smallButton}
+              style={styles.durationButton}
               onPress={() =>
                 settings.setPreparationTime(Math.min(180, settings.preparationMinutes + 15))
               }
             >
-              <Text style={styles.smallButtonText}>＋</Text>
+              <Text style={styles.durationButtonText}>＋</Text>
             </TouchableOpacity>
           </View>
         </View>
-
-        {/* 計算結果 */}
-        <View style={styles.resultCard}>
-          <Text style={styles.resultLabel}>🌙 就寝予定時刻</Text>
-          <Text style={styles.resultTime}>
-            {settings.calculatedSleepHour.toString().padStart(2, '0')}:
-            {settings.calculatedSleepMinute.toString().padStart(2, '0')}
-          </Text>
-          <Text style={styles.resultHint}>この時刻の1時間前から監視が開始されます</Text>
-        </View>
       </ScrollView>
-    </SafeAreaView >
+    </SafeAreaView>
   );
 };
 
@@ -213,37 +164,6 @@ const styles = StyleSheet.create({
     color: COLORS.text.dark,
     marginBottom: 16,
   },
-  timePickerRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 6,
-  },
-  timeButton: {
-    width: 36,
-    height: 36,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#1E293B',
-    borderRadius: 8,
-  },
-  timeButtonText: {
-    color: COLORS.primary,
-    fontSize: 21,
-  },
-  timeDisplay: {
-    fontSize: 52,
-    fontWeight: '200',
-    color: COLORS.text.dark,
-    width: 60,
-    textAlign: 'center',
-    fontVariant: ['tabular-nums'],
-  },
-  timeSeparator: {
-    fontSize: 52,
-    fontWeight: '200',
-    color: COLORS.text.dark,
-    marginHorizontal: 2,
-  },
   durationRow: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -271,28 +191,6 @@ const styles = StyleSheet.create({
   durationUnit: {
     fontSize: 21,
     color: '#94A3B8',
-  },
-  resultCard: {
-    backgroundColor: COLORS.primary,
-    borderRadius: 16,
-    padding: 24,
-    alignItems: 'center',
-  },
-  resultLabel: {
-    fontSize: 18,
-    color: 'rgba(255,255,255,0.8)',
-    marginBottom: 8,
-  },
-  resultTime: {
-    fontSize: 73,
-    fontWeight: '200',
-    color: '#FFFFFF',
-    fontVariant: ['tabular-nums'],
-    marginBottom: 8,
-  },
-  resultHint: {
-    fontSize: 16,
-    color: 'rgba(255,255,255,0.6)',
   },
 
   row: {
