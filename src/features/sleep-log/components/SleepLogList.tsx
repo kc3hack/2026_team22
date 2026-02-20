@@ -12,10 +12,7 @@ import { COLORS } from '@shared/constants';
 import type { SleepLogEntry } from '../types';
 
 // Android で LayoutAnimation を有効化
-if (
-  Platform.OS === 'android' &&
-  UIManager.setLayoutAnimationEnabledExperimental
-) {
+if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
   UIManager.setLayoutAnimationEnabledExperimental(true);
 }
 
@@ -68,24 +65,20 @@ export const SleepLogList: React.FC<SleepLogListProps> = ({ logs }) => {
     return (
       <View style={styles.emptyContainer}>
         <Text style={styles.emptyEmoji}>📝</Text>
-        <Text style={styles.emptyText}>
-          まだ睡眠ログがありません
-        </Text>
-        <Text style={styles.emptyHint}>
-          睡眠モニターを使って就寝準備を記録しましょう
-        </Text>
+        <Text style={styles.emptyText}>まだ睡眠ログがありません</Text>
+        <Text style={styles.emptyHint}>睡眠モニターを使って就寝準備を記録しましょう</Text>
       </View>
     );
   }
 
   const handlePress = (id: string) => {
     LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
-    setExpandedId((prev) => (prev === id ? null : id));
+    setExpandedId(prev => (prev === id ? null : id));
   };
 
   return (
     <View style={styles.listContent}>
-      {logs.map((item) => {
+      {logs.map(item => {
         const isExpanded = expandedId === item.id;
         const scoreColor = getScoreColor(item.score);
 
@@ -94,45 +87,26 @@ export const SleepLogList: React.FC<SleepLogListProps> = ({ logs }) => {
             key={item.id}
             activeOpacity={0.7}
             onPress={() => handlePress(item.id)}
-            style={[
-              styles.logCard,
-              { borderLeftColor: scoreColor },
-            ]}
+            style={[styles.logCard, { borderLeftColor: scoreColor }]}
           >
             {/* ヘッダー行 */}
             <View style={styles.logHeader}>
               <View style={styles.dateRow}>
-                <Text style={styles.logDate}>
-                  {item.date}
-                </Text>
-                <Text style={styles.moodEmoji}>
-                  {getMoodEmoji(item.mood)}
-                </Text>
+                <Text style={styles.logDate}>{item.date}</Text>
+                <Text style={styles.moodEmoji}>{getMoodEmoji(item.mood)}</Text>
               </View>
               <View style={styles.scoreRow}>
-                <Text
-                  style={[
-                    styles.logScore,
-                    { color: scoreColor },
-                  ]}
-                >
-                  {item.score}
-                </Text>
+                <Text style={[styles.logScore, { color: scoreColor }]}>{item.score}</Text>
                 <Text style={styles.scoreUnit}>点</Text>
-                <Text style={styles.chevron}>
-                  {isExpanded ? '▲' : '▼'}
-                </Text>
+                <Text style={styles.chevron}>{isExpanded ? '▲' : '▼'}</Text>
               </View>
             </View>
 
             {/* タグ行 */}
             <View style={styles.tagsContainer}>
-
               {item.usagePenalty > 0 && (
                 <View style={styles.tagPenalty}>
-                  <Text style={styles.tagText}>
-                    📱 スマホ
-                  </Text>
+                  <Text style={styles.tagText}>📱 スマホ</Text>
                 </View>
               )}
               {item.lightExceeded && (
@@ -145,15 +119,11 @@ export const SleepLogList: React.FC<SleepLogListProps> = ({ logs }) => {
                   <Text style={styles.tagText}>🔊 音</Text>
                 </View>
               )}
-              {!item.usagePenalty &&
-                !item.lightExceeded &&
-                !item.noiseExceeded && (
-                  <View style={styles.tagSuccess}>
-                    <Text style={styles.tagTextSuccess}>
-                      ✨ 完璧
-                    </Text>
-                  </View>
-                )}
+              {!item.usagePenalty && !item.lightExceeded && !item.noiseExceeded && (
+                <View style={styles.tagSuccess}>
+                  <Text style={styles.tagTextSuccess}>✨ 完璧</Text>
+                </View>
+              )}
             </View>
 
             {/* 展開時の詳細 */}
@@ -162,71 +132,41 @@ export const SleepLogList: React.FC<SleepLogListProps> = ({ logs }) => {
                 <View style={styles.divider} />
 
                 {/* スコア内訳 */}
-                <Text style={styles.detailSectionTitle}>
-                  スコア内訳
-                </Text>
+                <Text style={styles.detailSectionTitle}>スコア内訳</Text>
                 {item.usagePenalty > 0 && (
                   <View style={styles.detailRow}>
-                    <Text style={styles.detailLabel}>
-                      📱 スマホ使用
-                    </Text>
-                    <Text
-                      style={[
-                        styles.detailValue,
-                        { color: COLORS.error },
-                      ]}
-                    >
+                    <Text style={styles.detailLabel}>📱 スマホ使用</Text>
+                    <Text style={[styles.detailValue, { color: COLORS.error }]}>
                       −{item.usagePenalty}
                     </Text>
                   </View>
                 )}
                 {item.environmentPenalty > 0 && (
                   <View style={styles.detailRow}>
-                    <Text style={styles.detailLabel}>
-                      🌙 環境（光・音）
-                    </Text>
-                    <Text
-                      style={[
-                        styles.detailValue,
-                        { color: COLORS.error },
-                      ]}
-                    >
+                    <Text style={styles.detailLabel}>🌙 環境（光・音）</Text>
+                    <Text style={[styles.detailValue, { color: COLORS.error }]}>
                       −{item.environmentPenalty}
                     </Text>
                   </View>
                 )}
 
-                {item.usagePenalty === 0 &&
-                  item.environmentPenalty === 0 && (
-                    <Text style={styles.perfectText}>
-                      ✨ 減点なし！完璧です
-                    </Text>
-                  )}
+                {item.usagePenalty === 0 && item.environmentPenalty === 0 && (
+                  <Text style={styles.perfectText}>✨ 減点なし！完璧です</Text>
+                )}
 
                 {/* 警告情報 */}
-                <Text
-                  style={[
-                    styles.detailSectionTitle,
-                    { marginTop: 12 },
-                  ]}
-                >
-                  警告履歴
-                </Text>
+                <Text style={[styles.detailSectionTitle, { marginTop: 12 }]}>警告履歴</Text>
                 <View style={styles.warningRow}>
                   <View
                     style={[
                       styles.warningBadge,
-                      item.phase1Warning
-                        ? styles.warningActive
-                        : styles.warningInactive,
+                      item.phase1Warning ? styles.warningActive : styles.warningInactive,
                     ]}
                   >
                     <Text
                       style={[
                         styles.warningText,
-                        item.phase1Warning
-                          ? styles.warningTextActive
-                          : styles.warningTextInactive,
+                        item.phase1Warning ? styles.warningTextActive : styles.warningTextInactive,
                       ]}
                     >
                       Phase1
@@ -235,17 +175,13 @@ export const SleepLogList: React.FC<SleepLogListProps> = ({ logs }) => {
                   <View
                     style={[
                       styles.warningBadge,
-                      item.phase2Warning
-                        ? styles.warningActive
-                        : styles.warningInactive,
+                      item.phase2Warning ? styles.warningActive : styles.warningInactive,
                     ]}
                   >
                     <Text
                       style={[
                         styles.warningText,
-                        item.phase2Warning
-                          ? styles.warningTextActive
-                          : styles.warningTextInactive,
+                        item.phase2Warning ? styles.warningTextActive : styles.warningTextInactive,
                       ]}
                     >
                       Phase2
@@ -254,21 +190,10 @@ export const SleepLogList: React.FC<SleepLogListProps> = ({ logs }) => {
                 </View>
 
                 {/* 気分 */}
-                <Text
-                  style={[
-                    styles.detailSectionTitle,
-                    { marginTop: 12 },
-                  ]}
-                >
-                  朝の気分
-                </Text>
+                <Text style={[styles.detailSectionTitle, { marginTop: 12 }]}>朝の気分</Text>
                 <View style={styles.moodDetailRow}>
-                  <Text style={styles.moodDetailEmoji}>
-                    {getMoodEmoji(item.mood)}
-                  </Text>
-                  <Text style={styles.moodDetailLabel}>
-                    {getMoodLabel(item.mood)}
-                  </Text>
+                  <Text style={styles.moodDetailEmoji}>{getMoodEmoji(item.mood)}</Text>
+                  <Text style={styles.moodDetailLabel}>{getMoodLabel(item.mood)}</Text>
                 </View>
               </View>
             )}

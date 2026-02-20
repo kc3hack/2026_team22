@@ -34,7 +34,7 @@ export function useLightSensor(): UseLightSensorReturn {
         }
 
         LightSensor.setUpdateInterval(UPDATE_INTERVAL_MS);
-        subscription = LightSensor.addListener((data) => {
+        subscription = LightSensor.addListener(data => {
           console.log(`[LightSensor] lux=${data.illuminance.toFixed(1)}`);
           setLux(data.illuminance);
         });

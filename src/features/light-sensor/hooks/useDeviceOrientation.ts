@@ -39,7 +39,7 @@ export function useDeviceOrientation(): UseDeviceOrientationReturn {
       }
 
       if (countRef.current >= DEBOUNCE_COUNT) {
-        setOrientation((prev) => (prev !== detected ? detected : prev));
+        setOrientation(prev => (prev !== detected ? detected : prev));
       }
     });
 

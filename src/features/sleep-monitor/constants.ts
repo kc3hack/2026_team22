@@ -20,7 +20,6 @@ export const USAGE_THRESHOLDS = {
   PHASE1_WARN: 20,
   /** Phase 2: 15分以上で警告 */
   PHASE2_WARN: 15,
-
 } as const;
 
 /** 環境NGライン */

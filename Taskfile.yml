@@ -110,12 +110,23 @@ tasks:
         export JAVA_HOME=$(/usr/libexec/java_home -v 17 2>/dev/null) || true
         npx expo run:android
 
-  # バックエンドテスト実行（uv で pytest）
+  # バックエンドテスト実行（uv で pytest）。DB は別途起動済みであること
   test:
-    desc: バックエンドのテストを実行
+    desc: バックエンドのテストを実行（DB は起動済みであること）
     dir: backend
     cmds:
       - uv run pytest tests/ -v
+
+  # DB を起動してからバックエンドの統合テストを実行（DB 利用テストを簡単に実行）
+  test:db:
+    desc: DB を起動してからバックエンドのテストを実行
+    cmds:
+      - docker-compose up -d db
+      - |
+        echo "DB 起動待機..."
+        sleep 5
+      - |
+        cd backend && DATABASE_URL=postgresql://postgres:postgres@localhost:${DB_PORT:-5432}/sleepsupport uv run pytest tests/ -v
 
   # 開発環境をまとめて停止
   dev-down:

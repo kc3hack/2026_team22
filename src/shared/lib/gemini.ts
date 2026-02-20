@@ -115,22 +115,22 @@ class GeminiClient {
             { text: `Does this image show a "${targetLabel}"? Answer strictly with YES or NO.` },
             {
               inline_data: {
-                mime_type: "image/jpeg",
-                data: base64Image
-              }
-            }
-          ]
-        }
-      ]
+                mime_type: 'image/jpeg',
+                data: base64Image,
+              },
+            },
+          ],
+        },
+      ],
     };
 
     try {
       const response = await fetch(url, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
         },
-        body: JSON.stringify(body)
+        body: JSON.stringify(body),
       });
 
       const data = await response.json();
@@ -144,7 +144,6 @@ class GeminiClient {
       console.log(`[Gemini Vision] Target: ${targetLabel}, Result: ${text}`);
 
       return text?.includes('YES');
-
     } catch (error) {
       console.error('Gemini Verification Integration Failed:', error);
       return false;

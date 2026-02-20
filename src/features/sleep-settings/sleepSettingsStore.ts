@@ -61,7 +61,8 @@ export const useSleepSettingsStore = create<SleepSettings & SleepSettingsActions
   const defaultMissionEnabled = false;
   const defaultMissionTarget = 'washroom';
   const defaultPreparationMinutes = 60; // 1 hour default
-  const defaultIcsUrl = 'https://calendar.google.com/calendar/ical/e640656856d5f692768a50a4d0c65492146a4353ba65bfe23aa4796492b360ba%40group.calendar.google.com/private-aa715fd8bcfa902595f47d5aeb095b9c/basic.ics';
+  const defaultIcsUrl =
+    'https://calendar.google.com/calendar/ical/e640656856d5f692768a50a4d0c65492146a4353ba65bfe23aa4796492b360ba%40group.calendar.google.com/private-aa715fd8bcfa902595f47d5aeb095b9c/basic.ics';
 
   return {
     wakeUpHour: defaultWakeUp.hour,
@@ -99,7 +100,8 @@ export const useSleepSettingsStore = create<SleepSettings & SleepSettingsActions
     },
 
     setResilienceWindow: (minutes: number) => set({ resilienceWindowMinutes: minutes }),
-    setMissionSettings: (enabled: boolean, target: string) => set({ missionEnabled: enabled, missionTarget: target }),
+    setMissionSettings: (enabled: boolean, target: string) =>
+      set({ missionEnabled: enabled, missionTarget: target }),
     setPreparationTime: (minutes: number) => set({ preparationMinutes: minutes }),
 
     getSleepTimeToday: () => {
@@ -115,7 +117,7 @@ export const useSleepSettingsStore = create<SleepSettings & SleepSettingsActions
       return sleepTime.getTime();
     },
 
-    setTodayOverride: (override) => {
+    setTodayOverride: override => {
       const today = new Date().toISOString().slice(0, 10);
       set({ todayOverride: { ...override, date: today } });
     },
