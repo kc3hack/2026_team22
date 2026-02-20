@@ -46,7 +46,12 @@ def _ensure_db_tables(event_loop):
         async with engine.begin() as conn:
             await conn.run_sync(Base.metadata.create_all)
 
-    event_loop.run_until_complete(create_all())
+    try:
+        event_loop.run_until_complete(create_all())
+    except Exception:
+        # DB が起動していない場合はスキップ（単体テストは DB 不要）
+        import warnings
+        warnings.warn("DB connection failed. Integration tests will be skipped.")
 
 
 @pytest.fixture

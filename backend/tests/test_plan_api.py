@@ -1,5 +1,6 @@
 """
-POST /api/v1/plan の統合テスト（実 DB、LLM はモック）
+POST /api/v1/sleep-plans の統合テスト（実 DB、LLM はモック）
+todayOverride, force, cache_hit の E2E テスト含む。
 """
 
 from unittest.mock import AsyncMock
@@ -18,12 +19,12 @@ class TestPlanAPIAuth:
     async def test_plan_returns_401_without_authorization(
         self, client: AsyncClient
     ):
-        """Authorization ヘッダーなしで POST /plan すると 401"""
+        """Authorization ヘッダーなしで POST /sleep-plans すると 401"""
         # このテストだけ認証オーバーライドを外す
         app.dependency_overrides.pop(get_current_user_id, None)
         try:
             res = await client.post(
-                "/api/v1/plan",
+                "/api/v1/sleep-plans",
                 json={
                     "calendar_events": [],
                     "sleep_logs": [],
@@ -62,7 +63,7 @@ class TestPlanAPI:
         mock_llm_plan: dict,
         mock_plan_generator,
     ):
-        """ユーザー作成 → POST /plan で週間プランが返る（キャッシュミス・LLM モック）"""
+        """ユーザー作成 → POST /sleep-plans で週間プランが返る（キャッシュミス・LLM モック）"""
         app.dependency_overrides[get_plan_generator] = lambda: mock_plan_generator
 
         try:
@@ -81,13 +82,14 @@ class TestPlanAPI:
                 "settings": {},
             }
 
-            res = await client.post("/api/v1/plan", json=body)
+            res = await client.post("/api/v1/sleep-plans", json=body)
 
             assert res.status_code == 200
             data = res.json()
             assert "week_plan" in data
             assert len(data["week_plan"]) == 2
             assert data["week_plan"][0]["day"] == "月曜"
+            assert data["cache_hit"] is False
             mock_plan_generator.generate_week_plan.assert_called_once()
         finally:
             app.dependency_overrides.pop(get_plan_generator, None)
@@ -117,12 +119,142 @@ class TestPlanAPI:
                 "settings": {},
             }
 
-            res1 = await client.post("/api/v1/plan", json=body)
-            res2 = await client.post("/api/v1/plan", json=body)
+            res1 = await client.post("/api/v1/sleep-plans", json=body)
+            res2 = await client.post("/api/v1/sleep-plans", json=body)
 
             assert res1.status_code == 200
             assert res2.status_code == 200
-            assert res1.json() == res2.json()
+            assert res1.json()["cache_hit"] is False
+            assert res2.json()["cache_hit"] is True
             assert mock_plan_generator.generate_week_plan.call_count == 1
+        finally:
+            app.dependency_overrides.pop(get_plan_generator, None)
+
+    async def test_force_bypasses_cache(
+        self,
+        client: AsyncClient,
+        unique_email: str,
+        mock_llm_plan: dict,
+        mock_plan_generator,
+    ):
+        """force=true で 2 回目もキャッシュを無視して LLM を呼ぶ"""
+        app.dependency_overrides[get_plan_generator] = lambda: mock_plan_generator
+
+        try:
+            create_res = await client.post(
+                "/api/v1/users",
+                json={"email": unique_email, "name": "ForceTest"},
+            )
+            assert create_res.status_code == 201
+            user_id = create_res.json()["id"]
+            app.dependency_overrides[get_current_user_id] = lambda: user_id
+
+            body = {
+                "calendar_events": [],
+                "sleep_logs": [],
+                "settings": {},
+            }
+
+            res1 = await client.post("/api/v1/sleep-plans", json=body)
+            assert res1.status_code == 200
+
+            res2 = await client.post("/api/v1/sleep-plans?force=true", json=body)
+            assert res2.status_code == 200
+            assert res2.json()["cache_hit"] is False
+            assert mock_plan_generator.generate_week_plan.call_count == 2
+        finally:
+            app.dependency_overrides.pop(get_plan_generator, None)
+
+    async def test_today_override_in_request(
+        self,
+        client: AsyncClient,
+        unique_email: str,
+        mock_llm_plan: dict,
+        mock_plan_generator,
+    ):
+        """todayOverride 付きリクエストが正常に受け付けられる"""
+        app.dependency_overrides[get_plan_generator] = lambda: mock_plan_generator
+
+        try:
+            create_res = await client.post(
+                "/api/v1/users",
+                json={"email": unique_email, "name": "OverrideTest"},
+            )
+            assert create_res.status_code == 201
+            user_id = create_res.json()["id"]
+            app.dependency_overrides[get_current_user_id] = lambda: user_id
+
+            body = {
+                "calendar_events": [],
+                "sleep_logs": [],
+                "settings": {},
+                "today_override": {
+                    "date": "2026-02-20",
+                    "sleepHour": 23,
+                    "sleepMinute": 30,
+                    "wakeHour": 7,
+                    "wakeMinute": 0,
+                },
+            }
+
+            res = await client.post("/api/v1/sleep-plans", json=body)
+            assert res.status_code == 200
+            data = res.json()
+            assert "week_plan" in data
+            assert data["cache_hit"] is False
+
+            # LLM に todayOverride が渡されていること
+            call_kwargs = mock_plan_generator.generate_week_plan.call_args[1]
+            assert call_kwargs["today_override"] is not None
+            assert call_kwargs["today_override"]["date"] == "2026-02-20"
+        finally:
+            app.dependency_overrides.pop(get_plan_generator, None)
+
+    async def test_today_override_changes_cache_key(
+        self,
+        client: AsyncClient,
+        unique_email: str,
+        mock_llm_plan: dict,
+        mock_plan_generator,
+    ):
+        """todayOverride ありとなしで別キャッシュになる（両方キャッシュミス）"""
+        app.dependency_overrides[get_plan_generator] = lambda: mock_plan_generator
+
+        try:
+            create_res = await client.post(
+                "/api/v1/users",
+                json={"email": unique_email, "name": "OverrideCacheTest"},
+            )
+            assert create_res.status_code == 201
+            user_id = create_res.json()["id"]
+            app.dependency_overrides[get_current_user_id] = lambda: user_id
+
+            body_no_override = {
+                "calendar_events": [],
+                "sleep_logs": [],
+                "settings": {},
+            }
+            body_with_override = {
+                "calendar_events": [],
+                "sleep_logs": [],
+                "settings": {},
+                "today_override": {
+                    "date": "2026-02-20",
+                    "sleepHour": 23,
+                    "sleepMinute": 30,
+                    "wakeHour": 7,
+                    "wakeMinute": 0,
+                },
+            }
+
+            res1 = await client.post("/api/v1/sleep-plans", json=body_no_override)
+            res2 = await client.post("/api/v1/sleep-plans", json=body_with_override)
+
+            assert res1.status_code == 200
+            assert res2.status_code == 200
+            # 両方キャッシュミス（異なるハッシュのため）
+            assert res1.json()["cache_hit"] is False
+            assert res2.json()["cache_hit"] is False
+            assert mock_plan_generator.generate_week_plan.call_count == 2
         finally:
             app.dependency_overrides.pop(get_plan_generator, None)
