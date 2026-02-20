@@ -17,7 +17,7 @@ export const mockSleepLogs: SleepLogEntry[] = [
         phase2Warning: false,
         lightExceeded: false,
         noiseExceeded: false,
-        mood: 5,
+        mood: null,
         createdAt: NOW - DAY_MS + 8 * 60 * 60 * 1000, // 今朝作成
     },
     // 2. 少しスマホを触ってしまった (2日前)
