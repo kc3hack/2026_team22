@@ -89,7 +89,7 @@ tasks:
       - pnpm supabase start
       - docker-compose down -v
       - |
-        eval "$(node scripts/supabase-env-for-compose.mjs)" && docker-compose up -d
+        eval "$(node scripts/supabase-env-for-compose.mjs)" && docker-compose up -d --build
       - |
         echo "DB 起動待機ののちマイグレーション実行..."
         sleep 3
@@ -114,7 +114,7 @@ tasks:
       - pnpm supabase start
       - docker-compose down -v
       - |
-        eval "$(node scripts/supabase-env-for-compose.mjs)" && docker-compose up -d
+        eval "$(node scripts/supabase-env-for-compose.mjs)" && docker-compose up -d --build
       - |
         echo "DB 起動待機ののちマイグレーション実行..."
         sleep 3

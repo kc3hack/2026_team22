@@ -30,6 +30,9 @@ services:
     depends_on:
       db:
         condition: service_healthy
+    # コンテナからホストの Supabase へ JWT 検証するため（Mac は標準で host.docker.internal、Linux は host-gateway）
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     restart: unless-stopped
     networks:
       - sleepsupport-network
