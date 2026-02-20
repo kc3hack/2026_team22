@@ -64,9 +64,10 @@ tasks:
         npx expo run:android
 
   # 実機用: EXPO_PUBLIC_API_URL に PC の LAN IP を設定（実機と PC は同じ Wi‑Fi に接続すること）
+  # 環境構築ののち Android Development Build をビルド＆起動。実機を接続してから実行すること。
   # 毎回 DB をゼロから構築するため、docker-compose down -v でボリューム削除してから up
   dev-up:
-    desc: 実機用 - Supabase・docker-compose・マイグレーション・.env.expo.local 更新（LAN IP）
+    desc: 実機用 - 環境構築（LAN IP）＋ .env.expo.local 更新 ＋ Android ビルド＆起動
     cmds:
       - pnpm supabase start
       - docker-compose down -v
@@ -80,13 +81,17 @@ tasks:
       - |
         echo ""
         echo "[実機用] API: http://localhost:${API_PORT:-8000}  Supabase Studio: http://127.0.0.1:54323"
-        echo "Expo: 別ターミナルで task expo-start または pnpm start（.env.expo.local を読む）"
+        echo "Android ビルド＆起動します（実機を接続済みにしてください）。"
         echo "WiFi を変えたら task dev-up を再実行してください。"
+      - |
+        export JAVA_HOME=$(/usr/libexec/java_home -v 17 2>/dev/null) || true
+        npx expo run:android
 
   # エミュレータ用: EXPO_PUBLIC_API_URL を 10.0.2.2 に固定（Android エミュレータからホスト PC へ接続）
+  # 環境構築ののち Android Development Build をビルド＆起動。エミュレータを起動してから実行すること。
   # 毎回 DB をゼロから構築するため、docker-compose down -v でボリューム削除してから up
   dev-up-emulator:
-    desc: エミュレータ用 - 上記と同じだが .env.expo.local の API URL を 10.0.2.2 に設定
+    desc: エミュレータ用 - 環境構築（10.0.2.2）＋ .env.expo.local 更新 ＋ Android ビルド＆起動
     cmds:
       - pnpm supabase start
       - docker-compose down -v
@@ -100,8 +105,10 @@ tasks:
       - |
         echo ""
         echo "[エミュレータ用] API: http://10.0.2.2:${API_PORT:-8000}  Supabase Studio: http://127.0.0.1:54323"
-        echo "Expo: 別ターミナルで task expo-start または pnpm start（.env.expo.local を読む）"
-        echo "Android エミュレータで実行する場合は task dev-up-emulator を使ってください。"
+        echo "Android ビルド＆起動します（エミュレータを起動済みにしてください）。"
+      - |
+        export JAVA_HOME=$(/usr/libexec/java_home -v 17 2>/dev/null) || true
+        npx expo run:android
 
   # バックエンドテスト実行（uv で pytest）
   test:

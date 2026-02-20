@@ -139,7 +139,7 @@ pnpm run android
 pnpm run ios
 ```
 
-Expo の**ローカル用**環境変数（Supabase の URL など）は **`.env.expo.local`** に書きます。`task dev-up` を実行するとこのファイルが自動で更新されます。詳細は [docs/supabase-local.md](docs/supabase-local.md) を参照。
+Expo の**ローカル用**環境変数（Supabase の URL など）は **`.env.expo.local`** に書きます。`task dev-up`（実機用）または `task dev-up-emulator`（エミュレータ用）を実行するとこのファイルが自動で更新され、続けて Android のビルド＆起動まで行われます。詳細は [docs/supabase-local.md](docs/supabase-local.md) を参照。
 
 ### バックグラウンド光センサー機能について
 
@@ -409,7 +409,7 @@ docs: READMEにセットアップ手順を追加
 | --------------------------- | ------------------------------------------------------------ |
 | `pnpm start` / `pnpm dev`   | Expo開発サーバーを起動                                       |
 | `pnpm run expo:start`       | Expo開発サーバーを起動（同上）                               |
-| `pnpm run expo:android`     | Androidでビルド・起動（Java 17 推奨。Mac では `task expo-android` が便利） |
+| `pnpm run expo:android`     | Androidでビルド・起動（Java 17 推奨。Mac では `task expo-android`。環境構築済みの状態でアプリだけやり直すときに使う） |
 | `pnpm run android`         | Androidで実行（同上）                                        |
 | `pnpm run ios`              | iOSで実行                                                    |
 | `pnpm run setup`            | 環境チェック（初心者向け。Java 17 の有無も表示）             |

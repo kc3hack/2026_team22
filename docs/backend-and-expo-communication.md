@@ -8,18 +8,19 @@
 
 ### 1.1 実機用とエミュレータ用のタスク
 
-| タスク | 用途 | EXPO_PUBLIC_API_URL |
-|--------|------|---------------------|
-| **task dev-up** | 実機 | `http://<LAN_IP>:8000`（PC の LAN IP） |
-| **task dev-up-emulator** | Android エミュレータ | `http://10.0.2.2:8000` |
+| タスク | 用途 | EXPO_PUBLIC_API_URL | 備考 |
+|--------|------|---------------------|------|
+| **task dev-up** | 実機 | `http://<LAN_IP>:8000`（PC の LAN IP） | 環境構築 ＋ .env.expo.local 更新 ＋ **Android ビルド＆起動** |
+| **task dev-up-emulator** | Android エミュレータ | `http://10.0.2.2:8000` | 上記と同様に最後に **Android ビルド＆起動** |
 
-- **実機で実行するとき** → `task dev-up` を使う。PC と実機は同じ Wi‑Fi であること。
-- **Android エミュレータで実行するとき** → `task dev-up-emulator` を使う。WiFi に依存しない。
+- **実機で実行するとき** → 実機を USB 接続してから `task dev-up` を実行。PC と実機は同じ Wi‑Fi であること。
+- **Android エミュレータで実行するとき** → エミュレータを起動してから `task dev-up-emulator` を実行。WiFi に依存しない。
 - **WiFi を変えたら** → `task dev-up` を再実行する（LAN IP が変わるため）。
+- **環境はそのままでアプリだけビルドし直すとき** → `task expo-android` を実行（事前に一度 dev-up / dev-up-emulator で .env.expo.local を作っておくこと）。
 
 ### 1.2 全体フロー
 
-どちらのタスクも次の順序で開発環境を起動します。
+どちらのタスクも次の順序で開発環境を起動し、最後に Android アプリをビルド＆起動します。
 
 ```
 1. pnpm supabase start       … Supabase ローカル（Auth 用）起動
@@ -27,6 +28,7 @@
 3. sleep 3                   … DB の起動待ち
 4. alembic upgrade head      … DB マイグレーション実行
 5. write-expo-env.mjs        … .env.expo.local を更新（URL はタスクによって異なる）
+6. expo run:android          … Android Development Build をビルド＆起動（Java 17）
 ```
 
 ### 1.3 Supabase ローカル
@@ -92,8 +94,8 @@ Expo アプリがバックエンドの URL を知る経路は次のとおりで�
 
 ### 2.3 .env.expo.local の扱い
 
-- **生成**: `task dev-up` または `task dev-up-emulator` の最後で `write-expo-env.mjs` が実行される。
-- **読み込み**: `app.config.js` が起動時に `dotenv` で読み込む。
+- **生成**: `task dev-up` または `task dev-up-emulator` のなかで、Android ビルドの直前に `write-expo-env.mjs` が実行される。
+- **読み込み**: `app.config.js` が起動時に `dotenv` で読み込む。Android ビルド時にもこのファイルが参照される。
 - **Metro**: `.env*` を Babel の対象から外すため、`metro.config.js` の `resolver.blockList` で除外している。
 - **gitignore**: `.env.expo.local` は .gitignore 対象。
 
