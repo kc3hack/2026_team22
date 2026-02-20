@@ -16,8 +16,7 @@ export interface SleepLogEntry {
   usagePenalty: number;
   /** 環境減点 */
   environmentPenalty: number;
-  /** ボーナス */
-  bonus: number;
+
   /** Phase1警告が発動したか */
   phase1Warning: boolean;
   /** Phase2警告が発動したか */
@@ -26,6 +25,8 @@ export interface SleepLogEntry {
   lightExceeded: boolean;
   /** 就寝時にうるさかったか */
   noiseExceeded: boolean;
+  /** 朝の気分フィードバック (1〜5, 未入力は null) */
+  mood: number | null;
   /** 作成日時 */
   createdAt: number;
 }

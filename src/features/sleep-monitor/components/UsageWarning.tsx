@@ -69,17 +69,17 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   icon: {
-    fontSize: 40,
+    fontSize: 52,
   },
   title: {
-    fontSize: 22,
+    fontSize: 29,
     fontWeight: '700',
     color: COLORS.error,
     marginBottom: 16,
     textAlign: 'center',
   },
   message: {
-    fontSize: 16,
+    fontSize: 21,
     color: COLORS.text.dark,
     lineHeight: 26,
     textAlign: 'center',
@@ -95,7 +95,7 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     color: COLORS.text.dark,
-    fontSize: 16,
+    fontSize: 21,
     fontWeight: '600',
   },
 });

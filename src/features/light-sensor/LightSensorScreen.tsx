@@ -67,13 +67,13 @@ const styles = StyleSheet.create({
     paddingBottom: 10,
   },
   title: {
-    fontSize: 28,
+    fontSize: 36,
     fontWeight: 'bold',
     color: COLORS.text.dark,
     marginBottom: 5,
   },
   subtitle: {
-    fontSize: 14,
+    fontSize: 18,
     color: COLORS.text.dark,
     opacity: 0.7,
   },
@@ -89,13 +89,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   errorText: {
-    fontSize: 16,
+    fontSize: 21,
     color: COLORS.error,
     textAlign: 'center',
     marginBottom: 10,
   },
   errorHint: {
-    fontSize: 14,
+    fontSize: 18,
     color: COLORS.text.dark,
     opacity: 0.7,
     textAlign: 'center',
@@ -120,12 +120,12 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     color: COLORS.text.dark,
-    fontSize: 18,
+    fontSize: 23,
     fontWeight: '600',
   },
   statusText: {
     color: COLORS.text.dark,
     opacity: 0.5,
-    fontSize: 12,
+    fontSize: 16,
   },
 });

@@ -90,11 +90,11 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   emoji: {
-    fontSize: 24,
+    fontSize: 31,
     marginRight: 10,
   },
   phaseLabel: {
-    fontSize: 18,
+    fontSize: 23,
     fontWeight: '700',
   },
   timerContainer: {
@@ -103,11 +103,11 @@ const styles = StyleSheet.create({
   },
   timerLabel: {
     color: '#94A3B8',
-    fontSize: 12,
+    fontSize: 16,
     marginBottom: 4,
   },
   timer: {
-    fontSize: 48,
+    fontSize: 62,
     fontWeight: '200',
     fontVariant: ['tabular-nums'],
   },
@@ -132,7 +132,7 @@ const styles = StyleSheet.create({
   },
   totalTime: {
     color: '#94A3B8',
-    fontSize: 14,
+    fontSize: 18,
     textAlign: 'center',
   },
 });

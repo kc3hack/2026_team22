@@ -3,4 +3,4 @@
  */
 export { SleepSettingsScreen } from './SleepSettingsScreen';
 export { useSleepSettingsStore } from './sleepSettingsStore';
-export type { SleepSettings } from './types';
+export type { SleepSettings, TodayOverride } from './types';

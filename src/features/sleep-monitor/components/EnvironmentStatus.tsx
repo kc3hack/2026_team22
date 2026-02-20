@@ -81,7 +81,7 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   title: {
-    fontSize: 16,
+    fontSize: 21,
     fontWeight: '600',
     color: COLORS.text.dark,
     marginBottom: 16,
@@ -104,16 +104,16 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(239, 68, 68, 0.1)',
   },
   meterEmoji: {
-    fontSize: 24,
+    fontSize: 31,
     marginBottom: 8,
   },
   meterLabel: {
-    fontSize: 12,
+    fontSize: 16,
     color: '#94A3B8',
     marginBottom: 4,
   },
   meterValue: {
-    fontSize: 36,
+    fontSize: 47,
     fontWeight: '300',
     color: COLORS.text.dark,
     fontVariant: ['tabular-nums'],
@@ -122,7 +122,7 @@ const styles = StyleSheet.create({
     color: COLORS.error,
   },
   meterUnit: {
-    fontSize: 14,
+    fontSize: 18,
     color: '#94A3B8',
     marginBottom: 8,
   },
@@ -133,7 +133,7 @@ const styles = StyleSheet.create({
     marginBottom: 6,
   },
   threshold: {
-    fontSize: 10,
+    fontSize: 13,
     color: '#64748B',
     textAlign: 'center',
   },

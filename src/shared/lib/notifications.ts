@@ -14,7 +14,7 @@
  * ```
  */
 
-import * as Notifications from 'expo-notifications';
+import type * as Notifications from 'expo-notifications';
 
 /** クールダウン管理用のタイムスタンプマップ */
 const lastSentMap = new Map<string, number>();
@@ -28,32 +28,39 @@ const lastSentMap = new Map<string, number>();
  * @returns 権限が許可されたかどうか
  */
 export const initializeNotifications = async (): Promise<boolean> => {
-    // フォアグラウンドでも通知を表示
-    Notifications.setNotificationHandler({
-        handleNotification: async () => ({
-            shouldShowAlert: true,
-            shouldPlaySound: true,
-            shouldSetBadge: false,
-            shouldShowBanner: true,
-            shouldShowList: true,
-        }),
-    });
+    try {
+        const NotificationsModule = await import('expo-notifications');
 
-    // 権限をリクエスト
-    const { status: existingStatus } = await Notifications.getPermissionsAsync();
-    let finalStatus = existingStatus;
+        // フォアグラウンドでも通知を表示
+        NotificationsModule.setNotificationHandler({
+            handleNotification: async () => ({
+                shouldShowAlert: true,
+                shouldPlaySound: true,
+                shouldSetBadge: false,
+                shouldShowBanner: true,
+                shouldShowList: true,
+            }),
+        });
 
-    if (existingStatus !== 'granted') {
-        const { status } = await Notifications.requestPermissionsAsync();
-        finalStatus = status;
-    }
+        // 権限をリクエスト
+        const { status: existingStatus } = await NotificationsModule.getPermissionsAsync();
+        let finalStatus = existingStatus;
 
-    if (finalStatus !== 'granted') {
-        console.warn('[Notifications] 通知権限が許可されませんでした');
+        if (existingStatus !== 'granted') {
+            const { status } = await NotificationsModule.requestPermissionsAsync();
+            finalStatus = status;
+        }
+
+        if (finalStatus !== 'granted') {
+            console.warn('[Notifications] 通知権限が許可されませんでした');
+            return false;
+        }
+
+        return true;
+    } catch (error) {
+        console.warn('[Notifications] 通知機能はこの環境では利用できません (Expo Goなど):', error);
         return false;
     }
-
-    return true;
 };
 
 /**
@@ -67,7 +74,9 @@ export const sendLocalNotification = async (
     body: string
 ): Promise<void> => {
     try {
-        await Notifications.scheduleNotificationAsync({
+        const NotificationsModule = await import('expo-notifications');
+
+        await NotificationsModule.scheduleNotificationAsync({
             content: {
                 title,
                 body,
@@ -76,7 +85,7 @@ export const sendLocalNotification = async (
             trigger: null, // 即時送信
         });
     } catch (error) {
-        console.error('[Notifications] 通知の送信に失敗しました:', error);
+        console.error('[Notifications] 通知の送信に失敗しました (Expo Goなど):', error);
     }
 };
 

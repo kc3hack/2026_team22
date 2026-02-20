@@ -405,13 +405,13 @@ const styles = StyleSheet.create({
         gap: 4,
     },
     headerDay: {
-        fontSize: 26,
+        fontSize: 34,
         fontWeight: '800',
         color: COLORS.text.dark,
         letterSpacing: 0.5,
     },
     headerDate: {
-        fontSize: 15,
+        fontSize: 19,
         color: '#94A3B8',
         fontWeight: '500',
     },
@@ -424,7 +424,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
     closeIcon: {
-        fontSize: 16,
+        fontSize: 21,
         color: '#94A3B8',
         fontWeight: '600',
     },
@@ -434,7 +434,7 @@ const styles = StyleSheet.create({
         marginBottom: 24,
     },
     sectionTitle: {
-        fontSize: 15,
+        fontSize: 19,
         fontWeight: '700',
         color: COLORS.text.dark,
         marginBottom: 12,
@@ -456,20 +456,20 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     timeDetailLabel: {
-        fontSize: 12,
+        fontSize: 16,
         color: '#94A3B8',
         fontWeight: '600',
         marginBottom: 6,
     },
     timeDetailValue: {
-        fontSize: 32,
+        fontSize: 42,
         fontWeight: '300',
         color: COLORS.text.dark,
         fontVariant: ['tabular-nums'],
         letterSpacing: 1,
     },
     timeDiffText: {
-        fontSize: 11,
+        fontSize: 14,
         color: COLORS.primary,
         fontWeight: '500',
         marginTop: 6,
@@ -478,7 +478,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: 12,
     },
     timeDetailArrowIcon: {
-        fontSize: 20,
+        fontSize: 26,
         color: 'rgba(99, 102, 241, 0.5)',
     },
 
@@ -497,18 +497,18 @@ const styles = StyleSheet.create({
         marginBottom: 12,
     },
     evalHours: {
-        fontSize: 36,
+        fontSize: 47,
         fontWeight: '300',
         color: COLORS.text.dark,
         fontVariant: ['tabular-nums'],
     },
     evalUnit: {
-        fontSize: 16,
+        fontSize: 21,
         fontWeight: '500',
         color: '#94A3B8',
     },
     evalGoal: {
-        fontSize: 13,
+        fontSize: 17,
         color: '#64748B',
         fontWeight: '500',
     },
@@ -529,10 +529,10 @@ const styles = StyleSheet.create({
         gap: 8,
     },
     evalEmoji: {
-        fontSize: 16,
+        fontSize: 21,
     },
     evalMessage: {
-        fontSize: 14,
+        fontSize: 18,
         fontWeight: '600',
     },
 
@@ -554,11 +554,11 @@ const styles = StyleSheet.create({
         borderRadius: 5,
     },
     importanceTitle: {
-        fontSize: 15,
+        fontSize: 19,
         fontWeight: '700',
     },
     importanceDesc: {
-        fontSize: 13,
+        fontSize: 17,
         color: '#CBD5E1',
         lineHeight: 21,
     },
@@ -583,19 +583,19 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
     eventCardIcon: {
-        fontSize: 20,
+        fontSize: 26,
     },
     eventCardContent: {
         flex: 1,
         gap: 4,
     },
     eventCardTitle: {
-        fontSize: 15,
+        fontSize: 19,
         fontWeight: '700',
         color: COLORS.text.dark,
     },
     eventCardSub: {
-        fontSize: 12,
+        fontSize: 16,
         color: '#94A3B8',
         lineHeight: 18,
     },
@@ -611,7 +611,7 @@ const styles = StyleSheet.create({
         borderLeftColor: COLORS.primary,
     },
     adviceFullText: {
-        fontSize: 14,
+        fontSize: 18,
         color: '#CBD5E1',
         lineHeight: 24,
     },
@@ -646,7 +646,7 @@ const styles = StyleSheet.create({
         borderColor: 'rgba(99, 102, 241, 0.25)',
     },
     timelineDotIcon: {
-        fontSize: 18,
+        fontSize: 23,
     },
     timelineContent: {
         flex: 1,
@@ -659,18 +659,18 @@ const styles = StyleSheet.create({
         marginBottom: 4,
     },
     timelineTime: {
-        fontSize: 15,
+        fontSize: 19,
         fontWeight: '700',
         color: COLORS.primary,
         fontVariant: ['tabular-nums'],
     },
     timelineLabel: {
-        fontSize: 12,
+        fontSize: 16,
         color: '#64748B',
         fontWeight: '600',
     },
     timelineDesc: {
-        fontSize: 13,
+        fontSize: 17,
         color: '#94A3B8',
         lineHeight: 20,
     },
