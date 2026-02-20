@@ -149,6 +149,11 @@ class GoogleCalendarClient {
         } else if (line.startsWith('DESCRIPTION:')) {
           currentEvent.description = line.substring(12);
         } else if (line.startsWith('DTSTART')) {
+          // Check if this is an all-day event
+          const dateStr = line.includes(':') ? line.split(':')[1] : line;
+          if (dateStr && dateStr.length === 8) {
+            currentEvent.allDay = true;
+          }
           const date = parseIcsDate(line);
           if (date) currentEvent.start = date;
         } else if (line.startsWith('DTEND')) {
