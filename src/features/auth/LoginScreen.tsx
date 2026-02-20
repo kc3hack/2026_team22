@@ -10,27 +10,48 @@ import {
   Platform,
 } from 'react-native';
 import { COLORS } from '@shared/constants';
+import { supabase, isSupabaseConfigured } from '@shared/lib';
 import { useAuthStore } from './authStore';
 
 /**
  * ログイン画面
- * ユーザー認証を行う画面（雛形）
+ * Supabase Auth でメール/パスワード認証を行い、セッションを取得する。
+ * 取得したトークンは apiClient 経由の API 呼び出しで自動付与される。
  */
 export const LoginScreen: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const { setUser, isLoading, error } = useAuthStore();
+  const { setUser, setLoading, setError, isLoading, error } = useAuthStore();
 
   const handleLogin = async () => {
-    // TODO: 実際の認証ロジックを実装
-    // LLM認証やGoogleカレンダー連携などを追加予定
-
-    // 仮のログイン成功処理
-    setUser({
-      id: '1',
-      email,
-      name: 'Test User',
-    });
+    setError(null);
+    setLoading(true);
+    try {
+      if (!isSupabaseConfigured() || !supabase) {
+        setError('認証が未設定です。task dev-up で環境を用意してください。');
+        return;
+      }
+      const { data, error: authError } = await supabase.auth.signInWithPassword({
+        email: email.trim(),
+        password,
+      });
+      if (authError) {
+        setError(authError.message ?? 'ログインに失敗しました');
+        return;
+      }
+      const user = data?.user;
+      if (!user) {
+        setError('ログインに失敗しました');
+        return;
+      }
+      setUser({
+        id: user.id,
+        email: user.email ?? '',
+        name: user.user_metadata?.name ?? user.email ?? undefined,
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
