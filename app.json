@@ -20,7 +20,8 @@
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
+        "backgroundColor": "#ffffff",
+        "package": "com.kc3.sleepsupport"
       },
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
@@ -36,6 +37,13 @@
       "bundler": "metro"
     },
     "plugins": [
+      "expo-router",
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "環境の明るさを検出するためにカメラを使用します。"
+        }
+      ]
       "./withBackgroundActions",
       [
         "expo-build-properties",

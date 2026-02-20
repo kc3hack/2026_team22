@@ -1,8 +1,57 @@
-import React, { useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView, Platform } from 'react-native';
+import React from 'react';
+import { View, Text, StyleSheet, Platform } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { COLORS } from '@shared/constants';
-import { useLightSensor } from './hooks/useLightSensor';
+import { useAmbientLight } from '../../hooks/useAmbientLight';
 import { LightMeter } from './components/LightMeter';
+import type { SleepEnvironment } from './types';
+import { LIGHT_CONSTANTS } from './constants';
+
+const SOURCE_LABELS: Record<string, string> = {
+  light_sensor: '照度センサー',
+  camera: 'カメラ推定',
+  unavailable: '利用不可',
+};
+
+const ORIENTATION_LABELS: Record<string, string> = {
+  face_up: '画面が上向き',
+  face_down: '画面が下向き',
+  other: 'その他',
+};
+
+/**
+ * 照度から睡眠環境を評価する
+ */
+const evaluateSleepEnvironment = (lux: number): SleepEnvironment => {
+  if (lux <= LIGHT_CONSTANTS.OPTIMAL_SLEEP_LUX) {
+    return {
+      currentLux: lux,
+      isSuitableForSleep: true,
+      recommendation: '完璧な睡眠環境です。おやすみなさい！',
+      score: 100,
+    };
+  } else if (lux <= LIGHT_CONSTANTS.PREPARE_SLEEP_LUX) {
+    return {
+      currentLux: lux,
+      isSuitableForSleep: false,
+      recommendation: '睡眠の準備に適した明るさです。もう少し暗くするとより良いでしょう。',
+      score: 70,
+    };
+  } else if (lux <= LIGHT_CONSTANTS.NORMAL_INDOOR_LUX) {
+    return {
+      currentLux: lux,
+      isSuitableForSleep: false,
+      recommendation: '通常の室内の明るさです。睡眠前は照明を落としましょう。',
+      score: 40,
+    };
+  }
+  return {
+    currentLux: lux,
+    isSuitableForSleep: false,
+    recommendation: '明るすぎます。睡眠の質を高めるために、照明を暗くしてください。',
+    score: 10,
+  };
+};
 
 /**
  * 照度センサー画面コンポーネント
@@ -22,6 +71,9 @@ export const LightSensorScreen: React.FC = () => {
     stopBackgroundTask,
     error,
   } = useLightSensor();
+  
+  const { lux, source, orientation } = useAmbientLight();
+  const sleepEnvironment = lux !== null ? evaluateSleepEnvironment(lux) : null;
 
   // センサーが利用可能な場合、自動的に開始
   useEffect(() => {
@@ -46,15 +98,15 @@ export const LightSensorScreen: React.FC = () => {
       </View>
 
       <View style={styles.content}>
-        {error ? (
+        {source === 'unavailable' ? (
           <View style={styles.errorContainer}>
-            <Text style={styles.errorText}>{error}</Text>
+            <Text style={styles.errorText}>照度を検出できません</Text>
             {Platform.OS === 'web' && (
               <Text style={styles.errorHint}>照度センサーはAndroidデバイスでのみ利用可能です</Text>
             )}
           </View>
         ) : (
-          <LightMeter illuminance={data?.illuminance ?? null} sleepEnvironment={sleepEnvironment} />
+          <LightMeter illuminance={lux} sleepEnvironment={sleepEnvironment} />
         )}
       </View>
 
@@ -94,6 +146,9 @@ export const LightSensorScreen: React.FC = () => {
             バックグラウンド: {isBackgroundActive ? '動作中' : '停止中'}
           </Text>
         )}
+       <Text style={styles.statusText}>
+        データソース: {SOURCE_LABELS[source] ?? source}
+       </Text>
       </View>
     </SafeAreaView>
   );
