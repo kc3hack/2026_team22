@@ -54,9 +54,7 @@ async def get_users(
     """ユーザー一覧を取得（認証必須）"""
     usecase = GetAllUsersUseCase(cast(IUserRepository, user_repo))
     users = await usecase.execute()
-    return UserListResponse(
-        users=[UserResponse.model_validate(u) for u in users], total=len(users)
-    )
+    return UserListResponse(users=[UserResponse.model_validate(u) for u in users], total=len(users))
 
 
 @router.get("/{user_id}", response_model=UserResponse)
