@@ -8,24 +8,24 @@
 
 バックエンドの作業は **GitHub Issue 単位**で行う。実装を始めるときは次の手順に従う。
 
-1. **Issue 一覧を確認する**  
-   - リポジトリの Issues で、`[Phase1]` / `[Phase2]` / `[Phase3]` などのラベルやタイトルで該当する Issue を探す。  
+1. **Issue 一覧を確認する**
+   - リポジトリの Issues で、`[Phase1]` / `[Phase2]` / `[Phase3]` などのラベルやタイトルで該当する Issue を探す。
    - 実装計画に対応する Issue は `docs/implementation-plan.md` のチェックリスト（1.1, 1.2, 2.1 等）と対応している（例: Issue #18 = 1.1 認証ミドルウェア）。
 
-2. **実装する Issue を 1 つ選び、内容を把握する**  
-   - ブラウザで Issue を開くか、GitHub CLI で `gh issue view <番号>` を実行する。  
+2. **実装する Issue を 1 つ選び、内容を把握する**
+   - ブラウザで Issue を開くか、GitHub CLI で `gh issue view <番号>` を実行する。
    - Issue の「目的」「成果物」「依存」「参照」を読み、`docs/backend-design.md` や `docs/implementation-plan.md` の該当節を確認する。
 
-3. **Issue 用のブランチを切る**  
-   - 例: `git checkout -b fix/issue-18-auth-middleware`（Issue 番号と内容が分かる名前にする）。  
+3. **Issue 用のブランチを切る**
+   - 例: `git checkout -b fix/issue-18-auth-middleware`（Issue 番号と内容が分かる名前にする）。
    - GitHub CLI で Issue と紐づけたブランチを作る場合: `gh issue develop 18 --base main --checkout`（番号は適宜変更）。
 
-4. **Issue の「成果物」に沿って実装する**  
-   - 本 README の §2 以降（ディレクトリ構成・ビルド・実装の流れ）に従う。  
+4. **Issue の「成果物」に沿って実装する**
+   - 本 README の §2 以降（ディレクトリ構成・ビルド・実装の流れ）に従う。
    - 完了したら **`task test`** でテストが通ることを確認する（DB を未起動のまま一括で確認したい場合は **`task test:db`**）。
 
-5. **コミット・PR で Issue を参照する**  
-   - コミットメッセージや PR の説明に `Closes #18` のように書くと、マージ時に Issue が自動で閉じる。  
+5. **コミット・PR で Issue を参照する**
+   - コミットメッセージや PR の説明に `Closes #18` のように書くと、マージ時に Issue が自動で閉じる。
    - 例: `git commit -m "feat(auth): 認証ミドルウェアを追加 Closes #18"`
 
 **AI への指示の例（ユーザーがチャットで書くとき）**:  
@@ -84,14 +84,14 @@ backend/
 
 リポジトリルートに **Taskfile** がある。バックエンド関連は以下を使う。
 
-| 目的 | コマンド | 備考 |
-|------|----------|------|
-| **バックエンドのテスト** | `task test` | リポジトリルートで実行。内部で `dir: backend` かつ `uv run pytest tests/ -v`。**DB 利用の統合テストを含む場合は DB が起動済みであること。** |
-| **DB を起動してテスト** | `task test:db` | docker-compose で DB のみ起動してから `task test` と同様に pytest を実行。DB 環境を使ったテストを手軽に実行したいときに使う。 |
-| **開発環境の起動（実機用）** | `task dev-up` | Supabase 起動 → docker-compose up → **backend でマイグレーション**（`cd backend && DATABASE_URL=... uv run alembic upgrade head`）→ Expo 用 .env 更新 → **Android ビルド＆起動**（実機を接続してから実行）。 |
-| **開発環境の起動（エミュレータ用）** | `task dev-up-emulator` | 上記と同様だが .env の API URL が 10.0.2.2。最後に **Android ビルド＆起動**（エミュレータを起動してから実行）。 |
-| **開発環境の停止** | `task dev-down` | docker-compose down, supabase stop。 |
-| **Supabase のみ起動** | `task supabase-start` | 認証用。Docker 必須。 |
+| 目的                                 | コマンド               | 備考                                                                                                                                                                                                         |
+| ------------------------------------ | ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **バックエンドのテスト**             | `task test`            | リポジトリルートで実行。内部で `dir: backend` かつ `uv run pytest tests/ -v`。**DB 利用の統合テストを含む場合は DB が起動済みであること。**                                                                  |
+| **DB を起動してテスト**              | `task test:db`         | docker-compose で DB のみ起動してから `task test` と同様に pytest を実行。DB 環境を使ったテストを手軽に実行したいときに使う。                                                                                |
+| **開発環境の起動（実機用）**         | `task dev-up`          | Supabase 起動 → docker-compose up → **backend でマイグレーション**（`cd backend && DATABASE_URL=... uv run alembic upgrade head`）→ Expo 用 .env 更新 → **Android ビルド＆起動**（実機を接続してから実行）。 |
+| **開発環境の起動（エミュレータ用）** | `task dev-up-emulator` | 上記と同様だが .env の API URL が 10.0.2.2。最後に **Android ビルド＆起動**（エミュレータを起動してから実行）。                                                                                              |
+| **開発環境の停止**                   | `task dev-down`        | docker-compose down, supabase stop。                                                                                                                                                                         |
+| **Supabase のみ起動**                | `task supabase-start`  | 認証用。Docker 必須。                                                                                                                                                                                        |
 
 **backend ディレクトリ内で直接実行する場合**（AI がターミナルで叩くときの例）:
 
@@ -130,33 +130,33 @@ docker-compose up -d
 1. **設計の確認**  
    `docs/backend-design.md` と `docs/implementation-plan.md` で、追加する API・テーブル・署名の仕様を確認する。
 
-2. **モデルとマイグレーション**  
-   - `app/infrastructure/persistence/models/` に SQLAlchemy モデルを追加（`Base` を継承）。  
-   - `alembic/versions/` にリビジョンを追加。  
-   - `uv run alembic revision --autogenerate -m "説明"` で生成し、必要なら手で編集。  
+2. **モデルとマイグレーション**
+   - `app/infrastructure/persistence/models/` に SQLAlchemy モデルを追加（`Base` を継承）。
+   - `alembic/versions/` にリビジョンを追加。
+   - `uv run alembic revision --autogenerate -m "説明"` で生成し、必要なら手で編集。
    - `DATABASE_URL` を渡して `uv run alembic upgrade head` で適用。
 
-3. **ドメイン層**  
+3. **ドメイン層**
    - 必要なら `app/domain/<集約>/repositories.py` にリポジトリの **interface（抽象クラス）** を定義。
 
-4. **インフラ層**  
-   - `app/infrastructure/persistence/repositories/` にリポジトリの **実装** を追加。  
+4. **インフラ層**
+   - `app/infrastructure/persistence/repositories/` にリポジトリの **実装** を追加。
    - DB セッションは `AsyncSession`、`get_db` で注入する想定。
 
-5. **アプリケーション層**  
-   - `app/application/<集約>/` にユースケース（例: `get_or_create_plan.py`）を追加。  
+5. **アプリケーション層**
+   - `app/application/<集約>/` にユースケース（例: `get_or_create_plan.py`）を追加。
    - リポジトリは依存性注入（FastAPI の `Depends(get_db)` からリポジトリを渡すか、ルーターでインスタンス化）。
 
-6. **プレゼンテーション層**  
-   - `app/presentation/schemas/` に Pydantic のリクエスト・レスポンスを定義。  
-   - `app/presentation/api/` にルーターを追加。パスは `config.API_PREFIX`（`/api/v1`）を付与。  
+6. **プレゼンテーション層**
+   - `app/presentation/schemas/` に Pydantic のリクエスト・レスポンスを定義。
+   - `app/presentation/api/` にルーターを追加。パスは `config.API_PREFIX`（`/api/v1`）を付与。
    - `app/main.py` で `app.include_router(xxx.router, prefix=settings.API_PREFIX)` で登録。
 
-7. **認証**  
+7. **認証**
    - 設計では全 API 認証必須。実装時は、ミドルウェア or Depends で `Authorization` からトークン検証し、`user_id` を取得してハンドラに渡す。未認証は 401。
 
-8. **テスト**  
-   - `tests/` に統合テストを追加。`conftest.py` の `client` フィクスチャで `AsyncClient` を利用。  
+8. **テスト**
+   - `tests/` に統合テストを追加。`conftest.py` の `client` フィクスチャで `AsyncClient` を利用。
    - 実行: リポジトリルートで **`task test`**（DB 起動済みの場合）または **`task test:db`**（DB から起動してテストする場合）、または backend 内で **`uv run pytest tests/ -v`**（DB 起動済みであること）。
 
 ---
@@ -180,6 +180,6 @@ docker-compose up -d
 
 ## 8. まとめ
 
-- 仕様は **`docs/backend-design.md`** と **`docs/implementation-plan.md`** を参照する。  
-- ビルド・テスト・DB 反映は **Taskfile**（`task test`, `task test:db`, `task dev-up`）および **backend 内の `uv` / `alembic`** を使う。  
+- 仕様は **`docs/backend-design.md`** と **`docs/implementation-plan.md`** を参照する。
+- ビルド・テスト・DB 反映は **Taskfile**（`task test`, `task test:db`, `task dev-up`）および **backend 内の `uv` / `alembic`** を使う。
 - 新機能は **Issue をチェックアウトしてから**、**モデル → マイグレーション → リポジトリ → ユースケース → スキーマ → ルーター** の順で実装し、認証を全 API に掛ける。

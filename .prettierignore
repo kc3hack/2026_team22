@@ -4,3 +4,5 @@ node_modules/
 dist/
 build/
 *.lock
+backend/.mypy_cache/
+backend/.venv/
