@@ -1,8 +1,9 @@
-import React from 'react';
-import { View, Text, StyleSheet, Platform } from 'react-native';
+import React, { useEffect } from 'react';
+import { View, Text, StyleSheet, Platform, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { COLORS } from '@shared/constants';
-import { useAmbientLight } from '../../hooks/useAmbientLight';
+import { useAmbientLight } from './hooks/useAmbientLight';
+import { useLightSensor } from './hooks/useLightSensor';
 import { LightMeter } from './components/LightMeter';
 import type { SleepEnvironment } from './types';
 import { LIGHT_CONSTANTS } from './constants';
@@ -12,13 +13,6 @@ const SOURCE_LABELS: Record<string, string> = {
   camera: 'カメラ推定',
   unavailable: '利用不可',
 };
-
-const ORIENTATION_LABELS: Record<string, string> = {
-  face_up: '画面が上向き',
-  face_down: '画面が下向き',
-  other: 'その他',
-};
-
 /**
  * 照度から睡眠環境を評価する
  */
@@ -60,19 +54,21 @@ const evaluateSleepEnvironment = (lux: number): SleepEnvironment => {
  */
 export const LightSensorScreen: React.FC = () => {
   const {
-    data,
     isAvailable,
     isActive,
     isBackgroundActive,
-    sleepEnvironment,
     startSensor,
     stopSensor,
     startBackgroundTask,
     stopBackgroundTask,
     error,
   } = useLightSensor();
-  
-  const { lux, source, orientation } = useAmbientLight();
+
+  const {
+    lux,
+    source,
+  } = useAmbientLight();
+
   const sleepEnvironment = lux !== null ? evaluateSleepEnvironment(lux) : null;
 
   // センサーが利用可能な場合、自動的に開始
@@ -146,9 +142,9 @@ export const LightSensorScreen: React.FC = () => {
             バックグラウンド: {isBackgroundActive ? '動作中' : '停止中'}
           </Text>
         )}
-       <Text style={styles.statusText}>
-        データソース: {SOURCE_LABELS[source] ?? source}
-       </Text>
+        <Text style={styles.statusText}>
+          データソース: {SOURCE_LABELS[source] ?? source}
+        </Text>
       </View>
     </SafeAreaView>
   );
