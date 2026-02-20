@@ -10,7 +10,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.config import settings
 from app.database import init_db
 import app.infrastructure.persistence.models  # noqa: F401 - metadata 登録
-from app.presentation.api import health, plan, sleep_logs, users
+from app.presentation.api import health, plan, settings as settings_api, sleep_logs, users
 
 
 @asynccontextmanager
@@ -44,6 +44,7 @@ app.add_middleware(
 app.include_router(health.router, prefix=settings.API_PREFIX, tags=["health"])
 app.include_router(users.router, prefix=settings.API_PREFIX)
 app.include_router(plan.router, prefix=settings.API_PREFIX)
+app.include_router(settings_api.router, prefix=settings.API_PREFIX)
 app.include_router(sleep_logs.router, prefix=settings.API_PREFIX)
 
 
