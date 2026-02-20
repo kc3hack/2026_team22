@@ -4,9 +4,9 @@
 export { SleepPlanScreen } from './SleepPlanScreen';
 export { useSleepPlanStore } from './sleepPlanStore';
 export type {
-    DailyPlan,
-    WeeklySleepPlan,
-    SleepPlanRequest,
-    SleepPlanState,
-    PlanImportance,
+  DailyPlan,
+  WeeklySleepPlan,
+  SleepPlanRequest,
+  SleepPlanState,
+  PlanImportance,
 } from './types';

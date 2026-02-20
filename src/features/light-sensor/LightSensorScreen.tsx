@@ -64,10 +64,7 @@ export const LightSensorScreen: React.FC = () => {
     error,
   } = useLightSensor();
 
-  const {
-    lux,
-    source,
-  } = useAmbientLight();
+  const { lux, source } = useAmbientLight();
 
   const sleepEnvironment = lux !== null ? evaluateSleepEnvironment(lux) : null;
 
@@ -142,9 +139,7 @@ export const LightSensorScreen: React.FC = () => {
             バックグラウンド: {isBackgroundActive ? '動作中' : '停止中'}
           </Text>
         )}
-        <Text style={styles.statusText}>
-          データソース: {SOURCE_LABELS[source] ?? source}
-        </Text>
+        <Text style={styles.statusText}>データソース: {SOURCE_LABELS[source] ?? source}</Text>
       </View>
     </SafeAreaView>
   );

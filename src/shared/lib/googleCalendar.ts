@@ -129,7 +129,13 @@ class GoogleCalendarClient {
         continue;
       }
       if (line.startsWith('END:VEVENT')) {
-        if (inEvent && currentEvent && currentEvent.title && currentEvent.start && currentEvent.end) {
+        if (
+          inEvent &&
+          currentEvent &&
+          currentEvent.title &&
+          currentEvent.start &&
+          currentEvent.end
+        ) {
           events.push(currentEvent as CalendarEvent);
         }
         inEvent = false;
@@ -195,7 +201,7 @@ class GoogleCalendarClient {
         title: '深夜作業',
         start: new Date(Date.now() + 24 * 60 * 60 * 1000).setHours(2, 0, 0, 0) as unknown as Date,
         end: new Date(Date.now() + 24 * 60 * 60 * 1000).setHours(3, 0, 0, 0) as unknown as Date,
-      }
+      },
     ];
   }
 

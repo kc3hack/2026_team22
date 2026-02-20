@@ -19,10 +19,7 @@ const getScoreColor = (score: number): string => {
 /**
  * 睡眠スコア表示コンポーネント
  */
-export const SleepScoreDisplay: React.FC<SleepScoreDisplayProps> = ({
-  score,
-  dateLabel,
-}) => {
+export const SleepScoreDisplay: React.FC<SleepScoreDisplayProps> = ({ score, dateLabel }) => {
   const color = getScoreColor(score);
 
   return (
@@ -79,5 +76,4 @@ const styles = StyleSheet.create({
     marginBottom: 45,
     color: '#94A3B8',
   },
-
 });
