@@ -25,16 +25,17 @@ import { MorningReviewCard } from './components/MorningReviewCard';
 export const HomeScreen: React.FC = () => {
   const router = useRouter();
   const settings = useSleepSettingsStore();
-  const { logs, setMood } = useSleepLogStore();
+  const { logs, setMood, fetchLogs } = useSleepLogStore();
   const latestLog = logs[0] ?? null;
   const latestScore = latestLog?.score ?? null;
   const { plan, fetchPlan } = useSleepPlanStore();
   const todayPlan = useSleepPlanStore(state => state.getTodayPlan());
 
-  // プランを取得（キャッシュ期限内ならスキップ）
+  // ログとプランを取得
   useEffect(() => {
+    void fetchLogs();
     void fetchPlan();
-  }, [fetchPlan]);
+  }, [fetchLogs, fetchPlan]);
 
   // オーバーライド考慮の有効な時刻
   const effectiveSleep = settings.getEffectiveSleepTime();
@@ -151,7 +152,7 @@ export const HomeScreen: React.FC = () => {
             <MorningReviewCard
               score={latestScore}
               initialMood={latestLog.mood}
-              onSelectMood={mood => setMood(latestLog.id, mood)}
+              onSelectMood={mood => void setMood(latestLog.id, mood)}
             />
           )}
 
