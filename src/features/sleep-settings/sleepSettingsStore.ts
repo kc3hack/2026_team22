@@ -8,6 +8,12 @@ interface SleepSettingsActions {
   setSleepDuration: (hours: number) => void;
   /** 就寝予定時刻をDate.getTime()で取得 */
   getSleepTimeToday: () => number;
+  /** レジリエンスウィンドウ時間を設定 */
+  setResilienceWindow: (minutes: number) => void;
+  /** ミッション設定を更新 */
+  setMissionSettings: (enabled: boolean, target: string) => void;
+  /** 起床〜出発までの所要時間を設定 */
+  setPreparationTime: (minutes: number) => void;
 }
 
 /**
@@ -39,12 +45,22 @@ export const useSleepSettingsStore = create<SleepSettings & SleepSettingsActions
     defaultDuration
   );
 
+  // New settings defaults
+  const defaultResilienceWindow = 20; // 20 minutes default
+  const defaultMissionEnabled = false;
+  const defaultMissionTarget = 'washroom';
+  const defaultPreparationMinutes = 60; // 1 hour default
+
   return {
     wakeUpHour: defaultWakeUp.hour,
     wakeUpMinute: defaultWakeUp.minute,
     sleepDurationHours: defaultDuration,
     calculatedSleepHour: defaultSleep.hour,
     calculatedSleepMinute: defaultSleep.minute,
+    resilienceWindowMinutes: defaultResilienceWindow,
+    missionEnabled: defaultMissionEnabled,
+    missionTarget: defaultMissionTarget,
+    preparationMinutes: defaultPreparationMinutes,
 
     setWakeUpTime: (hour: number, minute: number) => {
       const sleep = calculateSleepTime(hour, minute, get().sleepDurationHours);
@@ -64,6 +80,10 @@ export const useSleepSettingsStore = create<SleepSettings & SleepSettingsActions
         calculatedSleepMinute: sleep.minute,
       });
     },
+
+    setResilienceWindow: (minutes: number) => set({ resilienceWindowMinutes: minutes }),
+    setMissionSettings: (enabled: boolean, target: string) => set({ missionEnabled: enabled, missionTarget: target }),
+    setPreparationTime: (minutes: number) => set({ preparationMinutes: minutes }),
 
     getSleepTimeToday: () => {
       const now = new Date();

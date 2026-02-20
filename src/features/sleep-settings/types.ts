@@ -14,4 +14,12 @@ export interface SleepSettings {
   calculatedSleepHour: number;
   /** 就寝予定時刻の分（自動計算） */
   calculatedSleepMinute: number;
+  /** レジリエンスウィンドウ（分）：Phase 1の継続時間 */
+  resilienceWindowMinutes: number;
+  /** ミッション有効 */
+  missionEnabled: boolean;
+  /** ミッション対象（例：'washroom'） */
+  missionTarget: string;
+  /** 起床〜出発までの所要時間（分） */
+  preparationMinutes: number;
 }

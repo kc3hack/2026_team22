@@ -5,6 +5,7 @@ import { COLORS } from '@shared/constants';
 import { useSleepSettingsStore } from '@features/sleep-settings';
 import { useSleepMonitorStore } from '@features/sleep-monitor';
 import { useSleepLogStore } from '@features/sleep-log';
+import { SleepAdvice } from '@features/sleep-schedule';
 import { useSleepPlanStore } from '@features/sleep-plan';
 import { useEffect } from 'react';
 
@@ -43,6 +44,8 @@ export const HomeScreen: React.FC = () => {
       </View>
 
       <View style={styles.content}>
+        {/* レコメンド */}
+        <SleepAdvice />
         {/* 今日の睡眠プラン */}
         {todayPlan && (
           <TouchableOpacity
