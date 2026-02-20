@@ -1,9 +1,8 @@
 {
-  "_comment": "Expoアプリの設定。アプリ名、アイコン、iOS/Androidのパッケージ名など",
   "expo": {
     "name": "SleepSupportApp",
     "slug": "SleepSupportApp",
-    "version": "1.0.0",
+    "version": "1.1.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "scheme": "sleepsupportapp",
@@ -25,12 +24,27 @@
       },
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
-      "package": "com.sleepsupportapp"
+      "package": "com.sleepsupportapp",
+      "permissions": [
+        "android.permission.CAMERA",
+        "android.permission.SCHEDULE_EXACT_ALARM",
+        "android.permission.POST_NOTIFICATIONS"
+      ]
     },
     "web": {
       "favicon": "./assets/favicon.png",
       "bundler": "metro"
     },
-    "plugins": ["expo-router"]
+    "plugins": [
+      "./withBackgroundActions",
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "usesCleartextTraffic": true
+          }
+        }
+      ]
+    ]
   }
 }

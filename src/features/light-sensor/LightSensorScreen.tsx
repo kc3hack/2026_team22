@@ -7,17 +7,36 @@ import { LightMeter } from './components/LightMeter';
 /**
  * 照度センサー画面コンポーネント
  * 睡眠環境の照度を測定・評価する
+ * バックグラウンドタスク機能にも対応
  */
 export const LightSensorScreen: React.FC = () => {
-  const { data, isAvailable, isActive, sleepEnvironment, startSensor, stopSensor, error } =
-    useLightSensor();
+  const {
+    data,
+    isAvailable,
+    isActive,
+    isBackgroundActive,
+    sleepEnvironment,
+    startSensor,
+    stopSensor,
+    startBackgroundTask,
+    stopBackgroundTask,
+    error,
+  } = useLightSensor();
 
   // センサーが利用可能な場合、自動的に開始
   useEffect(() => {
-    if (isAvailable && !isActive) {
+    if (isAvailable && !isActive && !isBackgroundActive) {
       startSensor();
     }
-  }, [isAvailable, isActive, startSensor]);
+  }, [isAvailable, isActive, isBackgroundActive, startSensor]);
+
+  const handleStartBackgroundTask = async () => {
+    await startBackgroundTask();
+  };
+
+  const handleStopBackgroundTask = async () => {
+    await stopBackgroundTask();
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -40,17 +59,41 @@ export const LightSensorScreen: React.FC = () => {
       </View>
 
       <View style={styles.footer}>
+        {/* フォアグラウンド計測ボタン */}
         <TouchableOpacity
           style={[styles.button, isActive ? styles.buttonStop : styles.buttonStart]}
           onPress={isActive ? stopSensor : startSensor}
-          disabled={!isAvailable}
+          disabled={!isAvailable || isBackgroundActive}
         >
-          <Text style={styles.buttonText}>{isActive ? '計測停止' : '計測開始'}</Text>
+          <Text style={styles.buttonText}>
+            {isActive ? 'フォアグラウンド計測停止' : 'フォアグラウンド計測開始'}
+          </Text>
         </TouchableOpacity>
 
+        {/* バックグラウンドタスクボタン（Androidのみ） */}
+        {Platform.OS === 'android' && (
+          <TouchableOpacity
+            style={[
+              styles.button,
+              isBackgroundActive ? styles.buttonBackgroundStop : styles.buttonBackgroundStart,
+            ]}
+            onPress={isBackgroundActive ? handleStopBackgroundTask : handleStartBackgroundTask}
+            disabled={!isAvailable}
+          >
+            <Text style={styles.buttonText}>
+              {isBackgroundActive ? 'バックグラウンド計測停止' : 'バックグラウンド計測開始'}
+            </Text>
+          </TouchableOpacity>
+        )}
+
         <Text style={styles.statusText}>
-          センサー状態: {isAvailable ? (isActive ? '動作中' : '停止中') : '利用不可'}
+          フォアグラウンド: {isAvailable ? (isActive ? '動作中' : '停止中') : '利用不可'}
         </Text>
+        {Platform.OS === 'android' && (
+          <Text style={styles.statusText}>
+            バックグラウンド: {isBackgroundActive ? '動作中' : '停止中'}
+          </Text>
+        )}
       </View>
     </SafeAreaView>
   );
@@ -117,6 +160,12 @@ const styles = StyleSheet.create({
   },
   buttonStop: {
     backgroundColor: COLORS.error,
+  },
+  buttonBackgroundStart: {
+    backgroundColor: '#8B5CF6',
+  },
+  buttonBackgroundStop: {
+    backgroundColor: '#EC4899',
   },
   buttonText: {
     color: COLORS.text.dark,
