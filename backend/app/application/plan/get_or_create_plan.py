@@ -1,6 +1,8 @@
 """
 GetOrCreatePlanUseCase - 週間睡眠プラン取得
 キャッシュヒットなら返却、ミスなら LLM で生成して保存して返す。
+force=True の場合はキャッシュを無視して再計算する。
+todayOverride を署名ハッシュと LLM 入力に含める。
 """
 
 from __future__ import annotations
@@ -23,11 +25,15 @@ class GetOrCreatePlanInput:
         calendar_events: list[Any],
         sleep_logs: list[Any],
         settings: dict[str, Any],
+        today_override: dict[str, Any] | None = None,
+        force: bool = False,
     ):
         self.user_id = user_id
         self.calendar_events = calendar_events
         self.sleep_logs = sleep_logs
         self.settings = settings
+        self.today_override = today_override
+        self.force = force
 
 
 class GetOrCreatePlanUseCase(BaseUseCase[GetOrCreatePlanInput, dict[str, Any]]):
@@ -46,20 +52,25 @@ class GetOrCreatePlanUseCase(BaseUseCase[GetOrCreatePlanInput, dict[str, Any]]):
             input.calendar_events,
             input.sleep_logs,
             input.settings,
+            input.today_override,
         )
 
-        # キャッシュヒット
-        cached = await self.cache_repo.get_by_user_and_hash(
-            input.user_id, signature_hash
-        )
-        if cached:
-            return json.loads(cached.plan_json)
+        # force=True でなければキャッシュを検索
+        if not input.force:
+            cached = await self.cache_repo.get_by_user_and_hash(
+                input.user_id, signature_hash
+            )
+            if cached:
+                plan = json.loads(cached.plan_json)
+                plan["cache_hit"] = True
+                return plan
 
-        # キャッシュミス: LLM で週間プラン生成
+        # キャッシュミス（または force）: LLM で週間プラン生成
         plan = await self.plan_generator.generate_week_plan(
             input.calendar_events,
             input.sleep_logs,
             input.settings,
+            today_override=input.today_override,
         )
         plan_json = json.dumps(plan, ensure_ascii=False)
 
@@ -68,4 +79,5 @@ class GetOrCreatePlanUseCase(BaseUseCase[GetOrCreatePlanInput, dict[str, Any]]):
             signature_hash=signature_hash,
             plan_json=plan_json,
         )
+        plan["cache_hit"] = False
         return plan

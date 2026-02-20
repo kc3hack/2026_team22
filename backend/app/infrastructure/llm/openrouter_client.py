@@ -94,9 +94,11 @@ class OpenRouterClient:
         calendar_events: list[Any],
         sleep_logs: list[Any],
         settings: dict[str, Any],
+        today_override: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
         """
         週間睡眠プランを生成する（IPlanGenerator の実装）
+        todayOverride がある場合はプロンプトに含め、今日だけの就寝・起床時刻を反映する。
         """
         user_content = (
             "以下を元に、このユーザー向けの「1週間の睡眠プラン」を JSON で返してください。\n"
@@ -116,6 +118,13 @@ class OpenRouterClient:
             "設定: "
             + json.dumps(settings, ensure_ascii=False)
         )
+        if today_override is not None:
+            user_content += (
+                "\n\n"
+                "今日のオーバーライド（今日だけの就寝・起床時刻の変更）: "
+                + json.dumps(today_override, ensure_ascii=False)
+                + "\n上記のオーバーライドを今日の就寝・起床時刻に反映してください。"
+            )
         messages = [
             {
                 "role": "system",

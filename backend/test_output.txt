@@ -1,0 +1,2327 @@
+﻿============================= test session starts =============================
+platform win32 -- Python 3.11.3, pytest-7.4.4, pluggy-1.6.0 -- C:\2026_team22\backend\.venv\Scripts\python.exe
+cachedir: .pytest_cache
+rootdir: C:\2026_team22\backend
+configfile: pytest.ini
+plugins: anyio-4.12.1, asyncio-0.23.8
+asyncio: mode=Mode.AUTO
+collecting ... collected 28 items
+
+tests/test_plan_api.py::TestPlanAPIAuth::test_plan_returns_401_without_authorization ERROR [  3%]
+tests/test_plan_api.py::TestPlanAPI::test_plan_returns_week_plan ERROR   [  7%]
+tests/test_plan_api.py::TestPlanAPI::test_plan_cache_hit_same_body ERROR [ 10%]
+tests/test_plan_api.py::TestPlanAPI::test_force_bypasses_cache ERROR     [ 14%]
+tests/test_plan_api.py::TestPlanAPI::test_today_override_in_request ERROR [ 17%]
+tests/test_plan_api.py::TestPlanAPI::test_today_override_changes_cache_key ERROR [ 21%]
+tests/test_plan_cache_repository.py::TestSleepPlanCacheRepository::test_upsert_creates_then_updates ERROR [ 25%]
+tests/test_plan_cache_repository.py::TestSleepPlanCacheRepository::test_get_by_user_and_hash_hit_and_miss ERROR [ 28%]
+tests/test_plan_usecase.py::TestGetOrCreatePlanUseCase::test_cache_hit_returns_cached_plan ERROR [ 32%]
+tests/test_plan_usecase.py::TestGetOrCreatePlanUseCase::test_cache_miss_calls_llm_and_upserts ERROR [ 35%]
+tests/test_plan_usecase.py::TestGetOrCreatePlanUseCase::test_force_skips_cache ERROR [ 39%]
+tests/test_plan_usecase.py::TestGetOrCreatePlanUseCase::test_today_override_passed_to_generator ERROR [ 42%]
+tests/test_plan_usecase.py::TestGetOrCreatePlanUseCase::test_today_override_changes_signature ERROR [ 46%]
+tests/test_signature.py::TestBuildSignatureHash::test_same_input_produces_same_hash ERROR [ 50%]
+tests/test_signature.py::TestBuildSignatureHash::test_different_input_produces_different_hash ERROR [ 53%]
+tests/test_signature.py::TestBuildSignatureHash::test_dict_key_order_independent ERROR [ 57%]
+tests/test_signature.py::TestBuildSignatureHash::test_empty_input_deterministic ERROR [ 60%]
+tests/test_signature.py::TestBuildSignatureHash::test_settings_only ERROR [ 64%]
+tests/test_signature.py::TestBuildSignatureHash::test_today_override_changes_hash ERROR [ 67%]
+tests/test_signature.py::TestBuildSignatureHash::test_today_override_same_produces_same_hash ERROR [ 71%]
+tests/test_signature.py::TestBuildSignatureHash::test_today_override_different_date_changes_hash ERROR [ 75%]
+tests/test_signature.py::TestBuildSignatureHash::test_today_override_none_is_deterministic ERROR [ 78%]
+tests/test_users_crud.py::TestUsersCRUD::test_create_and_read_user ERROR [ 82%]
+tests/test_users_crud.py::TestUsersCRUD::test_create_duplicate_email_fails ERROR [ 85%]
+tests/test_users_crud.py::TestUsersCRUD::test_update_user ERROR          [ 89%]
+tests/test_users_crud.py::TestUsersCRUD::test_delete_user ERROR          [ 92%]
+tests/test_users_crud.py::TestUsersCRUD::test_get_nonexistent_user_returns_404 ERROR [ 96%]
+tests/test_users_crud.py::TestUsersCRUD::test_full_crud_flow ERROR       [100%]
+
+=================================== ERRORS ====================================
+_ ERROR at setup of TestPlanAPIAuth.test_plan_returns_401_without_authorization _
+tests\conftest.py:49: in _ensure_db_tables
+    event_loop.run_until_complete(create_all())
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\base_events.py:653: in run_until_complete
+    return future.result()
+tests\conftest.py:46: in create_all
+    async with engine.begin() as conn:
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\contextlib.py:204: in __aenter__
+    return await anext(self.gen)
+.venv\Lib\site-packages\sqlalchemy\ext\asyncio\engine.py:1068: in begin
+    async with conn:
+.venv\Lib\site-packages\sqlalchemy\ext\asyncio\base.py:121: in __aenter__
+    return await self.start(is_ctxmanager=True)
+.venv\Lib\site-packages\sqlalchemy\ext\asyncio\engine.py:275: in start
+    await greenlet_spawn(self.sync_engine.connect)
+.venv\Lib\site-packages\sqlalchemy\util\_concurrency_py3k.py:201: in greenlet_spawn
+    result = context.throw(*sys.exc_info())
+.venv\Lib\site-packages\sqlalchemy\engine\base.py:3285: in connect
+    return self._connection_cls(self)
+.venv\Lib\site-packages\sqlalchemy\engine\base.py:143: in __init__
+    self._dbapi_connection = engine.raw_connection()
+.venv\Lib\site-packages\sqlalchemy\engine\base.py:3309: in raw_connection
+    return self.pool.connect()
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:447: in connect
+    return _ConnectionFairy._checkout(self)
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:1264: in _checkout
+    fairy = _ConnectionRecord.checkout(pool)
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:711: in checkout
+    rec = pool._do_get()
+.venv\Lib\site-packages\sqlalchemy\pool\impl.py:177: in _do_get
+    with util.safe_reraise():
+.venv\Lib\site-packages\sqlalchemy\util\langhelpers.py:224: in __exit__
+    raise exc_value.with_traceback(exc_tb)
+.venv\Lib\site-packages\sqlalchemy\pool\impl.py:175: in _do_get
+    return self._create_connection()
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:388: in _create_connection
+    return _ConnectionRecord(self)
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:673: in __init__
+    self.__connect()
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:899: in __connect
+    with util.safe_reraise():
+.venv\Lib\site-packages\sqlalchemy\util\langhelpers.py:224: in __exit__
+    raise exc_value.with_traceback(exc_tb)
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:895: in __connect
+    self.dbapi_connection = connection = pool._invoke_creator(self)
+.venv\Lib\site-packages\sqlalchemy\engine\create.py:661: in connect
+    return dialect.connect(*cargs, **cparams)
+.venv\Lib\site-packages\sqlalchemy\engine\default.py:630: in connect
+    return self.loaded_dbapi.connect(*cargs, **cparams)  # type: ignore[no-any-return]  # NOQA: E501
+.venv\Lib\site-packages\sqlalchemy\dialects\postgresql\asyncpg.py:955: in connect
+    await_only(creator_fn(*arg, **kw)),
+.venv\Lib\site-packages\sqlalchemy\util\_concurrency_py3k.py:132: in await_only
+    return current.parent.switch(awaitable)  # type: ignore[no-any-return,attr-defined] # noqa: E501
+.venv\Lib\site-packages\sqlalchemy\util\_concurrency_py3k.py:196: in greenlet_spawn
+    value = await result
+.venv\Lib\site-packages\asyncpg\connection.py:2443: in connect
+    return await connect_utils._connect(
+.venv\Lib\site-packages\asyncpg\connect_utils.py:1249: in _connect
+    raise last_error or exceptions.TargetServerAttributeNotMatched(
+.venv\Lib\site-packages\asyncpg\connect_utils.py:1218: in _connect
+    conn = await _connect_addr(
+.venv\Lib\site-packages\asyncpg\connect_utils.py:1054: in _connect_addr
+    return await __connect_addr(params, True, *args)
+.venv\Lib\site-packages\asyncpg\connect_utils.py:1099: in __connect_addr
+    tr, pr = await connector
+.venv\Lib\site-packages\asyncpg\connect_utils.py:969: in _create_ssl_connection
+    tr, pr = await loop.create_connection(
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\base_events.py:1090: in create_connection
+    raise exceptions[0]
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\base_events.py:1069: in create_connection
+    sock = await self._connect_sock(
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\base_events.py:973: in _connect_sock
+    await self.sock_connect(sock, address)
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\proactor_events.py:726: in sock_connect
+    return await self._proactor.connect(sock, address)
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\windows_events.py:846: in _poll
+    value = callback(transferred, key, ov)
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\windows_events.py:633: in finish_connect
+    ov.getresult()
+E   ConnectionRefusedError: [WinError 1225] リモート コンピューターによりネットワーク接続が拒否されました。
+__________ ERROR at setup of TestPlanAPI.test_plan_returns_week_plan __________
+tests\conftest.py:49: in _ensure_db_tables
+    event_loop.run_until_complete(create_all())
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\base_events.py:653: in run_until_complete
+    return future.result()
+tests\conftest.py:46: in create_all
+    async with engine.begin() as conn:
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\contextlib.py:204: in __aenter__
+    return await anext(self.gen)
+.venv\Lib\site-packages\sqlalchemy\ext\asyncio\engine.py:1068: in begin
+    async with conn:
+.venv\Lib\site-packages\sqlalchemy\ext\asyncio\base.py:121: in __aenter__
+    return await self.start(is_ctxmanager=True)
+.venv\Lib\site-packages\sqlalchemy\ext\asyncio\engine.py:275: in start
+    await greenlet_spawn(self.sync_engine.connect)
+.venv\Lib\site-packages\sqlalchemy\util\_concurrency_py3k.py:201: in greenlet_spawn
+    result = context.throw(*sys.exc_info())
+.venv\Lib\site-packages\sqlalchemy\engine\base.py:3285: in connect
+    return self._connection_cls(self)
+.venv\Lib\site-packages\sqlalchemy\engine\base.py:143: in __init__
+    self._dbapi_connection = engine.raw_connection()
+.venv\Lib\site-packages\sqlalchemy\engine\base.py:3309: in raw_connection
+    return self.pool.connect()
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:447: in connect
+    return _ConnectionFairy._checkout(self)
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:1264: in _checkout
+    fairy = _ConnectionRecord.checkout(pool)
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:711: in checkout
+    rec = pool._do_get()
+.venv\Lib\site-packages\sqlalchemy\pool\impl.py:177: in _do_get
+    with util.safe_reraise():
+.venv\Lib\site-packages\sqlalchemy\util\langhelpers.py:224: in __exit__
+    raise exc_value.with_traceback(exc_tb)
+.venv\Lib\site-packages\sqlalchemy\pool\impl.py:175: in _do_get
+    return self._create_connection()
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:388: in _create_connection
+    return _ConnectionRecord(self)
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:673: in __init__
+    self.__connect()
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:899: in __connect
+    with util.safe_reraise():
+.venv\Lib\site-packages\sqlalchemy\util\langhelpers.py:224: in __exit__
+    raise exc_value.with_traceback(exc_tb)
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:895: in __connect
+    self.dbapi_connection = connection = pool._invoke_creator(self)
+.venv\Lib\site-packages\sqlalchemy\engine\create.py:661: in connect
+    return dialect.connect(*cargs, **cparams)
+.venv\Lib\site-packages\sqlalchemy\engine\default.py:630: in connect
+    return self.loaded_dbapi.connect(*cargs, **cparams)  # type: ignore[no-any-return]  # NOQA: E501
+.venv\Lib\site-packages\sqlalchemy\dialects\postgresql\asyncpg.py:955: in connect
+    await_only(creator_fn(*arg, **kw)),
+.venv\Lib\site-packages\sqlalchemy\util\_concurrency_py3k.py:132: in await_only
+    return current.parent.switch(awaitable)  # type: ignore[no-any-return,attr-defined] # noqa: E501
+.venv\Lib\site-packages\sqlalchemy\util\_concurrency_py3k.py:196: in greenlet_spawn
+    value = await result
+.venv\Lib\site-packages\asyncpg\connection.py:2443: in connect
+    return await connect_utils._connect(
+.venv\Lib\site-packages\asyncpg\connect_utils.py:1249: in _connect
+    raise last_error or exceptions.TargetServerAttributeNotMatched(
+.venv\Lib\site-packages\asyncpg\connect_utils.py:1218: in _connect
+    conn = await _connect_addr(
+.venv\Lib\site-packages\asyncpg\connect_utils.py:1054: in _connect_addr
+    return await __connect_addr(params, True, *args)
+.venv\Lib\site-packages\asyncpg\connect_utils.py:1099: in __connect_addr
+    tr, pr = await connector
+.venv\Lib\site-packages\asyncpg\connect_utils.py:969: in _create_ssl_connection
+    tr, pr = await loop.create_connection(
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\base_events.py:1090: in create_connection
+    raise exceptions[0]
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\base_events.py:1069: in create_connection
+    sock = await self._connect_sock(
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\base_events.py:973: in _connect_sock
+    await self.sock_connect(sock, address)
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\proactor_events.py:726: in sock_connect
+    return await self._proactor.connect(sock, address)
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\windows_events.py:846: in _poll
+    value = callback(transferred, key, ov)
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\windows_events.py:633: in finish_connect
+    ov.getresult()
+E   ConnectionRefusedError: [WinError 1225] リモート コンピューターによりネットワーク接続が拒否されました。
+_________ ERROR at setup of TestPlanAPI.test_plan_cache_hit_same_body _________
+tests\conftest.py:49: in _ensure_db_tables
+    event_loop.run_until_complete(create_all())
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\base_events.py:653: in run_until_complete
+    return future.result()
+tests\conftest.py:46: in create_all
+    async with engine.begin() as conn:
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\contextlib.py:204: in __aenter__
+    return await anext(self.gen)
+.venv\Lib\site-packages\sqlalchemy\ext\asyncio\engine.py:1068: in begin
+    async with conn:
+.venv\Lib\site-packages\sqlalchemy\ext\asyncio\base.py:121: in __aenter__
+    return await self.start(is_ctxmanager=True)
+.venv\Lib\site-packages\sqlalchemy\ext\asyncio\engine.py:275: in start
+    await greenlet_spawn(self.sync_engine.connect)
+.venv\Lib\site-packages\sqlalchemy\util\_concurrency_py3k.py:201: in greenlet_spawn
+    result = context.throw(*sys.exc_info())
+.venv\Lib\site-packages\sqlalchemy\engine\base.py:3285: in connect
+    return self._connection_cls(self)
+.venv\Lib\site-packages\sqlalchemy\engine\base.py:143: in __init__
+    self._dbapi_connection = engine.raw_connection()
+.venv\Lib\site-packages\sqlalchemy\engine\base.py:3309: in raw_connection
+    return self.pool.connect()
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:447: in connect
+    return _ConnectionFairy._checkout(self)
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:1264: in _checkout
+    fairy = _ConnectionRecord.checkout(pool)
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:711: in checkout
+    rec = pool._do_get()
+.venv\Lib\site-packages\sqlalchemy\pool\impl.py:177: in _do_get
+    with util.safe_reraise():
+.venv\Lib\site-packages\sqlalchemy\util\langhelpers.py:224: in __exit__
+    raise exc_value.with_traceback(exc_tb)
+.venv\Lib\site-packages\sqlalchemy\pool\impl.py:175: in _do_get
+    return self._create_connection()
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:388: in _create_connection
+    return _ConnectionRecord(self)
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:673: in __init__
+    self.__connect()
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:899: in __connect
+    with util.safe_reraise():
+.venv\Lib\site-packages\sqlalchemy\util\langhelpers.py:224: in __exit__
+    raise exc_value.with_traceback(exc_tb)
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:895: in __connect
+    self.dbapi_connection = connection = pool._invoke_creator(self)
+.venv\Lib\site-packages\sqlalchemy\engine\create.py:661: in connect
+    return dialect.connect(*cargs, **cparams)
+.venv\Lib\site-packages\sqlalchemy\engine\default.py:630: in connect
+    return self.loaded_dbapi.connect(*cargs, **cparams)  # type: ignore[no-any-return]  # NOQA: E501
+.venv\Lib\site-packages\sqlalchemy\dialects\postgresql\asyncpg.py:955: in connect
+    await_only(creator_fn(*arg, **kw)),
+.venv\Lib\site-packages\sqlalchemy\util\_concurrency_py3k.py:132: in await_only
+    return current.parent.switch(awaitable)  # type: ignore[no-any-return,attr-defined] # noqa: E501
+.venv\Lib\site-packages\sqlalchemy\util\_concurrency_py3k.py:196: in greenlet_spawn
+    value = await result
+.venv\Lib\site-packages\asyncpg\connection.py:2443: in connect
+    return await connect_utils._connect(
+.venv\Lib\site-packages\asyncpg\connect_utils.py:1249: in _connect
+    raise last_error or exceptions.TargetServerAttributeNotMatched(
+.venv\Lib\site-packages\asyncpg\connect_utils.py:1218: in _connect
+    conn = await _connect_addr(
+.venv\Lib\site-packages\asyncpg\connect_utils.py:1054: in _connect_addr
+    return await __connect_addr(params, True, *args)
+.venv\Lib\site-packages\asyncpg\connect_utils.py:1099: in __connect_addr
+    tr, pr = await connector
+.venv\Lib\site-packages\asyncpg\connect_utils.py:969: in _create_ssl_connection
+    tr, pr = await loop.create_connection(
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\base_events.py:1090: in create_connection
+    raise exceptions[0]
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\base_events.py:1069: in create_connection
+    sock = await self._connect_sock(
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\base_events.py:973: in _connect_sock
+    await self.sock_connect(sock, address)
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\proactor_events.py:726: in sock_connect
+    return await self._proactor.connect(sock, address)
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\windows_events.py:846: in _poll
+    value = callback(transferred, key, ov)
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\windows_events.py:633: in finish_connect
+    ov.getresult()
+E   ConnectionRefusedError: [WinError 1225] リモート コンピューターによりネットワーク接続が拒否されました。
+___________ ERROR at setup of TestPlanAPI.test_force_bypasses_cache ___________
+tests\conftest.py:49: in _ensure_db_tables
+    event_loop.run_until_complete(create_all())
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\base_events.py:653: in run_until_complete
+    return future.result()
+tests\conftest.py:46: in create_all
+    async with engine.begin() as conn:
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\contextlib.py:204: in __aenter__
+    return await anext(self.gen)
+.venv\Lib\site-packages\sqlalchemy\ext\asyncio\engine.py:1068: in begin
+    async with conn:
+.venv\Lib\site-packages\sqlalchemy\ext\asyncio\base.py:121: in __aenter__
+    return await self.start(is_ctxmanager=True)
+.venv\Lib\site-packages\sqlalchemy\ext\asyncio\engine.py:275: in start
+    await greenlet_spawn(self.sync_engine.connect)
+.venv\Lib\site-packages\sqlalchemy\util\_concurrency_py3k.py:201: in greenlet_spawn
+    result = context.throw(*sys.exc_info())
+.venv\Lib\site-packages\sqlalchemy\engine\base.py:3285: in connect
+    return self._connection_cls(self)
+.venv\Lib\site-packages\sqlalchemy\engine\base.py:143: in __init__
+    self._dbapi_connection = engine.raw_connection()
+.venv\Lib\site-packages\sqlalchemy\engine\base.py:3309: in raw_connection
+    return self.pool.connect()
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:447: in connect
+    return _ConnectionFairy._checkout(self)
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:1264: in _checkout
+    fairy = _ConnectionRecord.checkout(pool)
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:711: in checkout
+    rec = pool._do_get()
+.venv\Lib\site-packages\sqlalchemy\pool\impl.py:177: in _do_get
+    with util.safe_reraise():
+.venv\Lib\site-packages\sqlalchemy\util\langhelpers.py:224: in __exit__
+    raise exc_value.with_traceback(exc_tb)
+.venv\Lib\site-packages\sqlalchemy\pool\impl.py:175: in _do_get
+    return self._create_connection()
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:388: in _create_connection
+    return _ConnectionRecord(self)
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:673: in __init__
+    self.__connect()
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:899: in __connect
+    with util.safe_reraise():
+.venv\Lib\site-packages\sqlalchemy\util\langhelpers.py:224: in __exit__
+    raise exc_value.with_traceback(exc_tb)
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:895: in __connect
+    self.dbapi_connection = connection = pool._invoke_creator(self)
+.venv\Lib\site-packages\sqlalchemy\engine\create.py:661: in connect
+    return dialect.connect(*cargs, **cparams)
+.venv\Lib\site-packages\sqlalchemy\engine\default.py:630: in connect
+    return self.loaded_dbapi.connect(*cargs, **cparams)  # type: ignore[no-any-return]  # NOQA: E501
+.venv\Lib\site-packages\sqlalchemy\dialects\postgresql\asyncpg.py:955: in connect
+    await_only(creator_fn(*arg, **kw)),
+.venv\Lib\site-packages\sqlalchemy\util\_concurrency_py3k.py:132: in await_only
+    return current.parent.switch(awaitable)  # type: ignore[no-any-return,attr-defined] # noqa: E501
+.venv\Lib\site-packages\sqlalchemy\util\_concurrency_py3k.py:196: in greenlet_spawn
+    value = await result
+.venv\Lib\site-packages\asyncpg\connection.py:2443: in connect
+    return await connect_utils._connect(
+.venv\Lib\site-packages\asyncpg\connect_utils.py:1249: in _connect
+    raise last_error or exceptions.TargetServerAttributeNotMatched(
+.venv\Lib\site-packages\asyncpg\connect_utils.py:1218: in _connect
+    conn = await _connect_addr(
+.venv\Lib\site-packages\asyncpg\connect_utils.py:1054: in _connect_addr
+    return await __connect_addr(params, True, *args)
+.venv\Lib\site-packages\asyncpg\connect_utils.py:1099: in __connect_addr
+    tr, pr = await connector
+.venv\Lib\site-packages\asyncpg\connect_utils.py:969: in _create_ssl_connection
+    tr, pr = await loop.create_connection(
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\base_events.py:1090: in create_connection
+    raise exceptions[0]
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\base_events.py:1069: in create_connection
+    sock = await self._connect_sock(
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\base_events.py:973: in _connect_sock
+    await self.sock_connect(sock, address)
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\proactor_events.py:726: in sock_connect
+    return await self._proactor.connect(sock, address)
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\windows_events.py:846: in _poll
+    value = callback(transferred, key, ov)
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\windows_events.py:633: in finish_connect
+    ov.getresult()
+E   ConnectionRefusedError: [WinError 1225] リモート コンピューターによりネットワーク接続が拒否されました。
+________ ERROR at setup of TestPlanAPI.test_today_override_in_request _________
+tests\conftest.py:49: in _ensure_db_tables
+    event_loop.run_until_complete(create_all())
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\base_events.py:653: in run_until_complete
+    return future.result()
+tests\conftest.py:46: in create_all
+    async with engine.begin() as conn:
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\contextlib.py:204: in __aenter__
+    return await anext(self.gen)
+.venv\Lib\site-packages\sqlalchemy\ext\asyncio\engine.py:1068: in begin
+    async with conn:
+.venv\Lib\site-packages\sqlalchemy\ext\asyncio\base.py:121: in __aenter__
+    return await self.start(is_ctxmanager=True)
+.venv\Lib\site-packages\sqlalchemy\ext\asyncio\engine.py:275: in start
+    await greenlet_spawn(self.sync_engine.connect)
+.venv\Lib\site-packages\sqlalchemy\util\_concurrency_py3k.py:201: in greenlet_spawn
+    result = context.throw(*sys.exc_info())
+.venv\Lib\site-packages\sqlalchemy\engine\base.py:3285: in connect
+    return self._connection_cls(self)
+.venv\Lib\site-packages\sqlalchemy\engine\base.py:143: in __init__
+    self._dbapi_connection = engine.raw_connection()
+.venv\Lib\site-packages\sqlalchemy\engine\base.py:3309: in raw_connection
+    return self.pool.connect()
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:447: in connect
+    return _ConnectionFairy._checkout(self)
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:1264: in _checkout
+    fairy = _ConnectionRecord.checkout(pool)
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:711: in checkout
+    rec = pool._do_get()
+.venv\Lib\site-packages\sqlalchemy\pool\impl.py:177: in _do_get
+    with util.safe_reraise():
+.venv\Lib\site-packages\sqlalchemy\util\langhelpers.py:224: in __exit__
+    raise exc_value.with_traceback(exc_tb)
+.venv\Lib\site-packages\sqlalchemy\pool\impl.py:175: in _do_get
+    return self._create_connection()
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:388: in _create_connection
+    return _ConnectionRecord(self)
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:673: in __init__
+    self.__connect()
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:899: in __connect
+    with util.safe_reraise():
+.venv\Lib\site-packages\sqlalchemy\util\langhelpers.py:224: in __exit__
+    raise exc_value.with_traceback(exc_tb)
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:895: in __connect
+    self.dbapi_connection = connection = pool._invoke_creator(self)
+.venv\Lib\site-packages\sqlalchemy\engine\create.py:661: in connect
+    return dialect.connect(*cargs, **cparams)
+.venv\Lib\site-packages\sqlalchemy\engine\default.py:630: in connect
+    return self.loaded_dbapi.connect(*cargs, **cparams)  # type: ignore[no-any-return]  # NOQA: E501
+.venv\Lib\site-packages\sqlalchemy\dialects\postgresql\asyncpg.py:955: in connect
+    await_only(creator_fn(*arg, **kw)),
+.venv\Lib\site-packages\sqlalchemy\util\_concurrency_py3k.py:132: in await_only
+    return current.parent.switch(awaitable)  # type: ignore[no-any-return,attr-defined] # noqa: E501
+.venv\Lib\site-packages\sqlalchemy\util\_concurrency_py3k.py:196: in greenlet_spawn
+    value = await result
+.venv\Lib\site-packages\asyncpg\connection.py:2443: in connect
+    return await connect_utils._connect(
+.venv\Lib\site-packages\asyncpg\connect_utils.py:1249: in _connect
+    raise last_error or exceptions.TargetServerAttributeNotMatched(
+.venv\Lib\site-packages\asyncpg\connect_utils.py:1218: in _connect
+    conn = await _connect_addr(
+.venv\Lib\site-packages\asyncpg\connect_utils.py:1054: in _connect_addr
+    return await __connect_addr(params, True, *args)
+.venv\Lib\site-packages\asyncpg\connect_utils.py:1099: in __connect_addr
+    tr, pr = await connector
+.venv\Lib\site-packages\asyncpg\connect_utils.py:969: in _create_ssl_connection
+    tr, pr = await loop.create_connection(
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\base_events.py:1090: in create_connection
+    raise exceptions[0]
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\base_events.py:1069: in create_connection
+    sock = await self._connect_sock(
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\base_events.py:973: in _connect_sock
+    await self.sock_connect(sock, address)
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\proactor_events.py:726: in sock_connect
+    return await self._proactor.connect(sock, address)
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\windows_events.py:846: in _poll
+    value = callback(transferred, key, ov)
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\windows_events.py:633: in finish_connect
+    ov.getresult()
+E   ConnectionRefusedError: [WinError 1225] リモート コンピューターによりネットワーク接続が拒否されました。
+_____ ERROR at setup of TestPlanAPI.test_today_override_changes_cache_key _____
+tests\conftest.py:49: in _ensure_db_tables
+    event_loop.run_until_complete(create_all())
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\base_events.py:653: in run_until_complete
+    return future.result()
+tests\conftest.py:46: in create_all
+    async with engine.begin() as conn:
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\contextlib.py:204: in __aenter__
+    return await anext(self.gen)
+.venv\Lib\site-packages\sqlalchemy\ext\asyncio\engine.py:1068: in begin
+    async with conn:
+.venv\Lib\site-packages\sqlalchemy\ext\asyncio\base.py:121: in __aenter__
+    return await self.start(is_ctxmanager=True)
+.venv\Lib\site-packages\sqlalchemy\ext\asyncio\engine.py:275: in start
+    await greenlet_spawn(self.sync_engine.connect)
+.venv\Lib\site-packages\sqlalchemy\util\_concurrency_py3k.py:201: in greenlet_spawn
+    result = context.throw(*sys.exc_info())
+.venv\Lib\site-packages\sqlalchemy\engine\base.py:3285: in connect
+    return self._connection_cls(self)
+.venv\Lib\site-packages\sqlalchemy\engine\base.py:143: in __init__
+    self._dbapi_connection = engine.raw_connection()
+.venv\Lib\site-packages\sqlalchemy\engine\base.py:3309: in raw_connection
+    return self.pool.connect()
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:447: in connect
+    return _ConnectionFairy._checkout(self)
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:1264: in _checkout
+    fairy = _ConnectionRecord.checkout(pool)
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:711: in checkout
+    rec = pool._do_get()
+.venv\Lib\site-packages\sqlalchemy\pool\impl.py:177: in _do_get
+    with util.safe_reraise():
+.venv\Lib\site-packages\sqlalchemy\util\langhelpers.py:224: in __exit__
+    raise exc_value.with_traceback(exc_tb)
+.venv\Lib\site-packages\sqlalchemy\pool\impl.py:175: in _do_get
+    return self._create_connection()
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:388: in _create_connection
+    return _ConnectionRecord(self)
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:673: in __init__
+    self.__connect()
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:899: in __connect
+    with util.safe_reraise():
+.venv\Lib\site-packages\sqlalchemy\util\langhelpers.py:224: in __exit__
+    raise exc_value.with_traceback(exc_tb)
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:895: in __connect
+    self.dbapi_connection = connection = pool._invoke_creator(self)
+.venv\Lib\site-packages\sqlalchemy\engine\create.py:661: in connect
+    return dialect.connect(*cargs, **cparams)
+.venv\Lib\site-packages\sqlalchemy\engine\default.py:630: in connect
+    return self.loaded_dbapi.connect(*cargs, **cparams)  # type: ignore[no-any-return]  # NOQA: E501
+.venv\Lib\site-packages\sqlalchemy\dialects\postgresql\asyncpg.py:955: in connect
+    await_only(creator_fn(*arg, **kw)),
+.venv\Lib\site-packages\sqlalchemy\util\_concurrency_py3k.py:132: in await_only
+    return current.parent.switch(awaitable)  # type: ignore[no-any-return,attr-defined] # noqa: E501
+.venv\Lib\site-packages\sqlalchemy\util\_concurrency_py3k.py:196: in greenlet_spawn
+    value = await result
+.venv\Lib\site-packages\asyncpg\connection.py:2443: in connect
+    return await connect_utils._connect(
+.venv\Lib\site-packages\asyncpg\connect_utils.py:1249: in _connect
+    raise last_error or exceptions.TargetServerAttributeNotMatched(
+.venv\Lib\site-packages\asyncpg\connect_utils.py:1218: in _connect
+    conn = await _connect_addr(
+.venv\Lib\site-packages\asyncpg\connect_utils.py:1054: in _connect_addr
+    return await __connect_addr(params, True, *args)
+.venv\Lib\site-packages\asyncpg\connect_utils.py:1099: in __connect_addr
+    tr, pr = await connector
+.venv\Lib\site-packages\asyncpg\connect_utils.py:969: in _create_ssl_connection
+    tr, pr = await loop.create_connection(
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\base_events.py:1090: in create_connection
+    raise exceptions[0]
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\base_events.py:1069: in create_connection
+    sock = await self._connect_sock(
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\base_events.py:973: in _connect_sock
+    await self.sock_connect(sock, address)
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\proactor_events.py:726: in sock_connect
+    return await self._proactor.connect(sock, address)
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\windows_events.py:846: in _poll
+    value = callback(transferred, key, ov)
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\windows_events.py:633: in finish_connect
+    ov.getresult()
+E   ConnectionRefusedError: [WinError 1225] リモート コンピューターによりネットワーク接続が拒否されました。
+_ ERROR at setup of TestSleepPlanCacheRepository.test_upsert_creates_then_updates _
+tests\conftest.py:49: in _ensure_db_tables
+    event_loop.run_until_complete(create_all())
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\base_events.py:653: in run_until_complete
+    return future.result()
+tests\conftest.py:46: in create_all
+    async with engine.begin() as conn:
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\contextlib.py:204: in __aenter__
+    return await anext(self.gen)
+.venv\Lib\site-packages\sqlalchemy\ext\asyncio\engine.py:1068: in begin
+    async with conn:
+.venv\Lib\site-packages\sqlalchemy\ext\asyncio\base.py:121: in __aenter__
+    return await self.start(is_ctxmanager=True)
+.venv\Lib\site-packages\sqlalchemy\ext\asyncio\engine.py:275: in start
+    await greenlet_spawn(self.sync_engine.connect)
+.venv\Lib\site-packages\sqlalchemy\util\_concurrency_py3k.py:201: in greenlet_spawn
+    result = context.throw(*sys.exc_info())
+.venv\Lib\site-packages\sqlalchemy\engine\base.py:3285: in connect
+    return self._connection_cls(self)
+.venv\Lib\site-packages\sqlalchemy\engine\base.py:143: in __init__
+    self._dbapi_connection = engine.raw_connection()
+.venv\Lib\site-packages\sqlalchemy\engine\base.py:3309: in raw_connection
+    return self.pool.connect()
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:447: in connect
+    return _ConnectionFairy._checkout(self)
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:1264: in _checkout
+    fairy = _ConnectionRecord.checkout(pool)
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:711: in checkout
+    rec = pool._do_get()
+.venv\Lib\site-packages\sqlalchemy\pool\impl.py:177: in _do_get
+    with util.safe_reraise():
+.venv\Lib\site-packages\sqlalchemy\util\langhelpers.py:224: in __exit__
+    raise exc_value.with_traceback(exc_tb)
+.venv\Lib\site-packages\sqlalchemy\pool\impl.py:175: in _do_get
+    return self._create_connection()
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:388: in _create_connection
+    return _ConnectionRecord(self)
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:673: in __init__
+    self.__connect()
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:899: in __connect
+    with util.safe_reraise():
+.venv\Lib\site-packages\sqlalchemy\util\langhelpers.py:224: in __exit__
+    raise exc_value.with_traceback(exc_tb)
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:895: in __connect
+    self.dbapi_connection = connection = pool._invoke_creator(self)
+.venv\Lib\site-packages\sqlalchemy\engine\create.py:661: in connect
+    return dialect.connect(*cargs, **cparams)
+.venv\Lib\site-packages\sqlalchemy\engine\default.py:630: in connect
+    return self.loaded_dbapi.connect(*cargs, **cparams)  # type: ignore[no-any-return]  # NOQA: E501
+.venv\Lib\site-packages\sqlalchemy\dialects\postgresql\asyncpg.py:955: in connect
+    await_only(creator_fn(*arg, **kw)),
+.venv\Lib\site-packages\sqlalchemy\util\_concurrency_py3k.py:132: in await_only
+    return current.parent.switch(awaitable)  # type: ignore[no-any-return,attr-defined] # noqa: E501
+.venv\Lib\site-packages\sqlalchemy\util\_concurrency_py3k.py:196: in greenlet_spawn
+    value = await result
+.venv\Lib\site-packages\asyncpg\connection.py:2443: in connect
+    return await connect_utils._connect(
+.venv\Lib\site-packages\asyncpg\connect_utils.py:1249: in _connect
+    raise last_error or exceptions.TargetServerAttributeNotMatched(
+.venv\Lib\site-packages\asyncpg\connect_utils.py:1218: in _connect
+    conn = await _connect_addr(
+.venv\Lib\site-packages\asyncpg\connect_utils.py:1054: in _connect_addr
+    return await __connect_addr(params, True, *args)
+.venv\Lib\site-packages\asyncpg\connect_utils.py:1099: in __connect_addr
+    tr, pr = await connector
+.venv\Lib\site-packages\asyncpg\connect_utils.py:969: in _create_ssl_connection
+    tr, pr = await loop.create_connection(
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\base_events.py:1090: in create_connection
+    raise exceptions[0]
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\base_events.py:1069: in create_connection
+    sock = await self._connect_sock(
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\base_events.py:973: in _connect_sock
+    await self.sock_connect(sock, address)
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\proactor_events.py:726: in sock_connect
+    return await self._proactor.connect(sock, address)
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\windows_events.py:846: in _poll
+    value = callback(transferred, key, ov)
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\windows_events.py:633: in finish_connect
+    ov.getresult()
+E   ConnectionRefusedError: [WinError 1225] リモート コンピューターによりネットワーク接続が拒否されました。
+_ ERROR at setup of TestSleepPlanCacheRepository.test_get_by_user_and_hash_hit_and_miss _
+tests\conftest.py:49: in _ensure_db_tables
+    event_loop.run_until_complete(create_all())
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\base_events.py:653: in run_until_complete
+    return future.result()
+tests\conftest.py:46: in create_all
+    async with engine.begin() as conn:
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\contextlib.py:204: in __aenter__
+    return await anext(self.gen)
+.venv\Lib\site-packages\sqlalchemy\ext\asyncio\engine.py:1068: in begin
+    async with conn:
+.venv\Lib\site-packages\sqlalchemy\ext\asyncio\base.py:121: in __aenter__
+    return await self.start(is_ctxmanager=True)
+.venv\Lib\site-packages\sqlalchemy\ext\asyncio\engine.py:275: in start
+    await greenlet_spawn(self.sync_engine.connect)
+.venv\Lib\site-packages\sqlalchemy\util\_concurrency_py3k.py:201: in greenlet_spawn
+    result = context.throw(*sys.exc_info())
+.venv\Lib\site-packages\sqlalchemy\engine\base.py:3285: in connect
+    return self._connection_cls(self)
+.venv\Lib\site-packages\sqlalchemy\engine\base.py:143: in __init__
+    self._dbapi_connection = engine.raw_connection()
+.venv\Lib\site-packages\sqlalchemy\engine\base.py:3309: in raw_connection
+    return self.pool.connect()
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:447: in connect
+    return _ConnectionFairy._checkout(self)
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:1264: in _checkout
+    fairy = _ConnectionRecord.checkout(pool)
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:711: in checkout
+    rec = pool._do_get()
+.venv\Lib\site-packages\sqlalchemy\pool\impl.py:177: in _do_get
+    with util.safe_reraise():
+.venv\Lib\site-packages\sqlalchemy\util\langhelpers.py:224: in __exit__
+    raise exc_value.with_traceback(exc_tb)
+.venv\Lib\site-packages\sqlalchemy\pool\impl.py:175: in _do_get
+    return self._create_connection()
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:388: in _create_connection
+    return _ConnectionRecord(self)
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:673: in __init__
+    self.__connect()
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:899: in __connect
+    with util.safe_reraise():
+.venv\Lib\site-packages\sqlalchemy\util\langhelpers.py:224: in __exit__
+    raise exc_value.with_traceback(exc_tb)
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:895: in __connect
+    self.dbapi_connection = connection = pool._invoke_creator(self)
+.venv\Lib\site-packages\sqlalchemy\engine\create.py:661: in connect
+    return dialect.connect(*cargs, **cparams)
+.venv\Lib\site-packages\sqlalchemy\engine\default.py:630: in connect
+    return self.loaded_dbapi.connect(*cargs, **cparams)  # type: ignore[no-any-return]  # NOQA: E501
+.venv\Lib\site-packages\sqlalchemy\dialects\postgresql\asyncpg.py:955: in connect
+    await_only(creator_fn(*arg, **kw)),
+.venv\Lib\site-packages\sqlalchemy\util\_concurrency_py3k.py:132: in await_only
+    return current.parent.switch(awaitable)  # type: ignore[no-any-return,attr-defined] # noqa: E501
+.venv\Lib\site-packages\sqlalchemy\util\_concurrency_py3k.py:196: in greenlet_spawn
+    value = await result
+.venv\Lib\site-packages\asyncpg\connection.py:2443: in connect
+    return await connect_utils._connect(
+.venv\Lib\site-packages\asyncpg\connect_utils.py:1249: in _connect
+    raise last_error or exceptions.TargetServerAttributeNotMatched(
+.venv\Lib\site-packages\asyncpg\connect_utils.py:1218: in _connect
+    conn = await _connect_addr(
+.venv\Lib\site-packages\asyncpg\connect_utils.py:1054: in _connect_addr
+    return await __connect_addr(params, True, *args)
+.venv\Lib\site-packages\asyncpg\connect_utils.py:1099: in __connect_addr
+    tr, pr = await connector
+.venv\Lib\site-packages\asyncpg\connect_utils.py:969: in _create_ssl_connection
+    tr, pr = await loop.create_connection(
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\base_events.py:1090: in create_connection
+    raise exceptions[0]
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\base_events.py:1069: in create_connection
+    sock = await self._connect_sock(
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\base_events.py:973: in _connect_sock
+    await self.sock_connect(sock, address)
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\proactor_events.py:726: in sock_connect
+    return await self._proactor.connect(sock, address)
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\windows_events.py:846: in _poll
+    value = callback(transferred, key, ov)
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\windows_events.py:633: in finish_connect
+    ov.getresult()
+E   ConnectionRefusedError: [WinError 1225] リモート コンピューターによりネットワーク接続が拒否されました。
+_ ERROR at setup of TestGetOrCreatePlanUseCase.test_cache_hit_returns_cached_plan _
+tests\conftest.py:49: in _ensure_db_tables
+    event_loop.run_until_complete(create_all())
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\base_events.py:653: in run_until_complete
+    return future.result()
+tests\conftest.py:46: in create_all
+    async with engine.begin() as conn:
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\contextlib.py:204: in __aenter__
+    return await anext(self.gen)
+.venv\Lib\site-packages\sqlalchemy\ext\asyncio\engine.py:1068: in begin
+    async with conn:
+.venv\Lib\site-packages\sqlalchemy\ext\asyncio\base.py:121: in __aenter__
+    return await self.start(is_ctxmanager=True)
+.venv\Lib\site-packages\sqlalchemy\ext\asyncio\engine.py:275: in start
+    await greenlet_spawn(self.sync_engine.connect)
+.venv\Lib\site-packages\sqlalchemy\util\_concurrency_py3k.py:201: in greenlet_spawn
+    result = context.throw(*sys.exc_info())
+.venv\Lib\site-packages\sqlalchemy\engine\base.py:3285: in connect
+    return self._connection_cls(self)
+.venv\Lib\site-packages\sqlalchemy\engine\base.py:143: in __init__
+    self._dbapi_connection = engine.raw_connection()
+.venv\Lib\site-packages\sqlalchemy\engine\base.py:3309: in raw_connection
+    return self.pool.connect()
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:447: in connect
+    return _ConnectionFairy._checkout(self)
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:1264: in _checkout
+    fairy = _ConnectionRecord.checkout(pool)
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:711: in checkout
+    rec = pool._do_get()
+.venv\Lib\site-packages\sqlalchemy\pool\impl.py:177: in _do_get
+    with util.safe_reraise():
+.venv\Lib\site-packages\sqlalchemy\util\langhelpers.py:224: in __exit__
+    raise exc_value.with_traceback(exc_tb)
+.venv\Lib\site-packages\sqlalchemy\pool\impl.py:175: in _do_get
+    return self._create_connection()
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:388: in _create_connection
+    return _ConnectionRecord(self)
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:673: in __init__
+    self.__connect()
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:899: in __connect
+    with util.safe_reraise():
+.venv\Lib\site-packages\sqlalchemy\util\langhelpers.py:224: in __exit__
+    raise exc_value.with_traceback(exc_tb)
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:895: in __connect
+    self.dbapi_connection = connection = pool._invoke_creator(self)
+.venv\Lib\site-packages\sqlalchemy\engine\create.py:661: in connect
+    return dialect.connect(*cargs, **cparams)
+.venv\Lib\site-packages\sqlalchemy\engine\default.py:630: in connect
+    return self.loaded_dbapi.connect(*cargs, **cparams)  # type: ignore[no-any-return]  # NOQA: E501
+.venv\Lib\site-packages\sqlalchemy\dialects\postgresql\asyncpg.py:955: in connect
+    await_only(creator_fn(*arg, **kw)),
+.venv\Lib\site-packages\sqlalchemy\util\_concurrency_py3k.py:132: in await_only
+    return current.parent.switch(awaitable)  # type: ignore[no-any-return,attr-defined] # noqa: E501
+.venv\Lib\site-packages\sqlalchemy\util\_concurrency_py3k.py:196: in greenlet_spawn
+    value = await result
+.venv\Lib\site-packages\asyncpg\connection.py:2443: in connect
+    return await connect_utils._connect(
+.venv\Lib\site-packages\asyncpg\connect_utils.py:1249: in _connect
+    raise last_error or exceptions.TargetServerAttributeNotMatched(
+.venv\Lib\site-packages\asyncpg\connect_utils.py:1218: in _connect
+    conn = await _connect_addr(
+.venv\Lib\site-packages\asyncpg\connect_utils.py:1054: in _connect_addr
+    return await __connect_addr(params, True, *args)
+.venv\Lib\site-packages\asyncpg\connect_utils.py:1099: in __connect_addr
+    tr, pr = await connector
+.venv\Lib\site-packages\asyncpg\connect_utils.py:969: in _create_ssl_connection
+    tr, pr = await loop.create_connection(
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\base_events.py:1090: in create_connection
+    raise exceptions[0]
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\base_events.py:1069: in create_connection
+    sock = await self._connect_sock(
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\base_events.py:973: in _connect_sock
+    await self.sock_connect(sock, address)
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\proactor_events.py:726: in sock_connect
+    return await self._proactor.connect(sock, address)
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\windows_events.py:846: in _poll
+    value = callback(transferred, key, ov)
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\windows_events.py:633: in finish_connect
+    ov.getresult()
+E   ConnectionRefusedError: [WinError 1225] リモート コンピューターによりネットワーク接続が拒否されました。
+_ ERROR at setup of TestGetOrCreatePlanUseCase.test_cache_miss_calls_llm_and_upserts _
+tests\conftest.py:49: in _ensure_db_tables
+    event_loop.run_until_complete(create_all())
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\base_events.py:653: in run_until_complete
+    return future.result()
+tests\conftest.py:46: in create_all
+    async with engine.begin() as conn:
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\contextlib.py:204: in __aenter__
+    return await anext(self.gen)
+.venv\Lib\site-packages\sqlalchemy\ext\asyncio\engine.py:1068: in begin
+    async with conn:
+.venv\Lib\site-packages\sqlalchemy\ext\asyncio\base.py:121: in __aenter__
+    return await self.start(is_ctxmanager=True)
+.venv\Lib\site-packages\sqlalchemy\ext\asyncio\engine.py:275: in start
+    await greenlet_spawn(self.sync_engine.connect)
+.venv\Lib\site-packages\sqlalchemy\util\_concurrency_py3k.py:201: in greenlet_spawn
+    result = context.throw(*sys.exc_info())
+.venv\Lib\site-packages\sqlalchemy\engine\base.py:3285: in connect
+    return self._connection_cls(self)
+.venv\Lib\site-packages\sqlalchemy\engine\base.py:143: in __init__
+    self._dbapi_connection = engine.raw_connection()
+.venv\Lib\site-packages\sqlalchemy\engine\base.py:3309: in raw_connection
+    return self.pool.connect()
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:447: in connect
+    return _ConnectionFairy._checkout(self)
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:1264: in _checkout
+    fairy = _ConnectionRecord.checkout(pool)
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:711: in checkout
+    rec = pool._do_get()
+.venv\Lib\site-packages\sqlalchemy\pool\impl.py:177: in _do_get
+    with util.safe_reraise():
+.venv\Lib\site-packages\sqlalchemy\util\langhelpers.py:224: in __exit__
+    raise exc_value.with_traceback(exc_tb)
+.venv\Lib\site-packages\sqlalchemy\pool\impl.py:175: in _do_get
+    return self._create_connection()
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:388: in _create_connection
+    return _ConnectionRecord(self)
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:673: in __init__
+    self.__connect()
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:899: in __connect
+    with util.safe_reraise():
+.venv\Lib\site-packages\sqlalchemy\util\langhelpers.py:224: in __exit__
+    raise exc_value.with_traceback(exc_tb)
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:895: in __connect
+    self.dbapi_connection = connection = pool._invoke_creator(self)
+.venv\Lib\site-packages\sqlalchemy\engine\create.py:661: in connect
+    return dialect.connect(*cargs, **cparams)
+.venv\Lib\site-packages\sqlalchemy\engine\default.py:630: in connect
+    return self.loaded_dbapi.connect(*cargs, **cparams)  # type: ignore[no-any-return]  # NOQA: E501
+.venv\Lib\site-packages\sqlalchemy\dialects\postgresql\asyncpg.py:955: in connect
+    await_only(creator_fn(*arg, **kw)),
+.venv\Lib\site-packages\sqlalchemy\util\_concurrency_py3k.py:132: in await_only
+    return current.parent.switch(awaitable)  # type: ignore[no-any-return,attr-defined] # noqa: E501
+.venv\Lib\site-packages\sqlalchemy\util\_concurrency_py3k.py:196: in greenlet_spawn
+    value = await result
+.venv\Lib\site-packages\asyncpg\connection.py:2443: in connect
+    return await connect_utils._connect(
+.venv\Lib\site-packages\asyncpg\connect_utils.py:1249: in _connect
+    raise last_error or exceptions.TargetServerAttributeNotMatched(
+.venv\Lib\site-packages\asyncpg\connect_utils.py:1218: in _connect
+    conn = await _connect_addr(
+.venv\Lib\site-packages\asyncpg\connect_utils.py:1054: in _connect_addr
+    return await __connect_addr(params, True, *args)
+.venv\Lib\site-packages\asyncpg\connect_utils.py:1099: in __connect_addr
+    tr, pr = await connector
+.venv\Lib\site-packages\asyncpg\connect_utils.py:969: in _create_ssl_connection
+    tr, pr = await loop.create_connection(
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\base_events.py:1090: in create_connection
+    raise exceptions[0]
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\base_events.py:1069: in create_connection
+    sock = await self._connect_sock(
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\base_events.py:973: in _connect_sock
+    await self.sock_connect(sock, address)
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\proactor_events.py:726: in sock_connect
+    return await self._proactor.connect(sock, address)
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\windows_events.py:846: in _poll
+    value = callback(transferred, key, ov)
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\windows_events.py:633: in finish_connect
+    ov.getresult()
+E   ConnectionRefusedError: [WinError 1225] リモート コンピューターによりネットワーク接続が拒否されました。
+_____ ERROR at setup of TestGetOrCreatePlanUseCase.test_force_skips_cache _____
+tests\conftest.py:49: in _ensure_db_tables
+    event_loop.run_until_complete(create_all())
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\base_events.py:653: in run_until_complete
+    return future.result()
+tests\conftest.py:46: in create_all
+    async with engine.begin() as conn:
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\contextlib.py:204: in __aenter__
+    return await anext(self.gen)
+.venv\Lib\site-packages\sqlalchemy\ext\asyncio\engine.py:1068: in begin
+    async with conn:
+.venv\Lib\site-packages\sqlalchemy\ext\asyncio\base.py:121: in __aenter__
+    return await self.start(is_ctxmanager=True)
+.venv\Lib\site-packages\sqlalchemy\ext\asyncio\engine.py:275: in start
+    await greenlet_spawn(self.sync_engine.connect)
+.venv\Lib\site-packages\sqlalchemy\util\_concurrency_py3k.py:201: in greenlet_spawn
+    result = context.throw(*sys.exc_info())
+.venv\Lib\site-packages\sqlalchemy\engine\base.py:3285: in connect
+    return self._connection_cls(self)
+.venv\Lib\site-packages\sqlalchemy\engine\base.py:143: in __init__
+    self._dbapi_connection = engine.raw_connection()
+.venv\Lib\site-packages\sqlalchemy\engine\base.py:3309: in raw_connection
+    return self.pool.connect()
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:447: in connect
+    return _ConnectionFairy._checkout(self)
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:1264: in _checkout
+    fairy = _ConnectionRecord.checkout(pool)
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:711: in checkout
+    rec = pool._do_get()
+.venv\Lib\site-packages\sqlalchemy\pool\impl.py:177: in _do_get
+    with util.safe_reraise():
+.venv\Lib\site-packages\sqlalchemy\util\langhelpers.py:224: in __exit__
+    raise exc_value.with_traceback(exc_tb)
+.venv\Lib\site-packages\sqlalchemy\pool\impl.py:175: in _do_get
+    return self._create_connection()
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:388: in _create_connection
+    return _ConnectionRecord(self)
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:673: in __init__
+    self.__connect()
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:899: in __connect
+    with util.safe_reraise():
+.venv\Lib\site-packages\sqlalchemy\util\langhelpers.py:224: in __exit__
+    raise exc_value.with_traceback(exc_tb)
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:895: in __connect
+    self.dbapi_connection = connection = pool._invoke_creator(self)
+.venv\Lib\site-packages\sqlalchemy\engine\create.py:661: in connect
+    return dialect.connect(*cargs, **cparams)
+.venv\Lib\site-packages\sqlalchemy\engine\default.py:630: in connect
+    return self.loaded_dbapi.connect(*cargs, **cparams)  # type: ignore[no-any-return]  # NOQA: E501
+.venv\Lib\site-packages\sqlalchemy\dialects\postgresql\asyncpg.py:955: in connect
+    await_only(creator_fn(*arg, **kw)),
+.venv\Lib\site-packages\sqlalchemy\util\_concurrency_py3k.py:132: in await_only
+    return current.parent.switch(awaitable)  # type: ignore[no-any-return,attr-defined] # noqa: E501
+.venv\Lib\site-packages\sqlalchemy\util\_concurrency_py3k.py:196: in greenlet_spawn
+    value = await result
+.venv\Lib\site-packages\asyncpg\connection.py:2443: in connect
+    return await connect_utils._connect(
+.venv\Lib\site-packages\asyncpg\connect_utils.py:1249: in _connect
+    raise last_error or exceptions.TargetServerAttributeNotMatched(
+.venv\Lib\site-packages\asyncpg\connect_utils.py:1218: in _connect
+    conn = await _connect_addr(
+.venv\Lib\site-packages\asyncpg\connect_utils.py:1054: in _connect_addr
+    return await __connect_addr(params, True, *args)
+.venv\Lib\site-packages\asyncpg\connect_utils.py:1099: in __connect_addr
+    tr, pr = await connector
+.venv\Lib\site-packages\asyncpg\connect_utils.py:969: in _create_ssl_connection
+    tr, pr = await loop.create_connection(
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\base_events.py:1090: in create_connection
+    raise exceptions[0]
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\base_events.py:1069: in create_connection
+    sock = await self._connect_sock(
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\base_events.py:973: in _connect_sock
+    await self.sock_connect(sock, address)
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\proactor_events.py:726: in sock_connect
+    return await self._proactor.connect(sock, address)
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\windows_events.py:846: in _poll
+    value = callback(transferred, key, ov)
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\windows_events.py:633: in finish_connect
+    ov.getresult()
+E   ConnectionRefusedError: [WinError 1225] リモート コンピューターによりネットワーク接続が拒否されました。
+_ ERROR at setup of TestGetOrCreatePlanUseCase.test_today_override_passed_to_generator _
+tests\conftest.py:49: in _ensure_db_tables
+    event_loop.run_until_complete(create_all())
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\base_events.py:653: in run_until_complete
+    return future.result()
+tests\conftest.py:46: in create_all
+    async with engine.begin() as conn:
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\contextlib.py:204: in __aenter__
+    return await anext(self.gen)
+.venv\Lib\site-packages\sqlalchemy\ext\asyncio\engine.py:1068: in begin
+    async with conn:
+.venv\Lib\site-packages\sqlalchemy\ext\asyncio\base.py:121: in __aenter__
+    return await self.start(is_ctxmanager=True)
+.venv\Lib\site-packages\sqlalchemy\ext\asyncio\engine.py:275: in start
+    await greenlet_spawn(self.sync_engine.connect)
+.venv\Lib\site-packages\sqlalchemy\util\_concurrency_py3k.py:201: in greenlet_spawn
+    result = context.throw(*sys.exc_info())
+.venv\Lib\site-packages\sqlalchemy\engine\base.py:3285: in connect
+    return self._connection_cls(self)
+.venv\Lib\site-packages\sqlalchemy\engine\base.py:143: in __init__
+    self._dbapi_connection = engine.raw_connection()
+.venv\Lib\site-packages\sqlalchemy\engine\base.py:3309: in raw_connection
+    return self.pool.connect()
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:447: in connect
+    return _ConnectionFairy._checkout(self)
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:1264: in _checkout
+    fairy = _ConnectionRecord.checkout(pool)
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:711: in checkout
+    rec = pool._do_get()
+.venv\Lib\site-packages\sqlalchemy\pool\impl.py:177: in _do_get
+    with util.safe_reraise():
+.venv\Lib\site-packages\sqlalchemy\util\langhelpers.py:224: in __exit__
+    raise exc_value.with_traceback(exc_tb)
+.venv\Lib\site-packages\sqlalchemy\pool\impl.py:175: in _do_get
+    return self._create_connection()
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:388: in _create_connection
+    return _ConnectionRecord(self)
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:673: in __init__
+    self.__connect()
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:899: in __connect
+    with util.safe_reraise():
+.venv\Lib\site-packages\sqlalchemy\util\langhelpers.py:224: in __exit__
+    raise exc_value.with_traceback(exc_tb)
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:895: in __connect
+    self.dbapi_connection = connection = pool._invoke_creator(self)
+.venv\Lib\site-packages\sqlalchemy\engine\create.py:661: in connect
+    return dialect.connect(*cargs, **cparams)
+.venv\Lib\site-packages\sqlalchemy\engine\default.py:630: in connect
+    return self.loaded_dbapi.connect(*cargs, **cparams)  # type: ignore[no-any-return]  # NOQA: E501
+.venv\Lib\site-packages\sqlalchemy\dialects\postgresql\asyncpg.py:955: in connect
+    await_only(creator_fn(*arg, **kw)),
+.venv\Lib\site-packages\sqlalchemy\util\_concurrency_py3k.py:132: in await_only
+    return current.parent.switch(awaitable)  # type: ignore[no-any-return,attr-defined] # noqa: E501
+.venv\Lib\site-packages\sqlalchemy\util\_concurrency_py3k.py:196: in greenlet_spawn
+    value = await result
+.venv\Lib\site-packages\asyncpg\connection.py:2443: in connect
+    return await connect_utils._connect(
+.venv\Lib\site-packages\asyncpg\connect_utils.py:1249: in _connect
+    raise last_error or exceptions.TargetServerAttributeNotMatched(
+.venv\Lib\site-packages\asyncpg\connect_utils.py:1218: in _connect
+    conn = await _connect_addr(
+.venv\Lib\site-packages\asyncpg\connect_utils.py:1054: in _connect_addr
+    return await __connect_addr(params, True, *args)
+.venv\Lib\site-packages\asyncpg\connect_utils.py:1099: in __connect_addr
+    tr, pr = await connector
+.venv\Lib\site-packages\asyncpg\connect_utils.py:969: in _create_ssl_connection
+    tr, pr = await loop.create_connection(
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\base_events.py:1090: in create_connection
+    raise exceptions[0]
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\base_events.py:1069: in create_connection
+    sock = await self._connect_sock(
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\base_events.py:973: in _connect_sock
+    await self.sock_connect(sock, address)
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\proactor_events.py:726: in sock_connect
+    return await self._proactor.connect(sock, address)
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\windows_events.py:846: in _poll
+    value = callback(transferred, key, ov)
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\windows_events.py:633: in finish_connect
+    ov.getresult()
+E   ConnectionRefusedError: [WinError 1225] リモート コンピューターによりネットワーク接続が拒否されました。
+_ ERROR at setup of TestGetOrCreatePlanUseCase.test_today_override_changes_signature _
+tests\conftest.py:49: in _ensure_db_tables
+    event_loop.run_until_complete(create_all())
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\base_events.py:653: in run_until_complete
+    return future.result()
+tests\conftest.py:46: in create_all
+    async with engine.begin() as conn:
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\contextlib.py:204: in __aenter__
+    return await anext(self.gen)
+.venv\Lib\site-packages\sqlalchemy\ext\asyncio\engine.py:1068: in begin
+    async with conn:
+.venv\Lib\site-packages\sqlalchemy\ext\asyncio\base.py:121: in __aenter__
+    return await self.start(is_ctxmanager=True)
+.venv\Lib\site-packages\sqlalchemy\ext\asyncio\engine.py:275: in start
+    await greenlet_spawn(self.sync_engine.connect)
+.venv\Lib\site-packages\sqlalchemy\util\_concurrency_py3k.py:201: in greenlet_spawn
+    result = context.throw(*sys.exc_info())
+.venv\Lib\site-packages\sqlalchemy\engine\base.py:3285: in connect
+    return self._connection_cls(self)
+.venv\Lib\site-packages\sqlalchemy\engine\base.py:143: in __init__
+    self._dbapi_connection = engine.raw_connection()
+.venv\Lib\site-packages\sqlalchemy\engine\base.py:3309: in raw_connection
+    return self.pool.connect()
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:447: in connect
+    return _ConnectionFairy._checkout(self)
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:1264: in _checkout
+    fairy = _ConnectionRecord.checkout(pool)
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:711: in checkout
+    rec = pool._do_get()
+.venv\Lib\site-packages\sqlalchemy\pool\impl.py:177: in _do_get
+    with util.safe_reraise():
+.venv\Lib\site-packages\sqlalchemy\util\langhelpers.py:224: in __exit__
+    raise exc_value.with_traceback(exc_tb)
+.venv\Lib\site-packages\sqlalchemy\pool\impl.py:175: in _do_get
+    return self._create_connection()
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:388: in _create_connection
+    return _ConnectionRecord(self)
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:673: in __init__
+    self.__connect()
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:899: in __connect
+    with util.safe_reraise():
+.venv\Lib\site-packages\sqlalchemy\util\langhelpers.py:224: in __exit__
+    raise exc_value.with_traceback(exc_tb)
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:895: in __connect
+    self.dbapi_connection = connection = pool._invoke_creator(self)
+.venv\Lib\site-packages\sqlalchemy\engine\create.py:661: in connect
+    return dialect.connect(*cargs, **cparams)
+.venv\Lib\site-packages\sqlalchemy\engine\default.py:630: in connect
+    return self.loaded_dbapi.connect(*cargs, **cparams)  # type: ignore[no-any-return]  # NOQA: E501
+.venv\Lib\site-packages\sqlalchemy\dialects\postgresql\asyncpg.py:955: in connect
+    await_only(creator_fn(*arg, **kw)),
+.venv\Lib\site-packages\sqlalchemy\util\_concurrency_py3k.py:132: in await_only
+    return current.parent.switch(awaitable)  # type: ignore[no-any-return,attr-defined] # noqa: E501
+.venv\Lib\site-packages\sqlalchemy\util\_concurrency_py3k.py:196: in greenlet_spawn
+    value = await result
+.venv\Lib\site-packages\asyncpg\connection.py:2443: in connect
+    return await connect_utils._connect(
+.venv\Lib\site-packages\asyncpg\connect_utils.py:1249: in _connect
+    raise last_error or exceptions.TargetServerAttributeNotMatched(
+.venv\Lib\site-packages\asyncpg\connect_utils.py:1218: in _connect
+    conn = await _connect_addr(
+.venv\Lib\site-packages\asyncpg\connect_utils.py:1054: in _connect_addr
+    return await __connect_addr(params, True, *args)
+.venv\Lib\site-packages\asyncpg\connect_utils.py:1099: in __connect_addr
+    tr, pr = await connector
+.venv\Lib\site-packages\asyncpg\connect_utils.py:969: in _create_ssl_connection
+    tr, pr = await loop.create_connection(
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\base_events.py:1090: in create_connection
+    raise exceptions[0]
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\base_events.py:1069: in create_connection
+    sock = await self._connect_sock(
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\base_events.py:973: in _connect_sock
+    await self.sock_connect(sock, address)
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\proactor_events.py:726: in sock_connect
+    return await self._proactor.connect(sock, address)
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\windows_events.py:846: in _poll
+    value = callback(transferred, key, ov)
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\windows_events.py:633: in finish_connect
+    ov.getresult()
+E   ConnectionRefusedError: [WinError 1225] リモート コンピューターによりネットワーク接続が拒否されました。
+_ ERROR at setup of TestBuildSignatureHash.test_same_input_produces_same_hash _
+tests\conftest.py:49: in _ensure_db_tables
+    event_loop.run_until_complete(create_all())
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\base_events.py:653: in run_until_complete
+    return future.result()
+tests\conftest.py:46: in create_all
+    async with engine.begin() as conn:
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\contextlib.py:204: in __aenter__
+    return await anext(self.gen)
+.venv\Lib\site-packages\sqlalchemy\ext\asyncio\engine.py:1068: in begin
+    async with conn:
+.venv\Lib\site-packages\sqlalchemy\ext\asyncio\base.py:121: in __aenter__
+    return await self.start(is_ctxmanager=True)
+.venv\Lib\site-packages\sqlalchemy\ext\asyncio\engine.py:275: in start
+    await greenlet_spawn(self.sync_engine.connect)
+.venv\Lib\site-packages\sqlalchemy\util\_concurrency_py3k.py:201: in greenlet_spawn
+    result = context.throw(*sys.exc_info())
+.venv\Lib\site-packages\sqlalchemy\engine\base.py:3285: in connect
+    return self._connection_cls(self)
+.venv\Lib\site-packages\sqlalchemy\engine\base.py:143: in __init__
+    self._dbapi_connection = engine.raw_connection()
+.venv\Lib\site-packages\sqlalchemy\engine\base.py:3309: in raw_connection
+    return self.pool.connect()
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:447: in connect
+    return _ConnectionFairy._checkout(self)
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:1264: in _checkout
+    fairy = _ConnectionRecord.checkout(pool)
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:711: in checkout
+    rec = pool._do_get()
+.venv\Lib\site-packages\sqlalchemy\pool\impl.py:177: in _do_get
+    with util.safe_reraise():
+.venv\Lib\site-packages\sqlalchemy\util\langhelpers.py:224: in __exit__
+    raise exc_value.with_traceback(exc_tb)
+.venv\Lib\site-packages\sqlalchemy\pool\impl.py:175: in _do_get
+    return self._create_connection()
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:388: in _create_connection
+    return _ConnectionRecord(self)
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:673: in __init__
+    self.__connect()
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:899: in __connect
+    with util.safe_reraise():
+.venv\Lib\site-packages\sqlalchemy\util\langhelpers.py:224: in __exit__
+    raise exc_value.with_traceback(exc_tb)
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:895: in __connect
+    self.dbapi_connection = connection = pool._invoke_creator(self)
+.venv\Lib\site-packages\sqlalchemy\engine\create.py:661: in connect
+    return dialect.connect(*cargs, **cparams)
+.venv\Lib\site-packages\sqlalchemy\engine\default.py:630: in connect
+    return self.loaded_dbapi.connect(*cargs, **cparams)  # type: ignore[no-any-return]  # NOQA: E501
+.venv\Lib\site-packages\sqlalchemy\dialects\postgresql\asyncpg.py:955: in connect
+    await_only(creator_fn(*arg, **kw)),
+.venv\Lib\site-packages\sqlalchemy\util\_concurrency_py3k.py:132: in await_only
+    return current.parent.switch(awaitable)  # type: ignore[no-any-return,attr-defined] # noqa: E501
+.venv\Lib\site-packages\sqlalchemy\util\_concurrency_py3k.py:196: in greenlet_spawn
+    value = await result
+.venv\Lib\site-packages\asyncpg\connection.py:2443: in connect
+    return await connect_utils._connect(
+.venv\Lib\site-packages\asyncpg\connect_utils.py:1249: in _connect
+    raise last_error or exceptions.TargetServerAttributeNotMatched(
+.venv\Lib\site-packages\asyncpg\connect_utils.py:1218: in _connect
+    conn = await _connect_addr(
+.venv\Lib\site-packages\asyncpg\connect_utils.py:1054: in _connect_addr
+    return await __connect_addr(params, True, *args)
+.venv\Lib\site-packages\asyncpg\connect_utils.py:1099: in __connect_addr
+    tr, pr = await connector
+.venv\Lib\site-packages\asyncpg\connect_utils.py:969: in _create_ssl_connection
+    tr, pr = await loop.create_connection(
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\base_events.py:1090: in create_connection
+    raise exceptions[0]
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\base_events.py:1069: in create_connection
+    sock = await self._connect_sock(
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\base_events.py:973: in _connect_sock
+    await self.sock_connect(sock, address)
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\proactor_events.py:726: in sock_connect
+    return await self._proactor.connect(sock, address)
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\windows_events.py:846: in _poll
+    value = callback(transferred, key, ov)
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\windows_events.py:633: in finish_connect
+    ov.getresult()
+E   ConnectionRefusedError: [WinError 1225] リモート コンピューターによりネットワーク接続が拒否されました。
+_ ERROR at setup of TestBuildSignatureHash.test_different_input_produces_different_hash _
+tests\conftest.py:49: in _ensure_db_tables
+    event_loop.run_until_complete(create_all())
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\base_events.py:653: in run_until_complete
+    return future.result()
+tests\conftest.py:46: in create_all
+    async with engine.begin() as conn:
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\contextlib.py:204: in __aenter__
+    return await anext(self.gen)
+.venv\Lib\site-packages\sqlalchemy\ext\asyncio\engine.py:1068: in begin
+    async with conn:
+.venv\Lib\site-packages\sqlalchemy\ext\asyncio\base.py:121: in __aenter__
+    return await self.start(is_ctxmanager=True)
+.venv\Lib\site-packages\sqlalchemy\ext\asyncio\engine.py:275: in start
+    await greenlet_spawn(self.sync_engine.connect)
+.venv\Lib\site-packages\sqlalchemy\util\_concurrency_py3k.py:201: in greenlet_spawn
+    result = context.throw(*sys.exc_info())
+.venv\Lib\site-packages\sqlalchemy\engine\base.py:3285: in connect
+    return self._connection_cls(self)
+.venv\Lib\site-packages\sqlalchemy\engine\base.py:143: in __init__
+    self._dbapi_connection = engine.raw_connection()
+.venv\Lib\site-packages\sqlalchemy\engine\base.py:3309: in raw_connection
+    return self.pool.connect()
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:447: in connect
+    return _ConnectionFairy._checkout(self)
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:1264: in _checkout
+    fairy = _ConnectionRecord.checkout(pool)
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:711: in checkout
+    rec = pool._do_get()
+.venv\Lib\site-packages\sqlalchemy\pool\impl.py:177: in _do_get
+    with util.safe_reraise():
+.venv\Lib\site-packages\sqlalchemy\util\langhelpers.py:224: in __exit__
+    raise exc_value.with_traceback(exc_tb)
+.venv\Lib\site-packages\sqlalchemy\pool\impl.py:175: in _do_get
+    return self._create_connection()
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:388: in _create_connection
+    return _ConnectionRecord(self)
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:673: in __init__
+    self.__connect()
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:899: in __connect
+    with util.safe_reraise():
+.venv\Lib\site-packages\sqlalchemy\util\langhelpers.py:224: in __exit__
+    raise exc_value.with_traceback(exc_tb)
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:895: in __connect
+    self.dbapi_connection = connection = pool._invoke_creator(self)
+.venv\Lib\site-packages\sqlalchemy\engine\create.py:661: in connect
+    return dialect.connect(*cargs, **cparams)
+.venv\Lib\site-packages\sqlalchemy\engine\default.py:630: in connect
+    return self.loaded_dbapi.connect(*cargs, **cparams)  # type: ignore[no-any-return]  # NOQA: E501
+.venv\Lib\site-packages\sqlalchemy\dialects\postgresql\asyncpg.py:955: in connect
+    await_only(creator_fn(*arg, **kw)),
+.venv\Lib\site-packages\sqlalchemy\util\_concurrency_py3k.py:132: in await_only
+    return current.parent.switch(awaitable)  # type: ignore[no-any-return,attr-defined] # noqa: E501
+.venv\Lib\site-packages\sqlalchemy\util\_concurrency_py3k.py:196: in greenlet_spawn
+    value = await result
+.venv\Lib\site-packages\asyncpg\connection.py:2443: in connect
+    return await connect_utils._connect(
+.venv\Lib\site-packages\asyncpg\connect_utils.py:1249: in _connect
+    raise last_error or exceptions.TargetServerAttributeNotMatched(
+.venv\Lib\site-packages\asyncpg\connect_utils.py:1218: in _connect
+    conn = await _connect_addr(
+.venv\Lib\site-packages\asyncpg\connect_utils.py:1054: in _connect_addr
+    return await __connect_addr(params, True, *args)
+.venv\Lib\site-packages\asyncpg\connect_utils.py:1099: in __connect_addr
+    tr, pr = await connector
+.venv\Lib\site-packages\asyncpg\connect_utils.py:969: in _create_ssl_connection
+    tr, pr = await loop.create_connection(
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\base_events.py:1090: in create_connection
+    raise exceptions[0]
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\base_events.py:1069: in create_connection
+    sock = await self._connect_sock(
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\base_events.py:973: in _connect_sock
+    await self.sock_connect(sock, address)
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\proactor_events.py:726: in sock_connect
+    return await self._proactor.connect(sock, address)
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\windows_events.py:846: in _poll
+    value = callback(transferred, key, ov)
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\windows_events.py:633: in finish_connect
+    ov.getresult()
+E   ConnectionRefusedError: [WinError 1225] リモート コンピューターによりネットワーク接続が拒否されました。
+__ ERROR at setup of TestBuildSignatureHash.test_dict_key_order_independent ___
+tests\conftest.py:49: in _ensure_db_tables
+    event_loop.run_until_complete(create_all())
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\base_events.py:653: in run_until_complete
+    return future.result()
+tests\conftest.py:46: in create_all
+    async with engine.begin() as conn:
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\contextlib.py:204: in __aenter__
+    return await anext(self.gen)
+.venv\Lib\site-packages\sqlalchemy\ext\asyncio\engine.py:1068: in begin
+    async with conn:
+.venv\Lib\site-packages\sqlalchemy\ext\asyncio\base.py:121: in __aenter__
+    return await self.start(is_ctxmanager=True)
+.venv\Lib\site-packages\sqlalchemy\ext\asyncio\engine.py:275: in start
+    await greenlet_spawn(self.sync_engine.connect)
+.venv\Lib\site-packages\sqlalchemy\util\_concurrency_py3k.py:201: in greenlet_spawn
+    result = context.throw(*sys.exc_info())
+.venv\Lib\site-packages\sqlalchemy\engine\base.py:3285: in connect
+    return self._connection_cls(self)
+.venv\Lib\site-packages\sqlalchemy\engine\base.py:143: in __init__
+    self._dbapi_connection = engine.raw_connection()
+.venv\Lib\site-packages\sqlalchemy\engine\base.py:3309: in raw_connection
+    return self.pool.connect()
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:447: in connect
+    return _ConnectionFairy._checkout(self)
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:1264: in _checkout
+    fairy = _ConnectionRecord.checkout(pool)
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:711: in checkout
+    rec = pool._do_get()
+.venv\Lib\site-packages\sqlalchemy\pool\impl.py:177: in _do_get
+    with util.safe_reraise():
+.venv\Lib\site-packages\sqlalchemy\util\langhelpers.py:224: in __exit__
+    raise exc_value.with_traceback(exc_tb)
+.venv\Lib\site-packages\sqlalchemy\pool\impl.py:175: in _do_get
+    return self._create_connection()
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:388: in _create_connection
+    return _ConnectionRecord(self)
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:673: in __init__
+    self.__connect()
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:899: in __connect
+    with util.safe_reraise():
+.venv\Lib\site-packages\sqlalchemy\util\langhelpers.py:224: in __exit__
+    raise exc_value.with_traceback(exc_tb)
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:895: in __connect
+    self.dbapi_connection = connection = pool._invoke_creator(self)
+.venv\Lib\site-packages\sqlalchemy\engine\create.py:661: in connect
+    return dialect.connect(*cargs, **cparams)
+.venv\Lib\site-packages\sqlalchemy\engine\default.py:630: in connect
+    return self.loaded_dbapi.connect(*cargs, **cparams)  # type: ignore[no-any-return]  # NOQA: E501
+.venv\Lib\site-packages\sqlalchemy\dialects\postgresql\asyncpg.py:955: in connect
+    await_only(creator_fn(*arg, **kw)),
+.venv\Lib\site-packages\sqlalchemy\util\_concurrency_py3k.py:132: in await_only
+    return current.parent.switch(awaitable)  # type: ignore[no-any-return,attr-defined] # noqa: E501
+.venv\Lib\site-packages\sqlalchemy\util\_concurrency_py3k.py:196: in greenlet_spawn
+    value = await result
+.venv\Lib\site-packages\asyncpg\connection.py:2443: in connect
+    return await connect_utils._connect(
+.venv\Lib\site-packages\asyncpg\connect_utils.py:1249: in _connect
+    raise last_error or exceptions.TargetServerAttributeNotMatched(
+.venv\Lib\site-packages\asyncpg\connect_utils.py:1218: in _connect
+    conn = await _connect_addr(
+.venv\Lib\site-packages\asyncpg\connect_utils.py:1054: in _connect_addr
+    return await __connect_addr(params, True, *args)
+.venv\Lib\site-packages\asyncpg\connect_utils.py:1099: in __connect_addr
+    tr, pr = await connector
+.venv\Lib\site-packages\asyncpg\connect_utils.py:969: in _create_ssl_connection
+    tr, pr = await loop.create_connection(
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\base_events.py:1090: in create_connection
+    raise exceptions[0]
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\base_events.py:1069: in create_connection
+    sock = await self._connect_sock(
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\base_events.py:973: in _connect_sock
+    await self.sock_connect(sock, address)
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\proactor_events.py:726: in sock_connect
+    return await self._proactor.connect(sock, address)
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\windows_events.py:846: in _poll
+    value = callback(transferred, key, ov)
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\windows_events.py:633: in finish_connect
+    ov.getresult()
+E   ConnectionRefusedError: [WinError 1225] リモート コンピューターによりネットワーク接続が拒否されました。
+___ ERROR at setup of TestBuildSignatureHash.test_empty_input_deterministic ___
+tests\conftest.py:49: in _ensure_db_tables
+    event_loop.run_until_complete(create_all())
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\base_events.py:653: in run_until_complete
+    return future.result()
+tests\conftest.py:46: in create_all
+    async with engine.begin() as conn:
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\contextlib.py:204: in __aenter__
+    return await anext(self.gen)
+.venv\Lib\site-packages\sqlalchemy\ext\asyncio\engine.py:1068: in begin
+    async with conn:
+.venv\Lib\site-packages\sqlalchemy\ext\asyncio\base.py:121: in __aenter__
+    return await self.start(is_ctxmanager=True)
+.venv\Lib\site-packages\sqlalchemy\ext\asyncio\engine.py:275: in start
+    await greenlet_spawn(self.sync_engine.connect)
+.venv\Lib\site-packages\sqlalchemy\util\_concurrency_py3k.py:201: in greenlet_spawn
+    result = context.throw(*sys.exc_info())
+.venv\Lib\site-packages\sqlalchemy\engine\base.py:3285: in connect
+    return self._connection_cls(self)
+.venv\Lib\site-packages\sqlalchemy\engine\base.py:143: in __init__
+    self._dbapi_connection = engine.raw_connection()
+.venv\Lib\site-packages\sqlalchemy\engine\base.py:3309: in raw_connection
+    return self.pool.connect()
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:447: in connect
+    return _ConnectionFairy._checkout(self)
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:1264: in _checkout
+    fairy = _ConnectionRecord.checkout(pool)
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:711: in checkout
+    rec = pool._do_get()
+.venv\Lib\site-packages\sqlalchemy\pool\impl.py:177: in _do_get
+    with util.safe_reraise():
+.venv\Lib\site-packages\sqlalchemy\util\langhelpers.py:224: in __exit__
+    raise exc_value.with_traceback(exc_tb)
+.venv\Lib\site-packages\sqlalchemy\pool\impl.py:175: in _do_get
+    return self._create_connection()
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:388: in _create_connection
+    return _ConnectionRecord(self)
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:673: in __init__
+    self.__connect()
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:899: in __connect
+    with util.safe_reraise():
+.venv\Lib\site-packages\sqlalchemy\util\langhelpers.py:224: in __exit__
+    raise exc_value.with_traceback(exc_tb)
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:895: in __connect
+    self.dbapi_connection = connection = pool._invoke_creator(self)
+.venv\Lib\site-packages\sqlalchemy\engine\create.py:661: in connect
+    return dialect.connect(*cargs, **cparams)
+.venv\Lib\site-packages\sqlalchemy\engine\default.py:630: in connect
+    return self.loaded_dbapi.connect(*cargs, **cparams)  # type: ignore[no-any-return]  # NOQA: E501
+.venv\Lib\site-packages\sqlalchemy\dialects\postgresql\asyncpg.py:955: in connect
+    await_only(creator_fn(*arg, **kw)),
+.venv\Lib\site-packages\sqlalchemy\util\_concurrency_py3k.py:132: in await_only
+    return current.parent.switch(awaitable)  # type: ignore[no-any-return,attr-defined] # noqa: E501
+.venv\Lib\site-packages\sqlalchemy\util\_concurrency_py3k.py:196: in greenlet_spawn
+    value = await result
+.venv\Lib\site-packages\asyncpg\connection.py:2443: in connect
+    return await connect_utils._connect(
+.venv\Lib\site-packages\asyncpg\connect_utils.py:1249: in _connect
+    raise last_error or exceptions.TargetServerAttributeNotMatched(
+.venv\Lib\site-packages\asyncpg\connect_utils.py:1218: in _connect
+    conn = await _connect_addr(
+.venv\Lib\site-packages\asyncpg\connect_utils.py:1054: in _connect_addr
+    return await __connect_addr(params, True, *args)
+.venv\Lib\site-packages\asyncpg\connect_utils.py:1099: in __connect_addr
+    tr, pr = await connector
+.venv\Lib\site-packages\asyncpg\connect_utils.py:969: in _create_ssl_connection
+    tr, pr = await loop.create_connection(
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\base_events.py:1090: in create_connection
+    raise exceptions[0]
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\base_events.py:1069: in create_connection
+    sock = await self._connect_sock(
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\base_events.py:973: in _connect_sock
+    await self.sock_connect(sock, address)
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\proactor_events.py:726: in sock_connect
+    return await self._proactor.connect(sock, address)
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\windows_events.py:846: in _poll
+    value = callback(transferred, key, ov)
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\windows_events.py:633: in finish_connect
+    ov.getresult()
+E   ConnectionRefusedError: [WinError 1225] リモート コンピューターによりネットワーク接続が拒否されました。
+_________ ERROR at setup of TestBuildSignatureHash.test_settings_only _________
+tests\conftest.py:49: in _ensure_db_tables
+    event_loop.run_until_complete(create_all())
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\base_events.py:653: in run_until_complete
+    return future.result()
+tests\conftest.py:46: in create_all
+    async with engine.begin() as conn:
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\contextlib.py:204: in __aenter__
+    return await anext(self.gen)
+.venv\Lib\site-packages\sqlalchemy\ext\asyncio\engine.py:1068: in begin
+    async with conn:
+.venv\Lib\site-packages\sqlalchemy\ext\asyncio\base.py:121: in __aenter__
+    return await self.start(is_ctxmanager=True)
+.venv\Lib\site-packages\sqlalchemy\ext\asyncio\engine.py:275: in start
+    await greenlet_spawn(self.sync_engine.connect)
+.venv\Lib\site-packages\sqlalchemy\util\_concurrency_py3k.py:201: in greenlet_spawn
+    result = context.throw(*sys.exc_info())
+.venv\Lib\site-packages\sqlalchemy\engine\base.py:3285: in connect
+    return self._connection_cls(self)
+.venv\Lib\site-packages\sqlalchemy\engine\base.py:143: in __init__
+    self._dbapi_connection = engine.raw_connection()
+.venv\Lib\site-packages\sqlalchemy\engine\base.py:3309: in raw_connection
+    return self.pool.connect()
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:447: in connect
+    return _ConnectionFairy._checkout(self)
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:1264: in _checkout
+    fairy = _ConnectionRecord.checkout(pool)
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:711: in checkout
+    rec = pool._do_get()
+.venv\Lib\site-packages\sqlalchemy\pool\impl.py:177: in _do_get
+    with util.safe_reraise():
+.venv\Lib\site-packages\sqlalchemy\util\langhelpers.py:224: in __exit__
+    raise exc_value.with_traceback(exc_tb)
+.venv\Lib\site-packages\sqlalchemy\pool\impl.py:175: in _do_get
+    return self._create_connection()
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:388: in _create_connection
+    return _ConnectionRecord(self)
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:673: in __init__
+    self.__connect()
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:899: in __connect
+    with util.safe_reraise():
+.venv\Lib\site-packages\sqlalchemy\util\langhelpers.py:224: in __exit__
+    raise exc_value.with_traceback(exc_tb)
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:895: in __connect
+    self.dbapi_connection = connection = pool._invoke_creator(self)
+.venv\Lib\site-packages\sqlalchemy\engine\create.py:661: in connect
+    return dialect.connect(*cargs, **cparams)
+.venv\Lib\site-packages\sqlalchemy\engine\default.py:630: in connect
+    return self.loaded_dbapi.connect(*cargs, **cparams)  # type: ignore[no-any-return]  # NOQA: E501
+.venv\Lib\site-packages\sqlalchemy\dialects\postgresql\asyncpg.py:955: in connect
+    await_only(creator_fn(*arg, **kw)),
+.venv\Lib\site-packages\sqlalchemy\util\_concurrency_py3k.py:132: in await_only
+    return current.parent.switch(awaitable)  # type: ignore[no-any-return,attr-defined] # noqa: E501
+.venv\Lib\site-packages\sqlalchemy\util\_concurrency_py3k.py:196: in greenlet_spawn
+    value = await result
+.venv\Lib\site-packages\asyncpg\connection.py:2443: in connect
+    return await connect_utils._connect(
+.venv\Lib\site-packages\asyncpg\connect_utils.py:1249: in _connect
+    raise last_error or exceptions.TargetServerAttributeNotMatched(
+.venv\Lib\site-packages\asyncpg\connect_utils.py:1218: in _connect
+    conn = await _connect_addr(
+.venv\Lib\site-packages\asyncpg\connect_utils.py:1054: in _connect_addr
+    return await __connect_addr(params, True, *args)
+.venv\Lib\site-packages\asyncpg\connect_utils.py:1099: in __connect_addr
+    tr, pr = await connector
+.venv\Lib\site-packages\asyncpg\connect_utils.py:969: in _create_ssl_connection
+    tr, pr = await loop.create_connection(
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\base_events.py:1090: in create_connection
+    raise exceptions[0]
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\base_events.py:1069: in create_connection
+    sock = await self._connect_sock(
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\base_events.py:973: in _connect_sock
+    await self.sock_connect(sock, address)
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\proactor_events.py:726: in sock_connect
+    return await self._proactor.connect(sock, address)
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\windows_events.py:846: in _poll
+    value = callback(transferred, key, ov)
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\windows_events.py:633: in finish_connect
+    ov.getresult()
+E   ConnectionRefusedError: [WinError 1225] リモート コンピューターによりネットワーク接続が拒否されました。
+__ ERROR at setup of TestBuildSignatureHash.test_today_override_changes_hash __
+tests\conftest.py:49: in _ensure_db_tables
+    event_loop.run_until_complete(create_all())
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\base_events.py:653: in run_until_complete
+    return future.result()
+tests\conftest.py:46: in create_all
+    async with engine.begin() as conn:
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\contextlib.py:204: in __aenter__
+    return await anext(self.gen)
+.venv\Lib\site-packages\sqlalchemy\ext\asyncio\engine.py:1068: in begin
+    async with conn:
+.venv\Lib\site-packages\sqlalchemy\ext\asyncio\base.py:121: in __aenter__
+    return await self.start(is_ctxmanager=True)
+.venv\Lib\site-packages\sqlalchemy\ext\asyncio\engine.py:275: in start
+    await greenlet_spawn(self.sync_engine.connect)
+.venv\Lib\site-packages\sqlalchemy\util\_concurrency_py3k.py:201: in greenlet_spawn
+    result = context.throw(*sys.exc_info())
+.venv\Lib\site-packages\sqlalchemy\engine\base.py:3285: in connect
+    return self._connection_cls(self)
+.venv\Lib\site-packages\sqlalchemy\engine\base.py:143: in __init__
+    self._dbapi_connection = engine.raw_connection()
+.venv\Lib\site-packages\sqlalchemy\engine\base.py:3309: in raw_connection
+    return self.pool.connect()
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:447: in connect
+    return _ConnectionFairy._checkout(self)
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:1264: in _checkout
+    fairy = _ConnectionRecord.checkout(pool)
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:711: in checkout
+    rec = pool._do_get()
+.venv\Lib\site-packages\sqlalchemy\pool\impl.py:177: in _do_get
+    with util.safe_reraise():
+.venv\Lib\site-packages\sqlalchemy\util\langhelpers.py:224: in __exit__
+    raise exc_value.with_traceback(exc_tb)
+.venv\Lib\site-packages\sqlalchemy\pool\impl.py:175: in _do_get
+    return self._create_connection()
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:388: in _create_connection
+    return _ConnectionRecord(self)
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:673: in __init__
+    self.__connect()
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:899: in __connect
+    with util.safe_reraise():
+.venv\Lib\site-packages\sqlalchemy\util\langhelpers.py:224: in __exit__
+    raise exc_value.with_traceback(exc_tb)
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:895: in __connect
+    self.dbapi_connection = connection = pool._invoke_creator(self)
+.venv\Lib\site-packages\sqlalchemy\engine\create.py:661: in connect
+    return dialect.connect(*cargs, **cparams)
+.venv\Lib\site-packages\sqlalchemy\engine\default.py:630: in connect
+    return self.loaded_dbapi.connect(*cargs, **cparams)  # type: ignore[no-any-return]  # NOQA: E501
+.venv\Lib\site-packages\sqlalchemy\dialects\postgresql\asyncpg.py:955: in connect
+    await_only(creator_fn(*arg, **kw)),
+.venv\Lib\site-packages\sqlalchemy\util\_concurrency_py3k.py:132: in await_only
+    return current.parent.switch(awaitable)  # type: ignore[no-any-return,attr-defined] # noqa: E501
+.venv\Lib\site-packages\sqlalchemy\util\_concurrency_py3k.py:196: in greenlet_spawn
+    value = await result
+.venv\Lib\site-packages\asyncpg\connection.py:2443: in connect
+    return await connect_utils._connect(
+.venv\Lib\site-packages\asyncpg\connect_utils.py:1249: in _connect
+    raise last_error or exceptions.TargetServerAttributeNotMatched(
+.venv\Lib\site-packages\asyncpg\connect_utils.py:1218: in _connect
+    conn = await _connect_addr(
+.venv\Lib\site-packages\asyncpg\connect_utils.py:1054: in _connect_addr
+    return await __connect_addr(params, True, *args)
+.venv\Lib\site-packages\asyncpg\connect_utils.py:1099: in __connect_addr
+    tr, pr = await connector
+.venv\Lib\site-packages\asyncpg\connect_utils.py:969: in _create_ssl_connection
+    tr, pr = await loop.create_connection(
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\base_events.py:1090: in create_connection
+    raise exceptions[0]
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\base_events.py:1069: in create_connection
+    sock = await self._connect_sock(
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\base_events.py:973: in _connect_sock
+    await self.sock_connect(sock, address)
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\proactor_events.py:726: in sock_connect
+    return await self._proactor.connect(sock, address)
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\windows_events.py:846: in _poll
+    value = callback(transferred, key, ov)
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\windows_events.py:633: in finish_connect
+    ov.getresult()
+E   ConnectionRefusedError: [WinError 1225] リモート コンピューターによりネットワーク接続が拒否されました。
+_ ERROR at setup of TestBuildSignatureHash.test_today_override_same_produces_same_hash _
+tests\conftest.py:49: in _ensure_db_tables
+    event_loop.run_until_complete(create_all())
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\base_events.py:653: in run_until_complete
+    return future.result()
+tests\conftest.py:46: in create_all
+    async with engine.begin() as conn:
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\contextlib.py:204: in __aenter__
+    return await anext(self.gen)
+.venv\Lib\site-packages\sqlalchemy\ext\asyncio\engine.py:1068: in begin
+    async with conn:
+.venv\Lib\site-packages\sqlalchemy\ext\asyncio\base.py:121: in __aenter__
+    return await self.start(is_ctxmanager=True)
+.venv\Lib\site-packages\sqlalchemy\ext\asyncio\engine.py:275: in start
+    await greenlet_spawn(self.sync_engine.connect)
+.venv\Lib\site-packages\sqlalchemy\util\_concurrency_py3k.py:201: in greenlet_spawn
+    result = context.throw(*sys.exc_info())
+.venv\Lib\site-packages\sqlalchemy\engine\base.py:3285: in connect
+    return self._connection_cls(self)
+.venv\Lib\site-packages\sqlalchemy\engine\base.py:143: in __init__
+    self._dbapi_connection = engine.raw_connection()
+.venv\Lib\site-packages\sqlalchemy\engine\base.py:3309: in raw_connection
+    return self.pool.connect()
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:447: in connect
+    return _ConnectionFairy._checkout(self)
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:1264: in _checkout
+    fairy = _ConnectionRecord.checkout(pool)
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:711: in checkout
+    rec = pool._do_get()
+.venv\Lib\site-packages\sqlalchemy\pool\impl.py:177: in _do_get
+    with util.safe_reraise():
+.venv\Lib\site-packages\sqlalchemy\util\langhelpers.py:224: in __exit__
+    raise exc_value.with_traceback(exc_tb)
+.venv\Lib\site-packages\sqlalchemy\pool\impl.py:175: in _do_get
+    return self._create_connection()
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:388: in _create_connection
+    return _ConnectionRecord(self)
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:673: in __init__
+    self.__connect()
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:899: in __connect
+    with util.safe_reraise():
+.venv\Lib\site-packages\sqlalchemy\util\langhelpers.py:224: in __exit__
+    raise exc_value.with_traceback(exc_tb)
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:895: in __connect
+    self.dbapi_connection = connection = pool._invoke_creator(self)
+.venv\Lib\site-packages\sqlalchemy\engine\create.py:661: in connect
+    return dialect.connect(*cargs, **cparams)
+.venv\Lib\site-packages\sqlalchemy\engine\default.py:630: in connect
+    return self.loaded_dbapi.connect(*cargs, **cparams)  # type: ignore[no-any-return]  # NOQA: E501
+.venv\Lib\site-packages\sqlalchemy\dialects\postgresql\asyncpg.py:955: in connect
+    await_only(creator_fn(*arg, **kw)),
+.venv\Lib\site-packages\sqlalchemy\util\_concurrency_py3k.py:132: in await_only
+    return current.parent.switch(awaitable)  # type: ignore[no-any-return,attr-defined] # noqa: E501
+.venv\Lib\site-packages\sqlalchemy\util\_concurrency_py3k.py:196: in greenlet_spawn
+    value = await result
+.venv\Lib\site-packages\asyncpg\connection.py:2443: in connect
+    return await connect_utils._connect(
+.venv\Lib\site-packages\asyncpg\connect_utils.py:1249: in _connect
+    raise last_error or exceptions.TargetServerAttributeNotMatched(
+.venv\Lib\site-packages\asyncpg\connect_utils.py:1218: in _connect
+    conn = await _connect_addr(
+.venv\Lib\site-packages\asyncpg\connect_utils.py:1054: in _connect_addr
+    return await __connect_addr(params, True, *args)
+.venv\Lib\site-packages\asyncpg\connect_utils.py:1099: in __connect_addr
+    tr, pr = await connector
+.venv\Lib\site-packages\asyncpg\connect_utils.py:969: in _create_ssl_connection
+    tr, pr = await loop.create_connection(
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\base_events.py:1090: in create_connection
+    raise exceptions[0]
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\base_events.py:1069: in create_connection
+    sock = await self._connect_sock(
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\base_events.py:973: in _connect_sock
+    await self.sock_connect(sock, address)
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\proactor_events.py:726: in sock_connect
+    return await self._proactor.connect(sock, address)
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\windows_events.py:846: in _poll
+    value = callback(transferred, key, ov)
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\windows_events.py:633: in finish_connect
+    ov.getresult()
+E   ConnectionRefusedError: [WinError 1225] リモート コンピューターによりネットワーク接続が拒否されました。
+_ ERROR at setup of TestBuildSignatureHash.test_today_override_different_date_changes_hash _
+tests\conftest.py:49: in _ensure_db_tables
+    event_loop.run_until_complete(create_all())
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\base_events.py:653: in run_until_complete
+    return future.result()
+tests\conftest.py:46: in create_all
+    async with engine.begin() as conn:
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\contextlib.py:204: in __aenter__
+    return await anext(self.gen)
+.venv\Lib\site-packages\sqlalchemy\ext\asyncio\engine.py:1068: in begin
+    async with conn:
+.venv\Lib\site-packages\sqlalchemy\ext\asyncio\base.py:121: in __aenter__
+    return await self.start(is_ctxmanager=True)
+.venv\Lib\site-packages\sqlalchemy\ext\asyncio\engine.py:275: in start
+    await greenlet_spawn(self.sync_engine.connect)
+.venv\Lib\site-packages\sqlalchemy\util\_concurrency_py3k.py:201: in greenlet_spawn
+    result = context.throw(*sys.exc_info())
+.venv\Lib\site-packages\sqlalchemy\engine\base.py:3285: in connect
+    return self._connection_cls(self)
+.venv\Lib\site-packages\sqlalchemy\engine\base.py:143: in __init__
+    self._dbapi_connection = engine.raw_connection()
+.venv\Lib\site-packages\sqlalchemy\engine\base.py:3309: in raw_connection
+    return self.pool.connect()
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:447: in connect
+    return _ConnectionFairy._checkout(self)
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:1264: in _checkout
+    fairy = _ConnectionRecord.checkout(pool)
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:711: in checkout
+    rec = pool._do_get()
+.venv\Lib\site-packages\sqlalchemy\pool\impl.py:177: in _do_get
+    with util.safe_reraise():
+.venv\Lib\site-packages\sqlalchemy\util\langhelpers.py:224: in __exit__
+    raise exc_value.with_traceback(exc_tb)
+.venv\Lib\site-packages\sqlalchemy\pool\impl.py:175: in _do_get
+    return self._create_connection()
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:388: in _create_connection
+    return _ConnectionRecord(self)
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:673: in __init__
+    self.__connect()
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:899: in __connect
+    with util.safe_reraise():
+.venv\Lib\site-packages\sqlalchemy\util\langhelpers.py:224: in __exit__
+    raise exc_value.with_traceback(exc_tb)
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:895: in __connect
+    self.dbapi_connection = connection = pool._invoke_creator(self)
+.venv\Lib\site-packages\sqlalchemy\engine\create.py:661: in connect
+    return dialect.connect(*cargs, **cparams)
+.venv\Lib\site-packages\sqlalchemy\engine\default.py:630: in connect
+    return self.loaded_dbapi.connect(*cargs, **cparams)  # type: ignore[no-any-return]  # NOQA: E501
+.venv\Lib\site-packages\sqlalchemy\dialects\postgresql\asyncpg.py:955: in connect
+    await_only(creator_fn(*arg, **kw)),
+.venv\Lib\site-packages\sqlalchemy\util\_concurrency_py3k.py:132: in await_only
+    return current.parent.switch(awaitable)  # type: ignore[no-any-return,attr-defined] # noqa: E501
+.venv\Lib\site-packages\sqlalchemy\util\_concurrency_py3k.py:196: in greenlet_spawn
+    value = await result
+.venv\Lib\site-packages\asyncpg\connection.py:2443: in connect
+    return await connect_utils._connect(
+.venv\Lib\site-packages\asyncpg\connect_utils.py:1249: in _connect
+    raise last_error or exceptions.TargetServerAttributeNotMatched(
+.venv\Lib\site-packages\asyncpg\connect_utils.py:1218: in _connect
+    conn = await _connect_addr(
+.venv\Lib\site-packages\asyncpg\connect_utils.py:1054: in _connect_addr
+    return await __connect_addr(params, True, *args)
+.venv\Lib\site-packages\asyncpg\connect_utils.py:1099: in __connect_addr
+    tr, pr = await connector
+.venv\Lib\site-packages\asyncpg\connect_utils.py:969: in _create_ssl_connection
+    tr, pr = await loop.create_connection(
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\base_events.py:1090: in create_connection
+    raise exceptions[0]
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\base_events.py:1069: in create_connection
+    sock = await self._connect_sock(
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\base_events.py:973: in _connect_sock
+    await self.sock_connect(sock, address)
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\proactor_events.py:726: in sock_connect
+    return await self._proactor.connect(sock, address)
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\windows_events.py:846: in _poll
+    value = callback(transferred, key, ov)
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\windows_events.py:633: in finish_connect
+    ov.getresult()
+E   ConnectionRefusedError: [WinError 1225] リモート コンピューターによりネットワーク接続が拒否されました。
+_ ERROR at setup of TestBuildSignatureHash.test_today_override_none_is_deterministic _
+tests\conftest.py:49: in _ensure_db_tables
+    event_loop.run_until_complete(create_all())
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\base_events.py:653: in run_until_complete
+    return future.result()
+tests\conftest.py:46: in create_all
+    async with engine.begin() as conn:
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\contextlib.py:204: in __aenter__
+    return await anext(self.gen)
+.venv\Lib\site-packages\sqlalchemy\ext\asyncio\engine.py:1068: in begin
+    async with conn:
+.venv\Lib\site-packages\sqlalchemy\ext\asyncio\base.py:121: in __aenter__
+    return await self.start(is_ctxmanager=True)
+.venv\Lib\site-packages\sqlalchemy\ext\asyncio\engine.py:275: in start
+    await greenlet_spawn(self.sync_engine.connect)
+.venv\Lib\site-packages\sqlalchemy\util\_concurrency_py3k.py:201: in greenlet_spawn
+    result = context.throw(*sys.exc_info())
+.venv\Lib\site-packages\sqlalchemy\engine\base.py:3285: in connect
+    return self._connection_cls(self)
+.venv\Lib\site-packages\sqlalchemy\engine\base.py:143: in __init__
+    self._dbapi_connection = engine.raw_connection()
+.venv\Lib\site-packages\sqlalchemy\engine\base.py:3309: in raw_connection
+    return self.pool.connect()
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:447: in connect
+    return _ConnectionFairy._checkout(self)
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:1264: in _checkout
+    fairy = _ConnectionRecord.checkout(pool)
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:711: in checkout
+    rec = pool._do_get()
+.venv\Lib\site-packages\sqlalchemy\pool\impl.py:177: in _do_get
+    with util.safe_reraise():
+.venv\Lib\site-packages\sqlalchemy\util\langhelpers.py:224: in __exit__
+    raise exc_value.with_traceback(exc_tb)
+.venv\Lib\site-packages\sqlalchemy\pool\impl.py:175: in _do_get
+    return self._create_connection()
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:388: in _create_connection
+    return _ConnectionRecord(self)
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:673: in __init__
+    self.__connect()
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:899: in __connect
+    with util.safe_reraise():
+.venv\Lib\site-packages\sqlalchemy\util\langhelpers.py:224: in __exit__
+    raise exc_value.with_traceback(exc_tb)
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:895: in __connect
+    self.dbapi_connection = connection = pool._invoke_creator(self)
+.venv\Lib\site-packages\sqlalchemy\engine\create.py:661: in connect
+    return dialect.connect(*cargs, **cparams)
+.venv\Lib\site-packages\sqlalchemy\engine\default.py:630: in connect
+    return self.loaded_dbapi.connect(*cargs, **cparams)  # type: ignore[no-any-return]  # NOQA: E501
+.venv\Lib\site-packages\sqlalchemy\dialects\postgresql\asyncpg.py:955: in connect
+    await_only(creator_fn(*arg, **kw)),
+.venv\Lib\site-packages\sqlalchemy\util\_concurrency_py3k.py:132: in await_only
+    return current.parent.switch(awaitable)  # type: ignore[no-any-return,attr-defined] # noqa: E501
+.venv\Lib\site-packages\sqlalchemy\util\_concurrency_py3k.py:196: in greenlet_spawn
+    value = await result
+.venv\Lib\site-packages\asyncpg\connection.py:2443: in connect
+    return await connect_utils._connect(
+.venv\Lib\site-packages\asyncpg\connect_utils.py:1249: in _connect
+    raise last_error or exceptions.TargetServerAttributeNotMatched(
+.venv\Lib\site-packages\asyncpg\connect_utils.py:1218: in _connect
+    conn = await _connect_addr(
+.venv\Lib\site-packages\asyncpg\connect_utils.py:1054: in _connect_addr
+    return await __connect_addr(params, True, *args)
+.venv\Lib\site-packages\asyncpg\connect_utils.py:1099: in __connect_addr
+    tr, pr = await connector
+.venv\Lib\site-packages\asyncpg\connect_utils.py:969: in _create_ssl_connection
+    tr, pr = await loop.create_connection(
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\base_events.py:1090: in create_connection
+    raise exceptions[0]
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\base_events.py:1069: in create_connection
+    sock = await self._connect_sock(
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\base_events.py:973: in _connect_sock
+    await self.sock_connect(sock, address)
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\proactor_events.py:726: in sock_connect
+    return await self._proactor.connect(sock, address)
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\windows_events.py:846: in _poll
+    value = callback(transferred, key, ov)
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\windows_events.py:633: in finish_connect
+    ov.getresult()
+E   ConnectionRefusedError: [WinError 1225] リモート コンピューターによりネットワーク接続が拒否されました。
+__________ ERROR at setup of TestUsersCRUD.test_create_and_read_user __________
+tests\conftest.py:49: in _ensure_db_tables
+    event_loop.run_until_complete(create_all())
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\base_events.py:653: in run_until_complete
+    return future.result()
+tests\conftest.py:46: in create_all
+    async with engine.begin() as conn:
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\contextlib.py:204: in __aenter__
+    return await anext(self.gen)
+.venv\Lib\site-packages\sqlalchemy\ext\asyncio\engine.py:1068: in begin
+    async with conn:
+.venv\Lib\site-packages\sqlalchemy\ext\asyncio\base.py:121: in __aenter__
+    return await self.start(is_ctxmanager=True)
+.venv\Lib\site-packages\sqlalchemy\ext\asyncio\engine.py:275: in start
+    await greenlet_spawn(self.sync_engine.connect)
+.venv\Lib\site-packages\sqlalchemy\util\_concurrency_py3k.py:201: in greenlet_spawn
+    result = context.throw(*sys.exc_info())
+.venv\Lib\site-packages\sqlalchemy\engine\base.py:3285: in connect
+    return self._connection_cls(self)
+.venv\Lib\site-packages\sqlalchemy\engine\base.py:143: in __init__
+    self._dbapi_connection = engine.raw_connection()
+.venv\Lib\site-packages\sqlalchemy\engine\base.py:3309: in raw_connection
+    return self.pool.connect()
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:447: in connect
+    return _ConnectionFairy._checkout(self)
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:1264: in _checkout
+    fairy = _ConnectionRecord.checkout(pool)
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:711: in checkout
+    rec = pool._do_get()
+.venv\Lib\site-packages\sqlalchemy\pool\impl.py:177: in _do_get
+    with util.safe_reraise():
+.venv\Lib\site-packages\sqlalchemy\util\langhelpers.py:224: in __exit__
+    raise exc_value.with_traceback(exc_tb)
+.venv\Lib\site-packages\sqlalchemy\pool\impl.py:175: in _do_get
+    return self._create_connection()
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:388: in _create_connection
+    return _ConnectionRecord(self)
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:673: in __init__
+    self.__connect()
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:899: in __connect
+    with util.safe_reraise():
+.venv\Lib\site-packages\sqlalchemy\util\langhelpers.py:224: in __exit__
+    raise exc_value.with_traceback(exc_tb)
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:895: in __connect
+    self.dbapi_connection = connection = pool._invoke_creator(self)
+.venv\Lib\site-packages\sqlalchemy\engine\create.py:661: in connect
+    return dialect.connect(*cargs, **cparams)
+.venv\Lib\site-packages\sqlalchemy\engine\default.py:630: in connect
+    return self.loaded_dbapi.connect(*cargs, **cparams)  # type: ignore[no-any-return]  # NOQA: E501
+.venv\Lib\site-packages\sqlalchemy\dialects\postgresql\asyncpg.py:955: in connect
+    await_only(creator_fn(*arg, **kw)),
+.venv\Lib\site-packages\sqlalchemy\util\_concurrency_py3k.py:132: in await_only
+    return current.parent.switch(awaitable)  # type: ignore[no-any-return,attr-defined] # noqa: E501
+.venv\Lib\site-packages\sqlalchemy\util\_concurrency_py3k.py:196: in greenlet_spawn
+    value = await result
+.venv\Lib\site-packages\asyncpg\connection.py:2443: in connect
+    return await connect_utils._connect(
+.venv\Lib\site-packages\asyncpg\connect_utils.py:1249: in _connect
+    raise last_error or exceptions.TargetServerAttributeNotMatched(
+.venv\Lib\site-packages\asyncpg\connect_utils.py:1218: in _connect
+    conn = await _connect_addr(
+.venv\Lib\site-packages\asyncpg\connect_utils.py:1054: in _connect_addr
+    return await __connect_addr(params, True, *args)
+.venv\Lib\site-packages\asyncpg\connect_utils.py:1099: in __connect_addr
+    tr, pr = await connector
+.venv\Lib\site-packages\asyncpg\connect_utils.py:969: in _create_ssl_connection
+    tr, pr = await loop.create_connection(
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\base_events.py:1090: in create_connection
+    raise exceptions[0]
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\base_events.py:1069: in create_connection
+    sock = await self._connect_sock(
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\base_events.py:973: in _connect_sock
+    await self.sock_connect(sock, address)
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\proactor_events.py:726: in sock_connect
+    return await self._proactor.connect(sock, address)
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\windows_events.py:846: in _poll
+    value = callback(transferred, key, ov)
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\windows_events.py:633: in finish_connect
+    ov.getresult()
+E   ConnectionRefusedError: [WinError 1225] リモート コンピューターによりネットワーク接続が拒否されました。
+______ ERROR at setup of TestUsersCRUD.test_create_duplicate_email_fails ______
+tests\conftest.py:49: in _ensure_db_tables
+    event_loop.run_until_complete(create_all())
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\base_events.py:653: in run_until_complete
+    return future.result()
+tests\conftest.py:46: in create_all
+    async with engine.begin() as conn:
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\contextlib.py:204: in __aenter__
+    return await anext(self.gen)
+.venv\Lib\site-packages\sqlalchemy\ext\asyncio\engine.py:1068: in begin
+    async with conn:
+.venv\Lib\site-packages\sqlalchemy\ext\asyncio\base.py:121: in __aenter__
+    return await self.start(is_ctxmanager=True)
+.venv\Lib\site-packages\sqlalchemy\ext\asyncio\engine.py:275: in start
+    await greenlet_spawn(self.sync_engine.connect)
+.venv\Lib\site-packages\sqlalchemy\util\_concurrency_py3k.py:201: in greenlet_spawn
+    result = context.throw(*sys.exc_info())
+.venv\Lib\site-packages\sqlalchemy\engine\base.py:3285: in connect
+    return self._connection_cls(self)
+.venv\Lib\site-packages\sqlalchemy\engine\base.py:143: in __init__
+    self._dbapi_connection = engine.raw_connection()
+.venv\Lib\site-packages\sqlalchemy\engine\base.py:3309: in raw_connection
+    return self.pool.connect()
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:447: in connect
+    return _ConnectionFairy._checkout(self)
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:1264: in _checkout
+    fairy = _ConnectionRecord.checkout(pool)
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:711: in checkout
+    rec = pool._do_get()
+.venv\Lib\site-packages\sqlalchemy\pool\impl.py:177: in _do_get
+    with util.safe_reraise():
+.venv\Lib\site-packages\sqlalchemy\util\langhelpers.py:224: in __exit__
+    raise exc_value.with_traceback(exc_tb)
+.venv\Lib\site-packages\sqlalchemy\pool\impl.py:175: in _do_get
+    return self._create_connection()
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:388: in _create_connection
+    return _ConnectionRecord(self)
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:673: in __init__
+    self.__connect()
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:899: in __connect
+    with util.safe_reraise():
+.venv\Lib\site-packages\sqlalchemy\util\langhelpers.py:224: in __exit__
+    raise exc_value.with_traceback(exc_tb)
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:895: in __connect
+    self.dbapi_connection = connection = pool._invoke_creator(self)
+.venv\Lib\site-packages\sqlalchemy\engine\create.py:661: in connect
+    return dialect.connect(*cargs, **cparams)
+.venv\Lib\site-packages\sqlalchemy\engine\default.py:630: in connect
+    return self.loaded_dbapi.connect(*cargs, **cparams)  # type: ignore[no-any-return]  # NOQA: E501
+.venv\Lib\site-packages\sqlalchemy\dialects\postgresql\asyncpg.py:955: in connect
+    await_only(creator_fn(*arg, **kw)),
+.venv\Lib\site-packages\sqlalchemy\util\_concurrency_py3k.py:132: in await_only
+    return current.parent.switch(awaitable)  # type: ignore[no-any-return,attr-defined] # noqa: E501
+.venv\Lib\site-packages\sqlalchemy\util\_concurrency_py3k.py:196: in greenlet_spawn
+    value = await result
+.venv\Lib\site-packages\asyncpg\connection.py:2443: in connect
+    return await connect_utils._connect(
+.venv\Lib\site-packages\asyncpg\connect_utils.py:1249: in _connect
+    raise last_error or exceptions.TargetServerAttributeNotMatched(
+.venv\Lib\site-packages\asyncpg\connect_utils.py:1218: in _connect
+    conn = await _connect_addr(
+.venv\Lib\site-packages\asyncpg\connect_utils.py:1054: in _connect_addr
+    return await __connect_addr(params, True, *args)
+.venv\Lib\site-packages\asyncpg\connect_utils.py:1099: in __connect_addr
+    tr, pr = await connector
+.venv\Lib\site-packages\asyncpg\connect_utils.py:969: in _create_ssl_connection
+    tr, pr = await loop.create_connection(
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\base_events.py:1090: in create_connection
+    raise exceptions[0]
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\base_events.py:1069: in create_connection
+    sock = await self._connect_sock(
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\base_events.py:973: in _connect_sock
+    await self.sock_connect(sock, address)
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\proactor_events.py:726: in sock_connect
+    return await self._proactor.connect(sock, address)
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\windows_events.py:846: in _poll
+    value = callback(transferred, key, ov)
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\windows_events.py:633: in finish_connect
+    ov.getresult()
+E   ConnectionRefusedError: [WinError 1225] リモート コンピューターによりネットワーク接続が拒否されました。
+______________ ERROR at setup of TestUsersCRUD.test_update_user _______________
+tests\conftest.py:49: in _ensure_db_tables
+    event_loop.run_until_complete(create_all())
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\base_events.py:653: in run_until_complete
+    return future.result()
+tests\conftest.py:46: in create_all
+    async with engine.begin() as conn:
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\contextlib.py:204: in __aenter__
+    return await anext(self.gen)
+.venv\Lib\site-packages\sqlalchemy\ext\asyncio\engine.py:1068: in begin
+    async with conn:
+.venv\Lib\site-packages\sqlalchemy\ext\asyncio\base.py:121: in __aenter__
+    return await self.start(is_ctxmanager=True)
+.venv\Lib\site-packages\sqlalchemy\ext\asyncio\engine.py:275: in start
+    await greenlet_spawn(self.sync_engine.connect)
+.venv\Lib\site-packages\sqlalchemy\util\_concurrency_py3k.py:201: in greenlet_spawn
+    result = context.throw(*sys.exc_info())
+.venv\Lib\site-packages\sqlalchemy\engine\base.py:3285: in connect
+    return self._connection_cls(self)
+.venv\Lib\site-packages\sqlalchemy\engine\base.py:143: in __init__
+    self._dbapi_connection = engine.raw_connection()
+.venv\Lib\site-packages\sqlalchemy\engine\base.py:3309: in raw_connection
+    return self.pool.connect()
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:447: in connect
+    return _ConnectionFairy._checkout(self)
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:1264: in _checkout
+    fairy = _ConnectionRecord.checkout(pool)
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:711: in checkout
+    rec = pool._do_get()
+.venv\Lib\site-packages\sqlalchemy\pool\impl.py:177: in _do_get
+    with util.safe_reraise():
+.venv\Lib\site-packages\sqlalchemy\util\langhelpers.py:224: in __exit__
+    raise exc_value.with_traceback(exc_tb)
+.venv\Lib\site-packages\sqlalchemy\pool\impl.py:175: in _do_get
+    return self._create_connection()
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:388: in _create_connection
+    return _ConnectionRecord(self)
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:673: in __init__
+    self.__connect()
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:899: in __connect
+    with util.safe_reraise():
+.venv\Lib\site-packages\sqlalchemy\util\langhelpers.py:224: in __exit__
+    raise exc_value.with_traceback(exc_tb)
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:895: in __connect
+    self.dbapi_connection = connection = pool._invoke_creator(self)
+.venv\Lib\site-packages\sqlalchemy\engine\create.py:661: in connect
+    return dialect.connect(*cargs, **cparams)
+.venv\Lib\site-packages\sqlalchemy\engine\default.py:630: in connect
+    return self.loaded_dbapi.connect(*cargs, **cparams)  # type: ignore[no-any-return]  # NOQA: E501
+.venv\Lib\site-packages\sqlalchemy\dialects\postgresql\asyncpg.py:955: in connect
+    await_only(creator_fn(*arg, **kw)),
+.venv\Lib\site-packages\sqlalchemy\util\_concurrency_py3k.py:132: in await_only
+    return current.parent.switch(awaitable)  # type: ignore[no-any-return,attr-defined] # noqa: E501
+.venv\Lib\site-packages\sqlalchemy\util\_concurrency_py3k.py:196: in greenlet_spawn
+    value = await result
+.venv\Lib\site-packages\asyncpg\connection.py:2443: in connect
+    return await connect_utils._connect(
+.venv\Lib\site-packages\asyncpg\connect_utils.py:1249: in _connect
+    raise last_error or exceptions.TargetServerAttributeNotMatched(
+.venv\Lib\site-packages\asyncpg\connect_utils.py:1218: in _connect
+    conn = await _connect_addr(
+.venv\Lib\site-packages\asyncpg\connect_utils.py:1054: in _connect_addr
+    return await __connect_addr(params, True, *args)
+.venv\Lib\site-packages\asyncpg\connect_utils.py:1099: in __connect_addr
+    tr, pr = await connector
+.venv\Lib\site-packages\asyncpg\connect_utils.py:969: in _create_ssl_connection
+    tr, pr = await loop.create_connection(
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\base_events.py:1090: in create_connection
+    raise exceptions[0]
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\base_events.py:1069: in create_connection
+    sock = await self._connect_sock(
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\base_events.py:973: in _connect_sock
+    await self.sock_connect(sock, address)
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\proactor_events.py:726: in sock_connect
+    return await self._proactor.connect(sock, address)
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\windows_events.py:846: in _poll
+    value = callback(transferred, key, ov)
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\windows_events.py:633: in finish_connect
+    ov.getresult()
+E   ConnectionRefusedError: [WinError 1225] リモート コンピューターによりネットワーク接続が拒否されました。
+______________ ERROR at setup of TestUsersCRUD.test_delete_user _______________
+tests\conftest.py:49: in _ensure_db_tables
+    event_loop.run_until_complete(create_all())
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\base_events.py:653: in run_until_complete
+    return future.result()
+tests\conftest.py:46: in create_all
+    async with engine.begin() as conn:
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\contextlib.py:204: in __aenter__
+    return await anext(self.gen)
+.venv\Lib\site-packages\sqlalchemy\ext\asyncio\engine.py:1068: in begin
+    async with conn:
+.venv\Lib\site-packages\sqlalchemy\ext\asyncio\base.py:121: in __aenter__
+    return await self.start(is_ctxmanager=True)
+.venv\Lib\site-packages\sqlalchemy\ext\asyncio\engine.py:275: in start
+    await greenlet_spawn(self.sync_engine.connect)
+.venv\Lib\site-packages\sqlalchemy\util\_concurrency_py3k.py:201: in greenlet_spawn
+    result = context.throw(*sys.exc_info())
+.venv\Lib\site-packages\sqlalchemy\engine\base.py:3285: in connect
+    return self._connection_cls(self)
+.venv\Lib\site-packages\sqlalchemy\engine\base.py:143: in __init__
+    self._dbapi_connection = engine.raw_connection()
+.venv\Lib\site-packages\sqlalchemy\engine\base.py:3309: in raw_connection
+    return self.pool.connect()
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:447: in connect
+    return _ConnectionFairy._checkout(self)
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:1264: in _checkout
+    fairy = _ConnectionRecord.checkout(pool)
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:711: in checkout
+    rec = pool._do_get()
+.venv\Lib\site-packages\sqlalchemy\pool\impl.py:177: in _do_get
+    with util.safe_reraise():
+.venv\Lib\site-packages\sqlalchemy\util\langhelpers.py:224: in __exit__
+    raise exc_value.with_traceback(exc_tb)
+.venv\Lib\site-packages\sqlalchemy\pool\impl.py:175: in _do_get
+    return self._create_connection()
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:388: in _create_connection
+    return _ConnectionRecord(self)
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:673: in __init__
+    self.__connect()
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:899: in __connect
+    with util.safe_reraise():
+.venv\Lib\site-packages\sqlalchemy\util\langhelpers.py:224: in __exit__
+    raise exc_value.with_traceback(exc_tb)
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:895: in __connect
+    self.dbapi_connection = connection = pool._invoke_creator(self)
+.venv\Lib\site-packages\sqlalchemy\engine\create.py:661: in connect
+    return dialect.connect(*cargs, **cparams)
+.venv\Lib\site-packages\sqlalchemy\engine\default.py:630: in connect
+    return self.loaded_dbapi.connect(*cargs, **cparams)  # type: ignore[no-any-return]  # NOQA: E501
+.venv\Lib\site-packages\sqlalchemy\dialects\postgresql\asyncpg.py:955: in connect
+    await_only(creator_fn(*arg, **kw)),
+.venv\Lib\site-packages\sqlalchemy\util\_concurrency_py3k.py:132: in await_only
+    return current.parent.switch(awaitable)  # type: ignore[no-any-return,attr-defined] # noqa: E501
+.venv\Lib\site-packages\sqlalchemy\util\_concurrency_py3k.py:196: in greenlet_spawn
+    value = await result
+.venv\Lib\site-packages\asyncpg\connection.py:2443: in connect
+    return await connect_utils._connect(
+.venv\Lib\site-packages\asyncpg\connect_utils.py:1249: in _connect
+    raise last_error or exceptions.TargetServerAttributeNotMatched(
+.venv\Lib\site-packages\asyncpg\connect_utils.py:1218: in _connect
+    conn = await _connect_addr(
+.venv\Lib\site-packages\asyncpg\connect_utils.py:1054: in _connect_addr
+    return await __connect_addr(params, True, *args)
+.venv\Lib\site-packages\asyncpg\connect_utils.py:1099: in __connect_addr
+    tr, pr = await connector
+.venv\Lib\site-packages\asyncpg\connect_utils.py:969: in _create_ssl_connection
+    tr, pr = await loop.create_connection(
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\base_events.py:1090: in create_connection
+    raise exceptions[0]
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\base_events.py:1069: in create_connection
+    sock = await self._connect_sock(
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\base_events.py:973: in _connect_sock
+    await self.sock_connect(sock, address)
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\proactor_events.py:726: in sock_connect
+    return await self._proactor.connect(sock, address)
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\windows_events.py:846: in _poll
+    value = callback(transferred, key, ov)
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\windows_events.py:633: in finish_connect
+    ov.getresult()
+E   ConnectionRefusedError: [WinError 1225] リモート コンピューターによりネットワーク接続が拒否されました。
+____ ERROR at setup of TestUsersCRUD.test_get_nonexistent_user_returns_404 ____
+tests\conftest.py:49: in _ensure_db_tables
+    event_loop.run_until_complete(create_all())
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\base_events.py:653: in run_until_complete
+    return future.result()
+tests\conftest.py:46: in create_all
+    async with engine.begin() as conn:
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\contextlib.py:204: in __aenter__
+    return await anext(self.gen)
+.venv\Lib\site-packages\sqlalchemy\ext\asyncio\engine.py:1068: in begin
+    async with conn:
+.venv\Lib\site-packages\sqlalchemy\ext\asyncio\base.py:121: in __aenter__
+    return await self.start(is_ctxmanager=True)
+.venv\Lib\site-packages\sqlalchemy\ext\asyncio\engine.py:275: in start
+    await greenlet_spawn(self.sync_engine.connect)
+.venv\Lib\site-packages\sqlalchemy\util\_concurrency_py3k.py:201: in greenlet_spawn
+    result = context.throw(*sys.exc_info())
+.venv\Lib\site-packages\sqlalchemy\engine\base.py:3285: in connect
+    return self._connection_cls(self)
+.venv\Lib\site-packages\sqlalchemy\engine\base.py:143: in __init__
+    self._dbapi_connection = engine.raw_connection()
+.venv\Lib\site-packages\sqlalchemy\engine\base.py:3309: in raw_connection
+    return self.pool.connect()
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:447: in connect
+    return _ConnectionFairy._checkout(self)
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:1264: in _checkout
+    fairy = _ConnectionRecord.checkout(pool)
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:711: in checkout
+    rec = pool._do_get()
+.venv\Lib\site-packages\sqlalchemy\pool\impl.py:177: in _do_get
+    with util.safe_reraise():
+.venv\Lib\site-packages\sqlalchemy\util\langhelpers.py:224: in __exit__
+    raise exc_value.with_traceback(exc_tb)
+.venv\Lib\site-packages\sqlalchemy\pool\impl.py:175: in _do_get
+    return self._create_connection()
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:388: in _create_connection
+    return _ConnectionRecord(self)
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:673: in __init__
+    self.__connect()
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:899: in __connect
+    with util.safe_reraise():
+.venv\Lib\site-packages\sqlalchemy\util\langhelpers.py:224: in __exit__
+    raise exc_value.with_traceback(exc_tb)
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:895: in __connect
+    self.dbapi_connection = connection = pool._invoke_creator(self)
+.venv\Lib\site-packages\sqlalchemy\engine\create.py:661: in connect
+    return dialect.connect(*cargs, **cparams)
+.venv\Lib\site-packages\sqlalchemy\engine\default.py:630: in connect
+    return self.loaded_dbapi.connect(*cargs, **cparams)  # type: ignore[no-any-return]  # NOQA: E501
+.venv\Lib\site-packages\sqlalchemy\dialects\postgresql\asyncpg.py:955: in connect
+    await_only(creator_fn(*arg, **kw)),
+.venv\Lib\site-packages\sqlalchemy\util\_concurrency_py3k.py:132: in await_only
+    return current.parent.switch(awaitable)  # type: ignore[no-any-return,attr-defined] # noqa: E501
+.venv\Lib\site-packages\sqlalchemy\util\_concurrency_py3k.py:196: in greenlet_spawn
+    value = await result
+.venv\Lib\site-packages\asyncpg\connection.py:2443: in connect
+    return await connect_utils._connect(
+.venv\Lib\site-packages\asyncpg\connect_utils.py:1249: in _connect
+    raise last_error or exceptions.TargetServerAttributeNotMatched(
+.venv\Lib\site-packages\asyncpg\connect_utils.py:1218: in _connect
+    conn = await _connect_addr(
+.venv\Lib\site-packages\asyncpg\connect_utils.py:1054: in _connect_addr
+    return await __connect_addr(params, True, *args)
+.venv\Lib\site-packages\asyncpg\connect_utils.py:1099: in __connect_addr
+    tr, pr = await connector
+.venv\Lib\site-packages\asyncpg\connect_utils.py:969: in _create_ssl_connection
+    tr, pr = await loop.create_connection(
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\base_events.py:1090: in create_connection
+    raise exceptions[0]
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\base_events.py:1069: in create_connection
+    sock = await self._connect_sock(
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\base_events.py:973: in _connect_sock
+    await self.sock_connect(sock, address)
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\proactor_events.py:726: in sock_connect
+    return await self._proactor.connect(sock, address)
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\windows_events.py:846: in _poll
+    value = callback(transferred, key, ov)
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\windows_events.py:633: in finish_connect
+    ov.getresult()
+E   ConnectionRefusedError: [WinError 1225] リモート コンピューターによりネットワーク接続が拒否されました。
+_____________ ERROR at setup of TestUsersCRUD.test_full_crud_flow _____________
+tests\conftest.py:49: in _ensure_db_tables
+    event_loop.run_until_complete(create_all())
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\base_events.py:653: in run_until_complete
+    return future.result()
+tests\conftest.py:46: in create_all
+    async with engine.begin() as conn:
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\contextlib.py:204: in __aenter__
+    return await anext(self.gen)
+.venv\Lib\site-packages\sqlalchemy\ext\asyncio\engine.py:1068: in begin
+    async with conn:
+.venv\Lib\site-packages\sqlalchemy\ext\asyncio\base.py:121: in __aenter__
+    return await self.start(is_ctxmanager=True)
+.venv\Lib\site-packages\sqlalchemy\ext\asyncio\engine.py:275: in start
+    await greenlet_spawn(self.sync_engine.connect)
+.venv\Lib\site-packages\sqlalchemy\util\_concurrency_py3k.py:201: in greenlet_spawn
+    result = context.throw(*sys.exc_info())
+.venv\Lib\site-packages\sqlalchemy\engine\base.py:3285: in connect
+    return self._connection_cls(self)
+.venv\Lib\site-packages\sqlalchemy\engine\base.py:143: in __init__
+    self._dbapi_connection = engine.raw_connection()
+.venv\Lib\site-packages\sqlalchemy\engine\base.py:3309: in raw_connection
+    return self.pool.connect()
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:447: in connect
+    return _ConnectionFairy._checkout(self)
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:1264: in _checkout
+    fairy = _ConnectionRecord.checkout(pool)
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:711: in checkout
+    rec = pool._do_get()
+.venv\Lib\site-packages\sqlalchemy\pool\impl.py:177: in _do_get
+    with util.safe_reraise():
+.venv\Lib\site-packages\sqlalchemy\util\langhelpers.py:224: in __exit__
+    raise exc_value.with_traceback(exc_tb)
+.venv\Lib\site-packages\sqlalchemy\pool\impl.py:175: in _do_get
+    return self._create_connection()
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:388: in _create_connection
+    return _ConnectionRecord(self)
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:673: in __init__
+    self.__connect()
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:899: in __connect
+    with util.safe_reraise():
+.venv\Lib\site-packages\sqlalchemy\util\langhelpers.py:224: in __exit__
+    raise exc_value.with_traceback(exc_tb)
+.venv\Lib\site-packages\sqlalchemy\pool\base.py:895: in __connect
+    self.dbapi_connection = connection = pool._invoke_creator(self)
+.venv\Lib\site-packages\sqlalchemy\engine\create.py:661: in connect
+    return dialect.connect(*cargs, **cparams)
+.venv\Lib\site-packages\sqlalchemy\engine\default.py:630: in connect
+    return self.loaded_dbapi.connect(*cargs, **cparams)  # type: ignore[no-any-return]  # NOQA: E501
+.venv\Lib\site-packages\sqlalchemy\dialects\postgresql\asyncpg.py:955: in connect
+    await_only(creator_fn(*arg, **kw)),
+.venv\Lib\site-packages\sqlalchemy\util\_concurrency_py3k.py:132: in await_only
+    return current.parent.switch(awaitable)  # type: ignore[no-any-return,attr-defined] # noqa: E501
+.venv\Lib\site-packages\sqlalchemy\util\_concurrency_py3k.py:196: in greenlet_spawn
+    value = await result
+.venv\Lib\site-packages\asyncpg\connection.py:2443: in connect
+    return await connect_utils._connect(
+.venv\Lib\site-packages\asyncpg\connect_utils.py:1249: in _connect
+    raise last_error or exceptions.TargetServerAttributeNotMatched(
+.venv\Lib\site-packages\asyncpg\connect_utils.py:1218: in _connect
+    conn = await _connect_addr(
+.venv\Lib\site-packages\asyncpg\connect_utils.py:1054: in _connect_addr
+    return await __connect_addr(params, True, *args)
+.venv\Lib\site-packages\asyncpg\connect_utils.py:1099: in __connect_addr
+    tr, pr = await connector
+.venv\Lib\site-packages\asyncpg\connect_utils.py:969: in _create_ssl_connection
+    tr, pr = await loop.create_connection(
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\base_events.py:1090: in create_connection
+    raise exceptions[0]
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\base_events.py:1069: in create_connection
+    sock = await self._connect_sock(
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\base_events.py:973: in _connect_sock
+    await self.sock_connect(sock, address)
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\proactor_events.py:726: in sock_connect
+    return await self._proactor.connect(sock, address)
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\windows_events.py:846: in _poll
+    value = callback(transferred, key, ov)
+C:\Users\tonam\AppData\Local\Programs\Python\Python311\Lib\asyncio\windows_events.py:633: in finish_connect
+    ov.getresult()
+E   ConnectionRefusedError: [WinError 1225] リモート コンピューターによりネットワーク接続が拒否されました。
+============================== warnings summary ===============================
+app\config.py:11
+  C:\2026_team22\backend\app\config.py:11: PydanticDeprecatedSince20: Support for class-based `config` is deprecated, use ConfigDict instead. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.12/migration/
+    class Settings(BaseSettings):
+
+tests/test_plan_api.py::TestPlanAPIAuth::test_plan_returns_401_without_authorization
+  C:\2026_team22\backend\.venv\Lib\site-packages\pytest_asyncio\plugin.py:761: DeprecationWarning: The event_loop fixture provided by pytest-asyncio has been redefined in
+  C:\2026_team22\backend\tests\conftest.py:34
+  Replacing the event_loop fixture with a custom implementation is deprecated
+  and will lead to errors in the future.
+  If you want to request an asyncio event loop with a scope other than function
+  scope, use the "scope" argument to the asyncio mark when marking the tests.
+  If you want to return different types of event loops, use the event_loop_policy
+  fixture.
+  
+    warnings.warn(
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+ERROR tests/test_plan_api.py::TestPlanAPIAuth::test_plan_returns_401_without_authorization
+ERROR tests/test_plan_api.py::TestPlanAPI::test_plan_returns_week_plan - Conn...
+ERROR tests/test_plan_api.py::TestPlanAPI::test_plan_cache_hit_same_body - Co...
+ERROR tests/test_plan_api.py::TestPlanAPI::test_force_bypasses_cache - Connec...
+ERROR tests/test_plan_api.py::TestPlanAPI::test_today_override_in_request - C...
+ERROR tests/test_plan_api.py::TestPlanAPI::test_today_override_changes_cache_key
+ERROR tests/test_plan_cache_repository.py::TestSleepPlanCacheRepository::test_upsert_creates_then_updates
+ERROR tests/test_plan_cache_repository.py::TestSleepPlanCacheRepository::test_get_by_user_and_hash_hit_and_miss
+ERROR tests/test_plan_usecase.py::TestGetOrCreatePlanUseCase::test_cache_hit_returns_cached_plan
+ERROR tests/test_plan_usecase.py::TestGetOrCreatePlanUseCase::test_cache_miss_calls_llm_and_upserts
+ERROR tests/test_plan_usecase.py::TestGetOrCreatePlanUseCase::test_force_skips_cache
+ERROR tests/test_plan_usecase.py::TestGetOrCreatePlanUseCase::test_today_override_passed_to_generator
+ERROR tests/test_plan_usecase.py::TestGetOrCreatePlanUseCase::test_today_override_changes_signature
+ERROR tests/test_signature.py::TestBuildSignatureHash::test_same_input_produces_same_hash
+ERROR tests/test_signature.py::TestBuildSignatureHash::test_different_input_produces_different_hash
+ERROR tests/test_signature.py::TestBuildSignatureHash::test_dict_key_order_independent
+ERROR tests/test_signature.py::TestBuildSignatureHash::test_empty_input_deterministic
+ERROR tests/test_signature.py::TestBuildSignatureHash::test_settings_only - C...
+ERROR tests/test_signature.py::TestBuildSignatureHash::test_today_override_changes_hash
+ERROR tests/test_signature.py::TestBuildSignatureHash::test_today_override_same_produces_same_hash
+ERROR tests/test_signature.py::TestBuildSignatureHash::test_today_override_different_date_changes_hash
+ERROR tests/test_signature.py::TestBuildSignatureHash::test_today_override_none_is_deterministic
+ERROR tests/test_users_crud.py::TestUsersCRUD::test_create_and_read_user - Co...
+ERROR tests/test_users_crud.py::TestUsersCRUD::test_create_duplicate_email_fails
+ERROR tests/test_users_crud.py::TestUsersCRUD::test_update_user - ConnectionR...
+ERROR tests/test_users_crud.py::TestUsersCRUD::test_delete_user - ConnectionR...
+ERROR tests/test_users_crud.py::TestUsersCRUD::test_get_nonexistent_user_returns_404
+ERROR tests/test_users_crud.py::TestUsersCRUD::test_full_crud_flow - Connecti...
+======================= 2 warnings, 28 errors in 18.52s =======================

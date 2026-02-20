@@ -1,0 +1,47 @@
+﻿============================= test session starts =============================
+platform win32 -- Python 3.11.3, pytest-7.4.4, pluggy-1.6.0 -- C:\2026_team22\backend\.venv\Scripts\python.exe
+cachedir: .pytest_cache
+rootdir: C:\2026_team22\backend
+configfile: pytest.ini
+plugins: anyio-4.12.1, asyncio-0.23.8
+asyncio: mode=Mode.AUTO
+collecting ... collected 14 items
+
+tests/test_signature.py::TestBuildSignatureHash::test_same_input_produces_same_hash PASSED [  7%]
+tests/test_signature.py::TestBuildSignatureHash::test_different_input_produces_different_hash PASSED [ 14%]
+tests/test_signature.py::TestBuildSignatureHash::test_dict_key_order_independent PASSED [ 21%]
+tests/test_signature.py::TestBuildSignatureHash::test_empty_input_deterministic PASSED [ 28%]
+tests/test_signature.py::TestBuildSignatureHash::test_settings_only PASSED [ 35%]
+tests/test_signature.py::TestBuildSignatureHash::test_today_override_changes_hash PASSED [ 42%]
+tests/test_signature.py::TestBuildSignatureHash::test_today_override_same_produces_same_hash PASSED [ 50%]
+tests/test_signature.py::TestBuildSignatureHash::test_today_override_different_date_changes_hash PASSED [ 57%]
+tests/test_signature.py::TestBuildSignatureHash::test_today_override_none_is_deterministic PASSED [ 64%]
+tests/test_plan_usecase.py::TestGetOrCreatePlanUseCase::test_cache_hit_returns_cached_plan PASSED [ 71%]
+tests/test_plan_usecase.py::TestGetOrCreatePlanUseCase::test_cache_miss_calls_llm_and_upserts PASSED [ 78%]
+tests/test_plan_usecase.py::TestGetOrCreatePlanUseCase::test_force_skips_cache PASSED [ 85%]
+tests/test_plan_usecase.py::TestGetOrCreatePlanUseCase::test_today_override_passed_to_generator PASSED [ 92%]
+tests/test_plan_usecase.py::TestGetOrCreatePlanUseCase::test_today_override_changes_signature PASSED [100%]
+
+============================== warnings summary ===============================
+app\config.py:11
+  C:\2026_team22\backend\app\config.py:11: PydanticDeprecatedSince20: Support for class-based `config` is deprecated, use ConfigDict instead. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.12/migration/
+    class Settings(BaseSettings):
+
+tests/test_signature.py::TestBuildSignatureHash::test_same_input_produces_same_hash
+  C:\2026_team22\backend\.venv\Lib\site-packages\pytest_asyncio\plugin.py:761: DeprecationWarning: The event_loop fixture provided by pytest-asyncio has been redefined in
+  C:\2026_team22\backend\tests\conftest.py:34
+  Replacing the event_loop fixture with a custom implementation is deprecated
+  and will lead to errors in the future.
+  If you want to request an asyncio event loop with a scope other than function
+  scope, use the "scope" argument to the asyncio mark when marking the tests.
+  If you want to return different types of event loops, use the event_loop_policy
+  fixture.
+  
+    warnings.warn(
+
+tests/test_signature.py::TestBuildSignatureHash::test_same_input_produces_same_hash
+  C:\2026_team22\backend\tests\conftest.py:54: UserWarning: DB connection failed. Integration tests will be skipped.
+    warnings.warn("DB connection failed. Integration tests will be skipped.")
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+======================= 14 passed, 3 warnings in 4.30s ========================
