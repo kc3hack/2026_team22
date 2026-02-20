@@ -36,7 +36,7 @@ interface SleepLogActions {
  * 睡眠ログストア
  * バックエンド API と連携してスコア履歴の保存と取得を管理
  */
-export const useSleepLogStore = create<SleepLogState & SleepLogActions>((set, get) => ({
+export const useSleepLogStore = create<SleepLogState & SleepLogActions>((set, _get) => ({
   logs: [],
   isLoading: false,
   lastFetchedAt: null,

@@ -1,6 +1,5 @@
 import { useState, useCallback } from 'react';
 import { googleCalendar } from '@shared/lib/googleCalendar';
-import { geminiClient } from '@shared/lib/gemini';
 import { useSleepSettingsStore } from '../../sleep-settings/sleepSettingsStore';
 
 interface SleepAdvice {
@@ -75,7 +74,7 @@ export const useSleepSchedule = () => {
     } finally {
       setLoading(false);
     }
-  }, [sleepDurationHours, preparationMinutes]);
+  }, [sleepDurationHours, preparationMinutes, icsUrl]);
 
   return {
     advice,

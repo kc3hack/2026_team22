@@ -2,19 +2,21 @@
 UpdateUserUseCase - ユーザー更新のビジネスロジック
 """
 
+from typing import Any
+
 from fastapi import HTTPException, status
 
 from app.application.base import BaseUseCase
 from app.domain.user.repositories import IUserRepository
 
 
-class UpdateUserUseCase(BaseUseCase[tuple[str, dict], object]):
+class UpdateUserUseCase(BaseUseCase[tuple[str, dict], Any]):
     """ユーザー更新 UseCase"""
 
     def __init__(self, user_repo: IUserRepository):
         self.user_repo = user_repo
 
-    async def execute(self, input: tuple[str, dict]) -> object:
+    async def execute(self, input: tuple[str, dict]) -> Any:
         """
         ユーザーを更新する
 
@@ -30,6 +32,6 @@ class UpdateUserUseCase(BaseUseCase[tuple[str, dict], object]):
             )
 
         if data.get("name") is not None:
-            user.name = data["name"]
+            setattr(user, "name", data["name"])
 
         return await self.user_repo.update(user)

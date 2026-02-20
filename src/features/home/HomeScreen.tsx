@@ -28,7 +28,7 @@ export const HomeScreen: React.FC = () => {
   const { logs, setMood, fetchLogs } = useSleepLogStore();
   const latestLog = logs[0] ?? null;
   const latestScore = latestLog?.score ?? null;
-  const { plan, fetchPlan } = useSleepPlanStore();
+  const { fetchPlan } = useSleepPlanStore();
   const todayPlan = useSleepPlanStore(state => state.getTodayPlan());
 
   // ログとプランを取得

@@ -16,7 +16,9 @@ export default function LoginRoute() {
     let cancelled = false;
     (async () => {
       if (!supabase) return;
-      const { data: { session } } = await supabase.auth.getSession();
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
       if (cancelled || !session?.user) return;
       setUser({
         id: session.user.id,
@@ -25,7 +27,9 @@ export default function LoginRoute() {
       });
       router.replace('/(tabs)');
     })();
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+    };
   }, [router, setUser]);
 
   const handleLoginSuccess = () => {
@@ -37,9 +41,6 @@ export default function LoginRoute() {
   };
 
   return (
-    <LoginScreen
-      onLoginSuccess={handleLoginSuccess}
-      onNavigateToSignup={handleNavigateToSignup}
-    />
+    <LoginScreen onLoginSuccess={handleLoginSuccess} onNavigateToSignup={handleNavigateToSignup} />
   );
 }

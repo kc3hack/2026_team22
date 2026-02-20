@@ -22,7 +22,9 @@ class BaseRepository(Generic[ModelT]):
 
     async def get_by_id(self, id: str) -> ModelT | None:
         """ID で 1 件取得"""
-        result = await self.db.execute(select(self.model).where(self.model.id == id))
+        result = await self.db.execute(
+            select(self.model).where(self.model.id == id)  # type: ignore[attr-defined]
+        )
         return result.scalar_one_or_none()
 
     async def get_all(self, skip: int = 0, limit: int = 100) -> Sequence[ModelT]:

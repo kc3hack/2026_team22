@@ -89,22 +89,24 @@ npx expo run:android
 
 （expo-dev-client は既に package.json に入っている想定。app.json の `expo.android.package` は `com.kc3.sleepsupport` に設定済みなら省略可。）
 
-```
+````
 2. app.jsonに追記（未設定の場合）
 ```JSON
 {
   "expo": {
     "android": {
-      "package": "com.kc3.sleepsupport" 
+      "package": "com.kc3.sleepsupport"
     }
   }
 }
-```
+````
+
 ```
 # 3. スマホを繋いでビルド
 npx expo run:android
 ```
-進まない場合：```npx expo start --dev-client```
+
+進まない場合：`npx expo start --dev-client`
 
 ### 環境変数の設定（任意）
 
@@ -407,21 +409,21 @@ docs: READMEにセットアップ手順を追加
 
 ## 利用可能なスクリプト
 
-| コマンド                    | 説明                                                         |
-| --------------------------- | ------------------------------------------------------------ |
-| `pnpm start` / `pnpm dev`   | Expo開発サーバーを起動                                       |
-| `pnpm run expo:start`       | Expo開発サーバーを起動（同上）                               |
-| `pnpm run expo:android`     | Androidでビルド・起動（Java 17 推奨。Mac では `task expo-android`。環境構築済みの状態でアプリだけやり直すときに使う） |
-| `pnpm run android`         | Androidで実行（同上）                                        |
-| `pnpm run ios`              | iOSで実行                                                    |
-| `pnpm run setup`            | 環境チェック（初心者向け。Java 17 の有無も表示）             |
-| `pnpm run check`          | lint + 型チェック + フォーマット確認を一括実行 |
-| `pnpm run reset`          | 詰まったときのリセット（node_modules 再構築）  |
-| `pnpm run start:clear`    | キャッシュをクリアして起動（挙動が怪しいとき） |
-| `pnpm run lint`           | ESLintでコードチェック                         |
-| `pnpm run lint:fix`       | ESLintで自動修正                               |
-| `pnpm run format`         | Prettierでフォーマット                         |
-| `pnpm run typecheck`      | TypeScriptの型チェック                         |
+| コマンド                  | 説明                                                                                                                  |
+| ------------------------- | --------------------------------------------------------------------------------------------------------------------- |
+| `pnpm start` / `pnpm dev` | Expo開発サーバーを起動                                                                                                |
+| `pnpm run expo:start`     | Expo開発サーバーを起動（同上）                                                                                        |
+| `pnpm run expo:android`   | Androidでビルド・起動（Java 17 推奨。Mac では `task expo-android`。環境構築済みの状態でアプリだけやり直すときに使う） |
+| `pnpm run android`        | Androidで実行（同上）                                                                                                 |
+| `pnpm run ios`            | iOSで実行                                                                                                             |
+| `pnpm run setup`          | 環境チェック（初心者向け。Java 17 の有無も表示）                                                                      |
+| `pnpm run check`          | lint + 型チェック + フォーマット確認を一括実行                                                                        |
+| `pnpm run reset`          | 詰まったときのリセット（node_modules 再構築）                                                                         |
+| `pnpm run start:clear`    | キャッシュをクリアして起動（挙動が怪しいとき）                                                                        |
+| `pnpm run lint`           | ESLintでコードチェック                                                                                                |
+| `pnpm run lint:fix`       | ESLintで自動修正                                                                                                      |
+| `pnpm run format`         | Prettierでフォーマット                                                                                                |
+| `pnpm run typecheck`      | TypeScriptの型チェック                                                                                                |
 
 ## 照度の目安
 

@@ -16,9 +16,6 @@ export default function SignupRoute() {
   };
 
   return (
-    <SignupScreen
-      onSignupSuccess={handleSignupSuccess}
-      onNavigateToLogin={handleNavigateToLogin}
-    />
+    <SignupScreen onSignupSuccess={handleSignupSuccess} onNavigateToLogin={handleNavigateToLogin} />
   );
 }

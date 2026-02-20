@@ -34,7 +34,7 @@ export const useUsageTracker = (): UseUsageTrackerReturn => {
   /** 累積操作秒数（内部用） */
   const [usageSeconds, setUsageSeconds] = useState(0);
   const [isOutsideApp, setIsOutsideApp] = useState(false);
-  const [isTracking, setIsTracking] = useState(false);
+  const [, setIsTracking] = useState(false);
 
   /** バックグラウンドに移行した時刻（ms） */
   const backgroundStartRef = useRef<number | null>(null);

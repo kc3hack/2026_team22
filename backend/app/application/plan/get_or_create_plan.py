@@ -9,7 +9,7 @@ from __future__ import annotations
 
 import json
 import logging
-from typing import Any
+from typing import Any, cast
 
 from app.application.base import BaseUseCase
 from app.application.plan.ports import IPlanGenerator
@@ -74,7 +74,7 @@ class GetOrCreatePlanUseCase(BaseUseCase[GetOrCreatePlanInput, dict[str, Any]]):
             cached = await self.cache_repo.get_by_user_and_hash(input.user_id, signature_hash)
             if cached:
                 logger.info("plan cache_hit signature_hash=%s", signature_hash)
-                plan = json.loads(cached.plan_json)
+                plan = cast(dict[str, Any], json.loads(cached.plan_json))
                 plan["cache_hit"] = True
                 return plan
 

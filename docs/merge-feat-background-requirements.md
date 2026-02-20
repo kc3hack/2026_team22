@@ -4,21 +4,23 @@
 
 ## コンフリクト発生ファイル（4ファイル）
 
-| ファイル | 概要 |
-|----------|------|
-| `README.md` | 開発サーバー起動セクション直後の記述が競合 |
-| `package.json` | 依存パッケージと pnpm パッチ設定が競合 |
-| `pnpm-lock.yaml` | 上記 package.json の差分に伴うロックファイル競合（多数箇所） |
-| `src/features/light-sensor/LightSensorScreen.tsx` | フォントサイズ・スタイルの差分 |
+| ファイル                                          | 概要                                                         |
+| ------------------------------------------------- | ------------------------------------------------------------ |
+| `README.md`                                       | 開発サーバー起動セクション直後の記述が競合                   |
+| `package.json`                                    | 依存パッケージと pnpm パッチ設定が競合                       |
+| `pnpm-lock.yaml`                                  | 上記 package.json の差分に伴うロックファイル競合（多数箇所） |
+| `src/features/light-sensor/LightSensorScreen.tsx` | フォントサイズ・スタイルの差分                               |
 
 ---
 
 ## 1. README.md
 
 ### 競合箇所
+
 「開発サーバーの起動」セクションの直後（125行目付近）。
 
 ### 修正方針
+
 **両方の内容を残し、順序を整理する。**
 
 - **HEAD（main）**: `.env.expo.local` と Supabase ローカル開発の説明  
@@ -27,9 +29,10 @@
   → そのまま残す。
 
 ### 修正後イメージ
-1. まず main の1文を記載  
+
+1. まず main の1文を記載
    - 「Expo の**ローカル用**環境変数（Supabase の URL など）は **`.env.expo.local`** に書きます。`task dev-up` を実行するとこのファイルが自動で更新されます。詳細は [docs/supabase-local.md](docs/supabase-local.md) を参照。」
-2. 続けて feat/background の「### バックグラウンド光センサー機能について」以降のセクションをそのまま追加  
+2. 続けて feat/background の「### バックグラウンド光センサー機能について」以降のセクションをそのまま追加
    - コンフリクトマーカー（`<<<<<<< HEAD` / `=======` / `>>>>>>> origin/feat/background`）はすべて削除する。
 
 ---
@@ -39,6 +42,7 @@
 ### 競合箇所（2箇所）
 
 #### 2-1. dependencies（expo 周り）
+
 - **HEAD（main）**: `expo-av`, `expo-camera` を追加済み。
 - **feat/background**: `expo-build-properties` を追加済み。
 
@@ -49,9 +53,11 @@
 "expo-build-properties": "~1.0.10",
 "expo-camera": "~17.0.10",
 ```
+
 （アルファベット順でも expo の並び方に合わせても可。上記は expo-build-properties を間に入れた例。）
 
 #### 2-2. 末尾の pnpm 設定
+
 - **HEAD（main）**: `"private": true` のみで終了。
 - **feat/background**: `"private": true` に加え、`"pnpm": { "patchedDependencies": { ... } }` を追加。
 
@@ -73,9 +79,11 @@
 ## 3. pnpm-lock.yaml
 
 ### 競合の原因
+
 `package.json` の dependencies の差分（expo-av / expo-camera vs expo-build-properties）に伴い、ロックファイル全体で多数のコンフリクトが発生しています。
 
 ### 修正方針（推奨）
+
 **手でマージしない。** 以下を推奨します。
 
 1. 上記のとおり **package.json のコンフリクトだけを解消**する。
@@ -92,23 +100,28 @@
 ### 競合箇所（2箇所）
 
 #### 4-1. buttonText の fontSize（169行目付近）
+
 - **HEAD（main）**: `fontSize: 23`
 - **feat/background**: `fontSize: 16`
 
 **修正方針**: どちらを採用するかは UI 方針に依存。
+
 - ボタン文字を大きくしたい → **main の `23` を採用**。
 - 他画面との統一やコンパクトさを優先 → **feat/background の `16` を採用**。  
-未指定の場合は、main の `23` を採用するか、チームで相談して決定。
+  未指定の場合は、main の `23` を採用するか、チームで相談して決定。
 
 #### 4-2. statusText のスタイル（179行目付近）
+
 - **HEAD（main）**: `fontSize: 16` のみ。
 - **feat/background**: `fontSize: 12`, `marginVertical: 4` を追加。
 
 **修正方針**: 両方の変更を反映してよい。
+
 - フォントサイズ: どちらかに統一（推奨: `16` で読みやすくする、または `12` でサブテキストらしくする）。
 - **feat/background の `marginVertical: 4` は残す**とレイアウトが安定する。
 
 例（main の fontSize を活かしつつ margin を追加）:
+
 ```ts
 statusText: {
   color: COLORS.text.dark,

@@ -7,7 +7,7 @@ from __future__ import annotations
 
 import json
 import logging
-from typing import Any
+from typing import Any, cast
 
 import httpx
 
@@ -93,7 +93,7 @@ class OpenRouterClient:
             if lines and lines[-1].strip() == "```":
                 lines = lines[:-1]
             raw = "\n".join(lines)
-        return json.loads(raw)
+        return cast("dict[str, Any] | list[Any]", json.loads(raw))
 
     async def generate_week_plan(
         self,

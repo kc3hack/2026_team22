@@ -1,13 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  SafeAreaView,
-  ScrollView,
-  Animated,
-  Easing,
-} from 'react-native';
+import { View, Text, StyleSheet, SafeAreaView, ScrollView, Animated, Easing } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import { COLORS } from '@shared/constants';
 import { useSleepPlanStore } from './sleepPlanStore';
@@ -39,7 +31,7 @@ export const SleepPlanScreen: React.FC = () => {
   useFocusEffect(
     useCallback(() => {
       void fetchPlan();
-    }, [fetchPlan]),
+    }, [fetchPlan])
   );
 
   // ヘッダーアニメーション
@@ -145,10 +137,7 @@ export const SleepPlanScreen: React.FC = () => {
         ))}
       </View>
 
-      <ScrollView
-        style={styles.scrollView}
-        contentContainerStyle={styles.scrollContent}
-      >
+      <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
         {/* ── ヘッダー ── */}
         <Animated.View style={[styles.header, { opacity: headerFade }]}>
           <View style={styles.titleRow}>
