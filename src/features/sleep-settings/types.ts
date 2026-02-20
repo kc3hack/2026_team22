@@ -29,6 +29,15 @@ export interface SleepSettings {
 
   /** 今日だけの一時的なオーバーライド */
   todayOverride: TodayOverride | null;
+
+  /* ── API 連携用ステート ── */
+
+  /** 設定を API から取得中 */
+  isLoading: boolean;
+  /** 設定を API に保存中 */
+  isSaving: boolean;
+  /** 最後に API から取得した時刻 (ms) */
+  lastFetchedAt: number | null;
 }
 
 /** 今日だけの一時的な時刻オーバーライド */

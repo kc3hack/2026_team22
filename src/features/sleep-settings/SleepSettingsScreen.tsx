@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
   View,
   Text,
@@ -8,16 +8,47 @@ import {
   Switch,
   TextInput,
   ScrollView,
+  ActivityIndicator,
+  Alert,
 } from 'react-native';
 import { COLORS } from '@shared/constants';
 import { useSleepSettingsStore } from './sleepSettingsStore';
 
 /**
  * 睡眠設定画面
- * 起床時刻と睡眠時間を設定し、就寝予定時刻を自動計算する
+ * 起床時刻と睡眠時間を設定し、就寝予定時刻を自動計算する。
+ * マウント時に GET /api/v1/settings で取得し、保存時に PUT で送信する。
  */
 export const SleepSettingsScreen: React.FC = () => {
   const settings = useSleepSettingsStore();
+
+  // ── マウント時にバックエンドから設定を取得 ──
+  useEffect(() => {
+    settings.fetchSettings();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // ── 保存ハンドラ ──
+  const handleSave = async () => {
+    try {
+      await settings.saveSettings();
+      Alert.alert('保存完了', '設定を保存しました。');
+    } catch {
+      Alert.alert('エラー', '設定の保存に失敗しました。');
+    }
+  };
+
+  // ── ローディング中はスピナーを表示 ──
+  if (settings.isLoading) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color={COLORS.primary} />
+          <Text style={styles.loadingText}>設定を読み込み中…</Text>
+        </View>
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView style={styles.container}>
@@ -126,6 +157,23 @@ export const SleepSettingsScreen: React.FC = () => {
             </TouchableOpacity>
           </View>
         </View>
+
+        {/* 保存ボタン */}
+        <TouchableOpacity
+          style={[styles.saveButton, settings.isSaving && styles.saveButtonDisabled]}
+          onPress={handleSave}
+          disabled={settings.isSaving}
+          activeOpacity={0.8}
+        >
+          {settings.isSaving ? (
+            <ActivityIndicator size="small" color="#FFFFFF" />
+          ) : (
+            <Text style={styles.saveButtonText}>💾 保存する</Text>
+          )}
+        </TouchableOpacity>
+
+        {/* 下部余白 */}
+        <View style={{ height: 40 }} />
       </ScrollView>
     </SafeAreaView>
   );
@@ -241,5 +289,34 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 8,
     width: '100%',
+  },
+
+  /* ── ローディング ── */
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: 16,
+  },
+  loadingText: {
+    color: '#94A3B8',
+    fontSize: 16,
+  },
+
+  /* ── 保存ボタン ── */
+  saveButton: {
+    backgroundColor: COLORS.primary,
+    borderRadius: 16,
+    paddingVertical: 16,
+    alignItems: 'center',
+    marginTop: 8,
+  },
+  saveButtonDisabled: {
+    opacity: 0.6,
+  },
+  saveButtonText: {
+    color: '#FFFFFF',
+    fontSize: 18,
+    fontWeight: '700',
   },
 });
