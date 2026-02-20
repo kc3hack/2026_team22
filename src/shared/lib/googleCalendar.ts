@@ -73,8 +73,14 @@ class GoogleCalendarClient {
       {
         id: '1',
         title: 'サンプルイベント',
-        start: new Date(),
-        end: new Date(Date.now() + 3600000),
+        start: new Date(Date.now() + 3 * 60 * 60 * 1000), // 3 hours later
+        end: new Date(Date.now() + 4 * 60 * 60 * 1000),
+      },
+      {
+        id: '2',
+        title: '早朝会議',
+        start: new Date(Date.now() + 24 * 60 * 60 * 1000).setHours(9, 0, 0, 0) as unknown as Date, // Tomorrow 9 AM
+        end: new Date(Date.now() + 24 * 60 * 60 * 1000).setHours(10, 0, 0, 0) as unknown as Date,
       },
     ];
   }

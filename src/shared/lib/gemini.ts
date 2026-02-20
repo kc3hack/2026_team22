@@ -87,6 +87,69 @@ class GeminiClient {
 
     return messages.length > 0 ? messages.join('\n') : '睡眠環境は良好です。おやすみなさい。';
   }
+
+  /**
+   * ミッション画像の判定 (Gemini Vision API)
+   * 指定された画像にターゲット（targetLabel）が写っているか判定する
+   */
+  async verifyMissionImage(base64Image: string, targetLabel: string): Promise<boolean> {
+    // ユーザー指定: APIキーは空欄
+    const apiKey = 'AIzaSyC0DXZJYdoNm5iMTaKapC90ER8vLrXacAk';
+    // const apiKey = this.config.apiKey || '';
+
+    if (!apiKey) {
+      console.warn('⚠️ Gemini API Key is missing. Please set it in src/shared/lib/gemini.ts');
+      // APIキーがない場合はデバッグ用に成功とするか、エラーにするか。
+      // ここではユーザーの意図（AIで判別）を尊重し、キーがないと動作しない（false）とするが、
+      // 動作確認のためにログを出す。
+      return false;
+    }
+
+    // 高速なFlash Liteモデルを使用
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent?key=${apiKey}`;
+
+    const body = {
+      contents: [
+        {
+          parts: [
+            { text: `Does this image show a "${targetLabel}"? Answer strictly with YES or NO.` },
+            {
+              inline_data: {
+                mime_type: "image/jpeg",
+                data: base64Image
+              }
+            }
+          ]
+        }
+      ]
+    };
+
+    try {
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(body)
+      });
+
+      const data = await response.json();
+
+      if (data.error) {
+        console.error('Gemini API Error:', data.error);
+        return false;
+      }
+
+      const text = data?.candidates?.[0]?.content?.parts?.[0]?.text?.trim().toUpperCase();
+      console.log(`[Gemini Vision] Target: ${targetLabel}, Result: ${text}`);
+
+      return text?.includes('YES');
+
+    } catch (error) {
+      console.error('Gemini Verification Integration Failed:', error);
+      return false;
+    }
+  }
 }
 
 // シングルトンインスタンス

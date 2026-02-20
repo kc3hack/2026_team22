@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, Switch, TextInput, ScrollView } from 'react-native';
 import { COLORS } from '@shared/constants';
 import { useSleepSettingsStore } from './sleepSettingsStore';
 
@@ -16,7 +16,7 @@ export const SleepSettingsScreen: React.FC = () => {
         <Text style={styles.title}>⚙️ 睡眠設定</Text>
       </View>
 
-      <View style={styles.content}>
+      <ScrollView style={styles.content}>
         {/* 起床時刻 */}
         <View style={styles.settingCard}>
           <Text style={styles.settingLabel}>⏰ 起床時刻</Text>
@@ -90,6 +90,82 @@ export const SleepSettingsScreen: React.FC = () => {
           </View>
         </View>
 
+        {/* アラーム設定 */}
+        <View style={styles.settingCard}>
+          <Text style={styles.settingLabel}>🔔 アラーム設定</Text>
+
+          {/* レジリエンスウィンドウ */}
+          <View style={styles.row}>
+            <Text style={styles.rowLabel}>レジリエンス（優しさ）</Text>
+            <View style={styles.counter}>
+              <TouchableOpacity
+                style={styles.smallButton}
+                onPress={() =>
+                  settings.setResilienceWindow(Math.max(0, settings.resilienceWindowMinutes - 5))
+                }
+              >
+                <Text style={styles.smallButtonText}>−</Text>
+              </TouchableOpacity>
+              <Text style={styles.valueText}>{settings.resilienceWindowMinutes}分</Text>
+              <TouchableOpacity
+                style={styles.smallButton}
+                onPress={() =>
+                  settings.setResilienceWindow(Math.min(60, settings.resilienceWindowMinutes + 5))
+                }
+              >
+                <Text style={styles.smallButtonText}>＋</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+
+          {/* ミッション設定 */}
+          <View style={[styles.row, { marginTop: 16 }]}>
+            <Text style={styles.rowLabel}>モーニングミッション</Text>
+            <Switch
+              value={settings.missionEnabled}
+              onValueChange={(val) => settings.setMissionSettings(val, settings.missionTarget)}
+            />
+          </View>
+
+          {settings.missionEnabled && (
+            <View style={styles.inputContainer}>
+              <Text style={styles.inputLabel}>対象物（例：洗面所）</Text>
+              <TextInput
+                style={styles.input}
+                value={settings.missionTarget}
+                onChangeText={(text) => settings.setMissionSettings(true, text)}
+                placeholder="撮影対象を入力"
+                placeholderTextColor="#94A3B8"
+              />
+            </View>
+          )}
+        </View>
+
+
+        {/* 準備時間設定 */}
+        <View style={[styles.row, { marginTop: 16 }]}>
+          <Text style={styles.rowLabel}>お支度時間（起床〜出発）</Text>
+          <View style={styles.counter}>
+            <TouchableOpacity
+              style={styles.smallButton}
+              onPress={() =>
+                settings.setPreparationTime(Math.max(15, settings.preparationMinutes - 15))
+              }
+            >
+              <Text style={styles.smallButtonText}>−</Text>
+            </TouchableOpacity>
+            <Text style={styles.valueText}>{settings.preparationMinutes}分</Text>
+            <TouchableOpacity
+              style={styles.smallButton}
+              onPress={() =>
+                settings.setPreparationTime(Math.min(180, settings.preparationMinutes + 15))
+              }
+            >
+              <Text style={styles.smallButtonText}>＋</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+
         {/* 計算結果 */}
         <View style={styles.resultCard}>
           <Text style={styles.resultLabel}>🌙 就寝予定時刻</Text>
@@ -99,8 +175,8 @@ export const SleepSettingsScreen: React.FC = () => {
           </Text>
           <Text style={styles.resultHint}>この時刻の1時間前から監視が開始されます</Text>
         </View>
-      </View>
-    </SafeAreaView>
+      </ScrollView>
+    </SafeAreaView >
   );
 };
 
@@ -217,5 +293,55 @@ const styles = StyleSheet.create({
   resultHint: {
     fontSize: 12,
     color: 'rgba(255,255,255,0.6)',
+  },
+
+  row: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    width: '100%',
+  },
+  rowLabel: {
+    color: COLORS.text.dark,
+    fontSize: 14,
+  },
+  counter: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+  },
+  smallButton: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: '#1E293B',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  smallButtonText: {
+    color: COLORS.primary,
+    fontSize: 18,
+  },
+  valueText: {
+    color: COLORS.text.dark,
+    fontSize: 16,
+    width: 40,
+    textAlign: 'center',
+  },
+  inputContainer: {
+    marginTop: 12,
+    width: '100%',
+  },
+  inputLabel: {
+    color: '#94A3B8',
+    fontSize: 12,
+    marginBottom: 4,
+  },
+  input: {
+    backgroundColor: '#1E293B',
+    color: COLORS.text.dark,
+    padding: 10,
+    borderRadius: 8,
+    width: '100%',
   },
 });

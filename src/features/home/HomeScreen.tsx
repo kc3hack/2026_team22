@@ -5,6 +5,7 @@ import { COLORS } from '@shared/constants';
 import { useSleepSettingsStore } from '@features/sleep-settings';
 import { useSleepMonitorStore } from '@features/sleep-monitor';
 import { useSleepLogStore } from '@features/sleep-log';
+import { SleepAdvice } from '@features/sleep-schedule';
 
 /**
  * ホーム画面（ダッシュボード）
@@ -28,6 +29,9 @@ export const HomeScreen: React.FC = () => {
       </View>
 
       <View style={styles.content}>
+        {/* レコメンド */}
+        <SleepAdvice />
+
         {/* 今夜の予定 */}
         <View style={styles.scheduleCard}>
           <Text style={styles.cardTitle}>🌙 今夜のスケジュール</Text>
