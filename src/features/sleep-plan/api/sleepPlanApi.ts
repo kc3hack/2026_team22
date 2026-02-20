@@ -1,16 +1,12 @@
 /**
  * 睡眠プラン API クライアント
  *
- * バックエンド完成後に実装を差し替えるだけで動く設計。
- * 現状はスタブ（モックデータ）を返す。
+ * 認証付き共通クライアント（apiV1Fetch）を使用し、Authorization ヘッダーを付与する。
+ * バックエンドが応答する場合はその結果を返し、未実装・エラー時はモックでフォールバックする。
  */
 
-import Constants from 'expo-constants';
+import { apiV1Fetch } from '@shared/lib';
 import type { SleepPlanRequest, WeeklySleepPlan, DailyPlan, CalendarEventSummary } from '../types';
-
-/** バックエンドAPIのベースURL（.env.expo.local の EXPO_PUBLIC_API_URL → app.config.js extra.apiUrl） */
-const base = (Constants.expoConfig?.extra?.apiUrl as string | undefined)?.trim();
-const API_BASE_URL = base ? `${base.replace(/\/$/, '')}/api/v1` : 'http://localhost:8000/api/v1';
 
 /**
  * 今日から7日分の日付を生成
@@ -147,25 +143,28 @@ const generateMockPlan = (calendarEvents: CalendarEventSummary[] = []): WeeklySl
 /**
  * 週間睡眠プランを取得
  *
- * TODO: バックエンド完成後に実際の API 呼び出しに置き換え
+ * 認証トークン付きで POST /api/v1/sleep-plans を呼ぶ。バックエンドが 2xx を返せばその結果を返し、
+ * 未実装・エラー時はモックでフォールバックする。
  *
  * @param request リクエストデータ（カレンダー予定 + 睡眠ログ + 設定）
  * @returns 週間睡眠プラン
  */
 export const fetchSleepPlan = async (request: SleepPlanRequest): Promise<WeeklySleepPlan> => {
-  // TODO: 実際のAPI呼び出し
-  // const response = await fetch(`${API_BASE_URL}/sleep-plans`, {
-  //   method: 'POST',
-  //   headers: { 'Content-Type': 'application/json' },
-  //   body: JSON.stringify(request),
-  // });
-  // if (!response.ok) throw new Error(`API Error: ${response.status}`);
-  // return response.json();
+  const response = await apiV1Fetch('/sleep-plans', {
+    method: 'POST',
+    body: JSON.stringify(request),
+  });
 
-  console.warn('[SleepPlanApi] Using mock data. API_BASE_URL:', API_BASE_URL);
+  if (response.ok) {
+    return response.json() as Promise<WeeklySleepPlan>;
+  }
 
-  // ネットワーク遅延をシミュレート
+  // バックエンド未実装・接続不可・401 などはモックでフォールバック
+  console.warn(
+    '[SleepPlanApi] Backend returned',
+    response.status,
+    '- using mock data. URL: /api/v1/sleep-plans'
+  );
   await new Promise<void>(resolve => setTimeout(() => resolve(), 800));
-
   return generateMockPlan(request.calendarEvents);
 };

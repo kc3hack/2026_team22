@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { supabase } from '@shared/lib';
 
 /**
  * ユーザー情報の型定義
@@ -26,12 +27,12 @@ interface AuthActions {
   setUser: (user: User | null) => void;
   setLoading: (isLoading: boolean) => void;
   setError: (error: string | null) => void;
-  logout: () => void;
+  logout: () => void | Promise<void>;
 }
 
 /**
  * 認証ストア（Zustand）
- * ユーザーの認証状態を管理
+ * ユーザーの認証状態を管理。ログアウト時に Supabase のセッションも破棄する。
  */
 export const useAuthStore = create<AuthState & AuthActions>(set => ({
   // State
@@ -52,10 +53,14 @@ export const useAuthStore = create<AuthState & AuthActions>(set => ({
 
   setError: error => set({ error, isLoading: false }),
 
-  logout: () =>
+  logout: async () => {
+    if (supabase) {
+      await supabase.auth.signOut();
+    }
     set({
       user: null,
       isAuthenticated: false,
       error: null,
-    }),
+    });
+  },
 }));

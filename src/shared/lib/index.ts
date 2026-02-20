@@ -1,6 +1,15 @@
 /**
  * Shared Libraries - Public API
  */
+export { supabase, isSupabaseConfigured } from './supabase';
+export {
+  authenticatedFetch,
+  apiV1Fetch,
+  getAccessToken,
+  getApiBaseUrl,
+} from './apiClient';
+export type { AuthenticatedFetchOptions } from './apiClient';
+
 export { llmClient } from './llm';
 export type { LLMConfig, ChatMessage, ChatResponse } from './llm';
 
