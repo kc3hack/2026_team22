@@ -3,7 +3,6 @@ import { View, Text, StyleSheet, Platform, TouchableOpacity } from 'react-native
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { COLORS } from '@shared/constants';
 import { useAmbientLight } from './hooks/useAmbientLight';
-import { useLightSensor } from './hooks/useLightSensor';
 import { LightMeter } from './components/LightMeter';
 import type { SleepEnvironment } from './types';
 import { LIGHT_CONSTANTS } from './constants';
@@ -54,6 +53,8 @@ const evaluateSleepEnvironment = (lux: number): SleepEnvironment => {
  */
 export const LightSensorScreen: React.FC = () => {
   const {
+    lux,
+    source,
     isAvailable,
     isActive,
     isBackgroundActive,
@@ -62,9 +63,7 @@ export const LightSensorScreen: React.FC = () => {
     startBackgroundTask,
     stopBackgroundTask,
     error,
-  } = useLightSensor();
-
-  const { lux, source } = useAmbientLight();
+  } = useAmbientLight();
 
   const sleepEnvironment = lux !== null ? evaluateSleepEnvironment(lux) : null;
 

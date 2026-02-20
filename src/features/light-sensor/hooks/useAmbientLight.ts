@@ -13,10 +13,27 @@ interface UseAmbientLightReturn {
   source: AmbientLightSource;
   /** デバイスの向き */
   orientation: DeviceOrientation;
+  /** センサーが利用可能かどうか */
+  isAvailable: boolean;
+  /** フォアグラウンドセンサーが動作中かどうか */
+  isActive: boolean;
+  /** バックグラウンドタスクが実行中かどうか */
+  isBackgroundActive: boolean;
+  /** センサーを開始 */
+  startSensor: () => void;
+  /** センサーを停止 */
+  stopSensor: () => void;
+  /** バックグラウンドタスクを開始 */
+  startBackgroundTask: () => Promise<void>;
+  /** バックグラウンドタスクを停止 */
+  stopBackgroundTask: () => Promise<void>;
+  /** エラーメッセージ */
+  error: string | null;
 }
 
 /**
  * デバイスの向きに応じて照度センサーとカメラを切り替えるフック。
+ * センサー制御（開始/停止/バックグラウンド）も統合して提供する。
  *
  * - face_up → 照度センサー（カメラ停止でバッテリー節約）
  * - face_down → カメラ輝度推定
@@ -24,7 +41,17 @@ interface UseAmbientLightReturn {
  */
 export function useAmbientLight(): UseAmbientLightReturn {
   const { orientation } = useDeviceOrientation();
-  const { data, isAvailable: sensorAvailable, isActive, startSensor } = useLightSensor();
+  const {
+    data,
+    isAvailable: sensorAvailable,
+    isActive,
+    isBackgroundActive,
+    startSensor,
+    stopSensor,
+    startBackgroundTask,
+    stopBackgroundTask,
+    error,
+  } = useLightSensor();
   const sensorLux = data?.illuminance ?? null;
 
   // face_up の時はカメラを起動しない（バッテリー節約）
@@ -66,5 +93,13 @@ export function useAmbientLight(): UseAmbientLightReturn {
     lux: result.lux,
     source: result.source,
     orientation,
+    isAvailable: sensorAvailable,
+    isActive,
+    isBackgroundActive,
+    startSensor,
+    stopSensor,
+    startBackgroundTask,
+    stopBackgroundTask,
+    error,
   };
 }
