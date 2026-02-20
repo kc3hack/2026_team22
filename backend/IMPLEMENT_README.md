@@ -109,7 +109,7 @@ DATABASE_URL=postgresql://postgres:postgres@localhost:5432/sleepsupport uv run a
 uv run alembic revision --autogenerate -m "add_sleep_settings_and_sleep_logs"
 
 # API をローカルで起動（DB が別途起動していること）
-uv run uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+uv run uvicorn app.main:web_app --reload --host 0.0.0.0 --port 8000
 ```
 
 **Docker で API と DB をまとめて起動する場合**（リポジトリルートで）:

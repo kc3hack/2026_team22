@@ -115,14 +115,9 @@ class OpenRouterClient:
             "    ... 7日分\n"
             "  ]\n"
             "}\n\n"
-            "カレンダー予定: "
-            + json.dumps(calendar_events, ensure_ascii=False)
-            + "\n\n"
-            "睡眠ログ: "
-            + json.dumps(sleep_logs, ensure_ascii=False)
-            + "\n\n"
-            "設定: "
-            + json.dumps(settings, ensure_ascii=False)
+            "カレンダー予定: " + json.dumps(calendar_events, ensure_ascii=False) + "\n\n"
+            "睡眠ログ: " + json.dumps(sleep_logs, ensure_ascii=False) + "\n\n"
+            "設定: " + json.dumps(settings, ensure_ascii=False)
         )
         if today_override is not None:
             user_content += (
@@ -154,8 +149,4 @@ class OpenRouterClient:
         )
         if isinstance(result, dict) and "week_plan" in result:
             return result
-        return (
-            {"week_plan": result}
-            if isinstance(result, list)
-            else {"week_plan": [result]}
-        )
+        return {"week_plan": result} if isinstance(result, list) else {"week_plan": [result]}

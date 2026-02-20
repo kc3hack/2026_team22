@@ -22,9 +22,7 @@ class SleepPlanCache(Base):
         ForeignKey("users.id", ondelete="CASCADE"),
         primary_key=True,
     )
-    signature_hash: Mapped[str] = mapped_column(
-        String(64), nullable=False, index=True
-    )
+    signature_hash: Mapped[str] = mapped_column(String(64), nullable=False, index=True)
     plan_json: Mapped[str] = mapped_column(Text, nullable=False)
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),

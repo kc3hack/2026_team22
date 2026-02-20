@@ -3,8 +3,9 @@
 Infrastructure 層がこのインターフェースを実装する。
 """
 
+from collections.abc import Sequence
 from datetime import date, datetime
-from typing import Protocol, Sequence
+from typing import Protocol
 
 
 class SleepLogRecord(Protocol):
@@ -28,9 +29,7 @@ class SleepLogRecord(Protocol):
 class ISleepLogRepository(Protocol):
     """睡眠ログのリポジトリポート"""
 
-    async def get_by_user(
-        self, user_id: str, limit: int = 7
-    ) -> Sequence[SleepLogRecord]:
+    async def get_by_user(self, user_id: str, limit: int = 7) -> Sequence[SleepLogRecord]:
         """user_id のログを日付降順で取得"""
         ...
 
@@ -55,8 +54,6 @@ class ISleepLogRepository(Protocol):
         """睡眠ログを新規作成"""
         ...
 
-    async def update_mood(
-        self, log_id: str, user_id: str, mood: int
-    ) -> SleepLogRecord | None:
+    async def update_mood(self, log_id: str, user_id: str, mood: int) -> SleepLogRecord | None:
         """指定ログの気分を更新"""
         ...

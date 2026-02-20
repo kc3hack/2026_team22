@@ -4,8 +4,8 @@ DeleteUserUseCase - ユーザー削除のビジネスロジック
 
 from fastapi import HTTPException, status
 
-from app.domain.user.repositories import IUserRepository
 from app.application.base import BaseUseCase
+from app.domain.user.repositories import IUserRepository
 
 
 class DeleteUserUseCase(BaseUseCase[str, None]):

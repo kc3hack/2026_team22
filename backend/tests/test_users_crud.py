@@ -8,9 +8,7 @@ from httpx import AsyncClient
 class TestUsersCRUD:
     """Users CRUD の統合テスト"""
 
-    async def test_create_and_read_user(
-        self, client: AsyncClient, unique_email: str
-    ):
+    async def test_create_and_read_user(self, client: AsyncClient, unique_email: str):
         """Create → Read の流れ"""
         # Create
         create_res = await client.post(
@@ -36,9 +34,7 @@ class TestUsersCRUD:
         users = list_res.json()["users"]
         assert any(u["id"] == user_id for u in users)
 
-    async def test_create_duplicate_email_fails(
-        self, client: AsyncClient, unique_email: str
-    ):
+    async def test_create_duplicate_email_fails(self, client: AsyncClient, unique_email: str):
         """同じメールで作成すると409"""
         payload = {"email": unique_email, "name": "ユーザー1"}
         res1 = await client.post("/api/v1/users", json=payload)
@@ -47,9 +43,7 @@ class TestUsersCRUD:
         res2 = await client.post("/api/v1/users", json=payload)
         assert res2.status_code == 409
 
-    async def test_update_user(
-        self, client: AsyncClient, unique_email: str
-    ):
+    async def test_update_user(self, client: AsyncClient, unique_email: str):
         """Create → Update → Read"""
         # Create
         create_res = await client.post(
@@ -72,9 +66,7 @@ class TestUsersCRUD:
         assert get_res.status_code == 200
         assert get_res.json()["name"] == "新名前"
 
-    async def test_delete_user(
-        self, client: AsyncClient, unique_email: str
-    ):
+    async def test_delete_user(self, client: AsyncClient, unique_email: str):
         """Create → Delete → Read 404"""
         # Create
         create_res = await client.post(
@@ -97,9 +89,7 @@ class TestUsersCRUD:
         res = await client.get("/api/v1/users/00000000-0000-0000-0000-000000000000")
         assert res.status_code == 404
 
-    async def test_full_crud_flow(
-        self, client: AsyncClient, unique_email: str
-    ):
+    async def test_full_crud_flow(self, client: AsyncClient, unique_email: str):
         """Create → Read → Update → Read → Delete → 404 の一連の流れ"""
         # Create
         create_res = await client.post(

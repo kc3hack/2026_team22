@@ -48,6 +48,9 @@ jobs:
       - name: Format check
         run: pnpm run format:check
 
+      - name: Build (expo export web)
+        run: npx expo export --platform web
+
   backend:
     name: Backend (dev-up + pytest)
     runs-on: ubuntu-latest
@@ -95,18 +98,33 @@ jobs:
         uses: astral-sh/setup-uv@v4
         with:
           version: "latest"
+          cache: "pip"
 
-      - name: Wait for DB and run migrations
+      - name: Wait for DB
+        run: node scripts/wait-for-db.mjs
+
+      - name: Install backend deps and run migrations
         run: |
-          echo "Waiting for DB..."
-          sleep 5
           cd backend && uv sync && \
           DATABASE_URL=postgresql://postgres:postgres@localhost:5432/sleepsupport uv run alembic upgrade head
 
-      - name: Install backend dependencies and run pytest
+      - name: Install backend dev deps
+        run: cd backend && uv sync --extra dev
+
+      - name: Lint (ruff)
         run: |
           cd backend
-          uv sync --extra dev
+          uv run ruff check .
+          uv run ruff format --check .
+
+      - name: Type check (mypy)
+        continue-on-error: true
+        run: cd backend && uv run mypy app
+        # 型エラー解消後に continue-on-error を外す
+
+      - name: Pytest
+        run: |
+          cd backend
           DATABASE_URL=postgresql+asyncpg://postgres:postgres@localhost:5432/sleepsupport uv run pytest tests/ -v
 
   expo-android:

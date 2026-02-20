@@ -25,8 +25,6 @@ class IPlanCacheRepository(Protocol):
         """user_id で1件取得（1ユーザー1行のため）"""
         ...
 
-    async def upsert(
-        self, user_id: str, signature_hash: str, plan_json: str
-    ) -> PlanCacheRecord:
+    async def upsert(self, user_id: str, signature_hash: str, plan_json: str) -> PlanCacheRecord:
         """同一 user_id の行を上書き（なければ INSERT）"""
         ...

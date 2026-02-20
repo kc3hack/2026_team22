@@ -2,11 +2,17 @@
 PutSettingsUseCase - 睡眠設定の保存（upsert）
 """
 
+from __future__ import annotations
+
 from datetime import date
+from typing import TYPE_CHECKING
 
 from app.infrastructure.persistence.repositories.sleep_settings_repository import (
     SleepSettingsRepository,
 )
+
+if TYPE_CHECKING:
+    from app.infrastructure.persistence.models.sleep_settings import SleepSettings
 
 
 class PutSettingsUseCase:
@@ -15,9 +21,8 @@ class PutSettingsUseCase:
     def __init__(self, settings_repo: SleepSettingsRepository):
         self.settings_repo = settings_repo
 
-    async def execute(self, user_id: str, payload: "PutSettingsPayload") -> "SleepSettings":
+    async def execute(self, user_id: str, payload: PutSettingsPayload) -> SleepSettings:
         """設定を upsert して保存済みエンティティを返す。"""
-        from app.infrastructure.persistence.models.sleep_settings import SleepSettings
 
         override_date = None
         override_sleep_hour = None
@@ -67,7 +72,7 @@ class PutSettingsPayload:
         mission_target: str | None = None,
         preparation_minutes: int = 30,
         ics_url: str | None = None,
-        today_override: "TodayOverrideInput | None" = None,
+        today_override: TodayOverrideInput | None = None,
     ):
         self.wake_up_hour = wake_up_hour
         self.wake_up_minute = wake_up_minute

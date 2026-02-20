@@ -2,12 +2,12 @@
 GetUserUseCase / GetAllUsersUseCase - ユーザー取得のビジネスロジック
 """
 
-from typing import Sequence
+from collections.abc import Sequence
 
 from fastapi import HTTPException, status
 
-from app.domain.user.repositories import IUserRepository
 from app.application.base import BaseUseCase, NoInputUseCase
+from app.domain.user.repositories import IUserRepository
 
 
 class GetUserUseCase(BaseUseCase[str, object]):

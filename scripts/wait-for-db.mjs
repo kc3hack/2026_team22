@@ -41,7 +41,9 @@ function sleep() {
 const DB_CONTAINER_NAME = 'sleepsupport-db';
 
 console.log('DB 起動待機...');
-const out = run('docker-compose ps -q db');
+// Docker Compose V2 (docker compose) を優先、無ければ V1 (docker-compose)
+const composeCmd = run('docker compose version') ? 'docker compose' : 'docker-compose';
+const out = run(composeCmd + ' ps -q db');
 const idFromCompose = out ? out.split(/\r?\n/)[0].trim().replace(/\s/g, '') : '';
 if (!idFromCompose) {
   console.error('DB コンテナが見つかりません（docker compose ps -q db が空です）');

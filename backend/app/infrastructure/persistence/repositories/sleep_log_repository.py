@@ -16,9 +16,7 @@ class SleepLogRepository:
     def __init__(self, db: AsyncSession):
         self.db = db
 
-    async def get_by_user(
-        self, user_id: str, limit: int = 7
-    ) -> list[SleepLog]:
+    async def get_by_user(self, user_id: str, limit: int = 7) -> list[SleepLog]:
         """user_id のログを日付降順で取得"""
         result = await self.db.execute(
             select(SleepLog)
@@ -71,9 +69,7 @@ class SleepLogRepository:
         await self.db.refresh(row)
         return row
 
-    async def update_mood(
-        self, log_id: str, user_id: str, mood: int
-    ) -> SleepLog | None:
+    async def update_mood(self, log_id: str, user_id: str, mood: int) -> SleepLog | None:
         """指定ログの気分を更新"""
         row = await self.get_by_id(log_id, user_id)
         if row is None:

@@ -33,9 +33,7 @@ class TestSleepPlanCacheRepository:
         await db_session.flush()
         return uid
 
-    async def test_upsert_creates_then_updates(
-        self, repo: SleepPlanCacheRepository, user_id: str
-    ):
+    async def test_upsert_creates_then_updates(self, repo: SleepPlanCacheRepository, user_id: str):
         """初回 upsert で INSERT、同 user_id で再度 upsert で UPDATE になる"""
         plan_v1 = '{"week_plan": [{"day": "月曜", "advice": "v1"}]}'
         row1 = await repo.upsert(

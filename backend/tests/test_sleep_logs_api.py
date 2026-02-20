@@ -18,9 +18,7 @@ async def ensure_test_user(db_session: AsyncSession):
     """TEST_USER_ID のユーザーが DB に存在することを保証する"""
     from sqlalchemy import select
 
-    result = await db_session.execute(
-        select(User).where(User.id == TEST_USER_ID)
-    )
+    result = await db_session.execute(select(User).where(User.id == TEST_USER_ID))
     if result.scalar_one_or_none() is None:
         user = User(
             id=TEST_USER_ID,

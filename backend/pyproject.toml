@@ -29,5 +29,34 @@ dependencies = [
 dev = [
     "pytest>=7.0.0,<8",
     "pytest-asyncio>=0.23.0",
+    "ruff>=0.8.0",
+    "mypy>=1.13.0",
 ]
+
+[tool.ruff]
+target-version = "py311"
+line-length = 100
+exclude = ["alembic/versions", ".venv"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "N", "W", "UP", "B", "C4", "SIM"]
+ignore = [
+    "E501",
+    "B008",   # FastAPI Depends() のデフォルト引数は慣用
+    "B028",   # warnings.warn stacklevel（テストでは許容）
+    "N815",   # Pydantic スキーマの API 契約で camelCase を使用
+    "B904",   # raise from（段階的に修正予定）
+    "B010",   # setattr 定数（既存コード）
+]
+
+[tool.mypy]
+python_version = "3.11"
+warn_return_any = true
+warn_unused_configs = true
+ignore_missing_imports = true
+exclude = ["alembic/versions", "tests"]
+
+[[tool.mypy.overrides]]
+module = ["tests.*"]
+ignore_errors = true
 

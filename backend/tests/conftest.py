@@ -8,16 +8,15 @@ import pytest
 from httpx import ASGITransport, AsyncClient
 from sqlalchemy.ext.asyncio import AsyncSession
 
+# 全モデルを Base.metadata に登録
+import app.infrastructure.persistence.models  # noqa: F401
 from app.infrastructure.persistence.database import (
     AsyncSessionLocal,
     Base,
     engine,
 )
-from app.main import app as fastapi_app
+from app.main import web_app as fastapi_app
 from app.presentation.dependencies.auth import get_current_user_id
-
-# 全モデルを Base.metadata に登録
-import app.infrastructure.persistence.models  # noqa: F401
 
 # テスト用の固定 user_id（認証オーバーライドで使用）
 TEST_USER_ID = "11111111-1111-1111-1111-111111111111"
@@ -42,6 +41,7 @@ def event_loop():
 @pytest.fixture(scope="session", autouse=True)
 def _ensure_db_tables(event_loop):
     """統合テスト用: テストセッション開始時にテーブルが存在するようにする（マイグレーション未適用のDB向け）"""
+
     async def create_all():
         async with engine.begin() as conn:
             await conn.run_sync(Base.metadata.create_all)
@@ -51,7 +51,11 @@ def _ensure_db_tables(event_loop):
     except Exception:
         # DB が起動していない場合はスキップ（単体テストは DB 不要）
         import warnings
-        warnings.warn("DB connection failed. Integration tests will be skipped.")
+
+        warnings.warn(
+            "DB connection failed. Integration tests will be skipped.",
+            stacklevel=2,
+        )
 
 
 @pytest.fixture
@@ -68,6 +72,7 @@ async def client() -> AsyncClient:
 def unique_email() -> str:
     """テスト用の一意なメールアドレスを生成"""
     import uuid
+
     return f"test-{uuid.uuid4().hex[:8]}@example.com"
 
 
