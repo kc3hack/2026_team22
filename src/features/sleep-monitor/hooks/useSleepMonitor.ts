@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { useSleepMonitorStore } from '../sleepMonitorStore';
 import { useUsageTracker } from './useUsageTracker';
 import { useNoiseSensor } from './useNoiseSensor';
-import { useLightSensor } from '@features/light-sensor';
+import { useLightSensor, useAmbientLight, type AmbientLightSource } from '@features/light-sensor';
 import { geminiClient } from '@shared/lib/gemini';
 import { googleCalendar } from '@shared/lib/googleCalendar';
 import {
@@ -35,6 +35,8 @@ interface UseSleepMonitorReturn {
   usageMinutes: number;
   /** 光（lux） */
   lightLux: number | null;
+  /** 照度データのソース */
+  lightSource: AmbientLightSource;
   /** 音（dB） */
   noiseDb: number | null;
   /** 光がNGか */
@@ -73,7 +75,7 @@ export const useSleepMonitor = (): UseSleepMonitorReturn => {
   const store = useSleepMonitorStore();
   const usageTracker = useUsageTracker();
   const noiseSensor = useNoiseSensor();
-  const lightSensor = useLightSensor();
+  const ambientLight = useAmbientLight();
 
   const [remainingSeconds, setRemainingSeconds] = useState(0);
   const [totalRemainingSeconds, setTotalRemainingSeconds] = useState(0);
@@ -142,8 +144,8 @@ export const useSleepMonitor = (): UseSleepMonitorReturn => {
       resetNotificationCooldowns();
 
       // 光センサーを開始
-      if (lightSensor.isAvailable && !lightSensor.isActive) {
-        lightSensor.startSensor();
+      if (ambientLight.lightSensor.isAvailable && !ambientLight.lightSensor.isActive) {
+        ambientLight.lightSensor.startSensor();
       }
 
       // 音センサーを開始
@@ -151,7 +153,7 @@ export const useSleepMonitor = (): UseSleepMonitorReturn => {
         noiseSensor.startSensor();
       }
     },
-    [store, usageTracker, lightSensor, noiseSensor]
+    [store, usageTracker, ambientLight.lightSensor, noiseSensor]
   );
 
   /**
@@ -229,7 +231,7 @@ export const useSleepMonitor = (): UseSleepMonitorReturn => {
   useEffect(() => {
     if (!store.isMonitoring) return;
 
-    const lightLux = lightSensor.data?.illuminance ?? null;
+    const lightLux = ambientLight.lux;
     const noiseDb = noiseSensor.noiseDb;
 
     store.updateEnvironment({
@@ -274,7 +276,7 @@ export const useSleepMonitor = (): UseSleepMonitorReturn => {
     }
 
     store.recalculateScore();
-  }, [lightSensor.data?.illuminance, noiseSensor.noiseDb, store.isMonitoring, store.currentPhase]);
+  }, [ambientLight.lux, noiseSensor.noiseDb, store.isMonitoring, store.currentPhase]);
 
   // 使用時間の警告チェック
   useEffect(() => {
@@ -351,6 +353,7 @@ export const useSleepMonitor = (): UseSleepMonitorReturn => {
     totalRemainingSeconds,
     usageMinutes: usageTracker.usageMinutes,
     lightLux: store.environment.lightLux,
+    lightSource: ambientLight.source,
     noiseDb: store.environment.noiseDb,
     isLightExceeded: store.environment.isLightExceeded,
     isNoiseExceeded: store.environment.isNoiseExceeded,

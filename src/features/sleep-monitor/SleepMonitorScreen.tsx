@@ -71,6 +71,20 @@ export const SleepMonitorScreen: React.FC = () => {
             isLightExceeded={monitor.isLightExceeded}
             isNoiseExceeded={monitor.isNoiseExceeded}
           />
+
+          {/* 照度取得元 */}
+          <View style={styles.sourceCard}>
+            <Text style={styles.sourceTitle}>💡 照度取得元</Text>
+            <View style={styles.sourceContent}>
+              <Text style={styles.sourceText}>
+                {monitor.lightSource === 'camera'
+                  ? '📷 カメラ推定'
+                  : monitor.lightSource === 'light_sensor'
+                    ? '☀️ 照度センサー'
+                    : '❌ 利用不可'}
+              </Text>
+            </View>
+          </View>
         </ScrollView>
 
         {/* 警告オーバーレイ */}
@@ -205,6 +219,29 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: '#94A3B8',
     lineHeight: 22,
+  },
+  sourceCard: {
+    backgroundColor: '#0F172A',
+    borderRadius: 16,
+    padding: 20,
+    marginBottom: 16,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  sourceTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#94A3B8',
+  },
+  sourceContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  sourceText: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: COLORS.text.dark,
   },
   settingCard: {
     backgroundColor: '#0F172A',

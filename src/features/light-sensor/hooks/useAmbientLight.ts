@@ -13,6 +13,8 @@ interface UseAmbientLightReturn {
   source: AmbientLightSource;
   /** デバイスの向き */
   orientation: DeviceOrientation;
+  /** 内部的な照度センサーオブジェクト */
+  lightSensor: ReturnType<typeof useLightSensor>;
 }
 
 /**
@@ -24,13 +26,9 @@ interface UseAmbientLightReturn {
  */
 export function useAmbientLight(): UseAmbientLightReturn {
   const { orientation } = useDeviceOrientation();
-  const {
-    data,
-    isAvailable: sensorAvailable,
-    isActive,
-    startSensor,
-  } = useLightSensor();
-  const sensorLux = data?.illuminance ?? null;
+  const lightSensor = useLightSensor();
+  const sensorAvailable = lightSensor.isAvailable;
+  const sensorLux = lightSensor.data?.illuminance ?? null;
 
   // face_up の時はカメラを起動しない（バッテリー節約）
   const cameraEnabled = orientation !== 'face_up';
@@ -72,5 +70,6 @@ export function useAmbientLight(): UseAmbientLightReturn {
     lux: result.lux,
     source: result.source,
     orientation,
+    lightSensor,
   };
 }
