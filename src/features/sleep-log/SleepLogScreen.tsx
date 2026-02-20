@@ -1,5 +1,5 @@
-import React from 'react';
-import { View, Text, StyleSheet, SafeAreaView, ScrollView } from 'react-native';
+import React, { useEffect } from 'react';
+import { View, Text, StyleSheet, SafeAreaView, ScrollView, ActivityIndicator } from 'react-native';
 import { COLORS } from '@shared/constants';
 import { useSleepLogStore } from './sleepLogStore';
 import { SleepScoreDisplay } from './components/SleepScoreDisplay';
@@ -11,7 +11,11 @@ import { WeeklyTrendChart } from './components/WeeklyTrendChart';
  * 過去の睡眠準備スコアの履歴を表示
  */
 export const SleepLogScreen: React.FC = () => {
-  const { logs } = useSleepLogStore();
+  const { logs, isLoading, fetchLogs } = useSleepLogStore();
+
+  useEffect(() => {
+    void fetchLogs();
+  }, [fetchLogs]);
   const latestLog = logs[0] ?? null;
 
   return (
@@ -23,6 +27,13 @@ export const SleepLogScreen: React.FC = () => {
       </View>
 
       <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
+        {/* ローディング */}
+        {isLoading && logs.length === 0 && (
+          <View style={styles.loadingContainer}>
+            <ActivityIndicator size="large" color={COLORS.primary} />
+          </View>
+        )}
+
         {/* 最新スコア */}
         {latestLog && (
           <View style={styles.latestCard}>
@@ -96,5 +107,9 @@ const styles = StyleSheet.create({
     fontSize: 17,
     color: '#64748B',
     fontWeight: '500',
+  },
+  loadingContainer: {
+    paddingVertical: 40,
+    alignItems: 'center',
   },
 });
