@@ -72,6 +72,30 @@ pnpm install
 pnpm run setup
 ```
 
+# ビルド
+0. javaを入れる
+```
+brew install --cask temurin@17
+```
+1. ```npx expo install expo-dev-client```
+2. app.jsonに追記
+```
+
+JSON
+{
+  "expo": {
+    "android": {
+      "package": "com.kc3.sleepsupport" 
+    }
+  }
+}
+```
+3. スマホを繋いでビルド
+```
+npx expo run:android
+```
+進まない場合：```npx expo start --dev-client```
+
 ### 環境変数の設定（任意）
 
 LLM連携やGoogle Calendar連携を使用する場合は、環境変数を設定してください。
