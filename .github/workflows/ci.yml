@@ -1,4 +1,5 @@
-# CI: フロントビルド確認・バックエンド dev-up 起動・pytest
+# CI: フロント・バックエンド・Android を並列・分割実行
+# 分割しているため、どこで失敗したかが分かりやすく、他ジョブはそのまま結果が出る
 name: CI
 
 on:
@@ -6,12 +7,98 @@ on:
     branches: [main, master, develop]
   pull_request:
     branches: [main, master, develop]
-  # 手動実行（Actions タブから「Run workflow」で確認用に実行できる）
   workflow_dispatch:
 
+# フロント: 並列実行（連続でなく個別ジョブなので、1つ失敗しても他は実行される）
 jobs:
-  frontend:
-    name: Frontend (build check)
+  frontend-typecheck:
+    name: Frontend (typecheck)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "pnpm"
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm run typecheck
+
+  frontend-lint:
+    name: Frontend (lint)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "pnpm"
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm run lint
+
+  frontend-format:
+    name: Frontend (format check)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "pnpm"
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm run format:check
+
+  frontend-build:
+    name: Frontend (expo export web)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "pnpm"
+      - run: pnpm install --frozen-lockfile
+      - run: npx expo export --platform web
+
+  # バックエンド: ruff / mypy は DB 不要なので単体ジョブで並列実行
+  backend-lint:
+    name: Backend (ruff)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup uv
+        uses: astral-sh/setup-uv@v4
+        with:
+          version: "latest"
+          cache: "pip"
+      - name: Install deps
+        run: cd backend && uv sync --extra dev
+      - name: Ruff check
+        run: cd backend && uv run ruff check .
+      - name: Ruff format check
+        run: cd backend && uv run ruff format --check .
+
+  backend-mypy:
+    name: Backend (mypy)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup uv
+        uses: astral-sh/setup-uv@v4
+        with:
+          version: "latest"
+          cache: "pip"
+      - name: Install deps
+        run: cd backend && uv sync --extra dev
+      - name: Mypy
+        run: cd backend && uv run mypy app
+
+  # バックエンド: pytest のみ DB が必要 → Supabase + Docker 起動してから実行（連続ステップで1ジョブ）
+  backend-pytest:
+    name: Backend (pytest)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -20,65 +107,9 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: "20"
-
-      - name: Install pnpm
-        uses: pnpm/action-setup@v4
-
-      - name: Get pnpm store directory
-        shell: bash
-        run: echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_ENV
-
-      - name: Setup pnpm cache
-        uses: actions/cache@v4
-        with:
-          path: ${{ env.STORE_PATH }}
-          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
-          restore-keys: |
-            ${{ runner.os }}-pnpm-store-
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-
-      - name: Typecheck
-        run: pnpm run typecheck
-
-      - name: Lint
-        run: pnpm run lint
-
-      - name: Format check
-        run: pnpm run format:check
-
-      - name: Build (expo export web)
-        run: npx expo export --platform web
-
-  backend:
-    name: Backend (dev-up + pytest)
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: "20"
-
-      - name: Install pnpm
-        uses: pnpm/action-setup@v4
-
-      - name: Get pnpm store directory
-        shell: bash
-        run: echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_ENV
-
-      - name: Setup pnpm cache
-        uses: actions/cache@v4
-        with:
-          path: ${{ env.STORE_PATH }}
-          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
-          restore-keys: |
-            ${{ runner.os }}-pnpm-store-
-
-      - name: Install frontend dependencies
-        run: pnpm install --frozen-lockfile
+          cache: "pnpm"
+      - uses: pnpm/action-setup@v4
+      - run: pnpm install --frozen-lockfile
 
       - name: Setup Supabase CLI
         uses: supabase/setup-cli@v1
@@ -94,7 +125,7 @@ jobs:
           docker compose down -v 2>/dev/null || true
           eval "$(node scripts/supabase-env-for-compose.mjs)" && docker compose up -d
 
-      - name: Setup uv (Python)
+      - name: Setup uv
         uses: astral-sh/setup-uv@v4
         with:
           version: "latest"
@@ -103,22 +134,13 @@ jobs:
       - name: Wait for DB
         run: node scripts/wait-for-db.mjs
 
-      - name: Install backend deps and run migrations
+      - name: Migrations
         run: |
           cd backend && uv sync && \
           DATABASE_URL=postgresql://postgres:postgres@localhost:5432/sleepsupport uv run alembic upgrade head
 
-      - name: Install backend dev deps
+      - name: Install dev deps
         run: cd backend && uv sync --extra dev
-
-      - name: Lint (ruff)
-        run: |
-          cd backend
-          uv run ruff check .
-          uv run ruff format --check .
-
-      - name: Type check (mypy)
-        run: cd backend && uv run mypy app
 
       - name: Pytest
         run: |
@@ -131,28 +153,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: "20"
-
-      - name: Install pnpm
-        uses: pnpm/action-setup@v4
-
-      - name: Get pnpm store directory
-        shell: bash
-        run: echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_ENV
-
-      - name: Setup pnpm cache
-        uses: actions/cache@v4
-        with:
-          path: ${{ env.STORE_PATH }}
-          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
-          restore-keys: |
-            ${{ runner.os }}-pnpm-store-
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+          cache: "pnpm"
+      - run: pnpm install --frozen-lockfile
 
       - name: Setup Java 17
         uses: actions/setup-java@v4
@@ -160,13 +166,13 @@ jobs:
           distribution: "temurin"
           java-version: "17"
 
-      - name: Enable KVM (Linux emulator acceleration)
+      - name: Enable KVM
         run: |
           echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
           sudo udevadm control --reload-rules
           sudo udevadm trigger --name-match=kvm
 
-      - name: Build and run on Android emulator (expo run:android)
+      - name: Build and run on Android emulator
         uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: 34
