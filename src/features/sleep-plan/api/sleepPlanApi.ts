@@ -99,7 +99,7 @@ const generateMockPlan = (calendarEvents: CalendarEventSummary[] = []): WeeklySl
     // イベントテキストの生成 (例: "10:00-11:30 ミーティング\n13:00-14:00 ランチ")
     const eventTexts = tomorrowEvents.map(event => {
       if (event.allDay) {
-        return `【終日】 ${event.title}`;
+        return `終日 ${event.title}`;
       }
       const startTime = formatEventTime(event.start, event.allDay);
       const endTime = formatEventTime(event.end, event.allDay);
@@ -118,10 +118,10 @@ const generateMockPlan = (calendarEvents: CalendarEventSummary[] = []): WeeklySl
 
     if (eventTexts.length > 0) {
       importance = tomorrowEvents.length > 2 ? 'high' : 'medium';
-      advice = `明日は${tomorrowEvents.length}件の予定があります。しっかり睡眠を取りましょう。`;
+      advice = `翌日は${tomorrowEvents.length}件の予定があります。しっかり睡眠を取りましょう。`;
     } else {
       importance = 'low';
-      advice = '明日は特に大きな予定はありません。リラックスして過ごしましょう。';
+      advice = '翌日は特に大きな予定はありません。リラックスして過ごしましょう。';
     }
 
     return {
