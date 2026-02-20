@@ -14,9 +14,21 @@ from app.infrastructure.persistence.database import (
     engine,
 )
 from app.main import app as fastapi_app
+from app.presentation.dependencies.auth import get_current_user_id
 
 # 全モデルを Base.metadata に登録
 import app.infrastructure.persistence.models  # noqa: F401
+
+# テスト用の固定 user_id（認証オーバーライドで使用）
+TEST_USER_ID = "11111111-1111-1111-1111-111111111111"
+
+
+@pytest.fixture(autouse=True)
+def _override_auth():
+    """認証必須 API のテスト用: get_current_user_id を固定 ID でオーバーライド"""
+    fastapi_app.dependency_overrides[get_current_user_id] = lambda: TEST_USER_ID
+    yield
+    fastapi_app.dependency_overrides.pop(get_current_user_id, None)
 
 
 @pytest.fixture(scope="session")

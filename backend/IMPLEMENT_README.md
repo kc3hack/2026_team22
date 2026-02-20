@@ -56,6 +56,7 @@ backend/
 │   │   ├── user/
 │   │   └── plan/
 │   ├── infrastructure/         # インフラ層（DB・外部API）
+│   │   ├── auth/               # 認証（Supabase JWT 検証）※Phase1
 │   │   ├── persistence/       # モデル・リポジトリ実装・database
 │   │   │   ├── models/
 │   │   │   ├── repositories/
@@ -63,6 +64,7 @@ backend/
 │   │   └── llm/               # LLM クライアント（OpenRouter 等）
 │   └── presentation/          # プレゼンテーション層（API）
 │       ├── api/               # FastAPI ルーター
+│       ├── dependencies/      # 認証 Depends（get_current_user_id）※Phase1
 │       └── schemas/           # Pydantic リクエスト・レスポンス
 ├── alembic/                    # マイグレーション
 │   ├── env.py
