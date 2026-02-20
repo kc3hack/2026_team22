@@ -13,12 +13,22 @@ import { COLORS } from '@shared/constants';
 import { supabase, isSupabaseConfigured } from '@shared/lib';
 import { useAuthStore } from './authStore';
 
+export interface LoginScreenProps {
+  /** ログイン成功時（セッション取得済み） */
+  onLoginSuccess?: () => void;
+  /** 「アカウントを作成」でサインアップへ */
+  onNavigateToSignup?: () => void;
+}
+
 /**
  * ログイン画面
  * Supabase Auth でメール/パスワード認証を行い、セッションを取得する。
  * 取得したトークンは apiClient 経由の API 呼び出しで自動付与される。
  */
-export const LoginScreen: React.FC = () => {
+export const LoginScreen: React.FC<LoginScreenProps> = ({
+  onLoginSuccess,
+  onNavigateToSignup,
+}) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const { setUser, setLoading, setError, isLoading, error } = useAuthStore();
@@ -49,6 +59,7 @@ export const LoginScreen: React.FC = () => {
         email: user.email ?? '',
         name: user.user_metadata?.name ?? user.email ?? undefined,
       });
+      onLoginSuccess?.();
     } finally {
       setLoading(false);
     }
@@ -104,6 +115,16 @@ export const LoginScreen: React.FC = () => {
           >
             <Text style={styles.buttonText}>{isLoading ? 'ログイン中...' : 'ログイン'}</Text>
           </TouchableOpacity>
+
+          {onNavigateToSignup && (
+            <TouchableOpacity
+              style={styles.linkButton}
+              onPress={onNavigateToSignup}
+              disabled={isLoading}
+            >
+              <Text style={styles.linkText}>アカウントを作成 → サインアップ</Text>
+            </TouchableOpacity>
+          )}
         </View>
       </KeyboardAvoidingView>
     </SafeAreaView>
@@ -178,5 +199,13 @@ const styles = StyleSheet.create({
     color: COLORS.text.dark,
     fontSize: 23,
     fontWeight: '600',
+  },
+  linkButton: {
+    padding: 16,
+    alignItems: 'center',
+  },
+  linkText: {
+    color: '#94A3B8',
+    fontSize: 18,
   },
 });

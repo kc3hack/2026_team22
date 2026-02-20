@@ -19,7 +19,9 @@ export default function RootLayout() {
           headerShown: false,
           contentStyle: { backgroundColor: '#1E293B' },
         }}
+        initialRouteName="(auth)"
       >
+        <Stack.Screen name="(auth)" options={{ headerShown: false }} />
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
       </Stack>
 

@@ -46,6 +46,23 @@ tasks:
     cmds:
       - pnpm supabase stop
 
+  # Metro / Expo バンドラーを停止（ポート 8081 使用プロセスを終了。dev-up-emulator 前に実行すると .env が確実に読み直される）
+  metro-stop:
+    desc: Metro / Expo のバンドラーを停止（ポート 8081）
+    cmds:
+      - |
+        if command -v lsof >/dev/null 2>&1; then
+          PIDS=$(lsof -ti:8081 2>/dev/null) || true
+          if [ -n "$PIDS" ]; then
+            echo "Metro (port 8081) を停止します: $PIDS"
+            echo "$PIDS" | xargs kill -9 2>/dev/null || true
+          else
+            echo "ポート 8081 で動作中のプロセスはありません。"
+          fi
+        else
+          echo "lsof が見つかりません。手動で Metro/Expo を終了してください。"
+        fi
+
   # 開発環境をまとめて起動（Expo は含まない。別ターミナルで task expo-start）
   # 注意: "container name already in use" が出たら docker rm -f sleepsupport-db sleepsupport-api してから再実行
 
@@ -90,6 +107,7 @@ tasks:
   # エミュレータ用: EXPO_PUBLIC_API_URL を 10.0.2.2 に固定（Android エミュレータからホスト PC へ接続）
   # 環境構築ののち Android Development Build をビルド＆起動。エミュレータを起動してから実行すること。
   # 毎回 DB をゼロから構築するため、docker-compose down -v でボリューム削除してから up
+  # Network request failed になる場合は docs/troubleshooting-emulator-network.md を参照（Metro を止めてから実行すること）
   dev-up-emulator:
     desc: エミュレータ用 - 環境構築（10.0.2.2）＋ .env.expo.local 更新 ＋ Android ビルド＆起動
     cmds:
@@ -104,8 +122,9 @@ tasks:
       - EXPO_PUBLIC_API_URL=http://10.0.2.2:8000 node scripts/write-expo-env.mjs
       - |
         echo ""
-        echo "[エミュレータ用] API: http://10.0.2.2:${API_PORT:-8000}  Supabase Studio: http://127.0.0.1:54323"
+        echo "[エミュレータ用] API: http://10.0.2.2:${API_PORT:-8000}  Supabase: http://10.0.2.2:54321"
         echo "Android ビルド＆起動します（エミュレータを起動済みにしてください）。"
+        echo "Network request failed のときは Metro を止めてから再実行するか、docs/troubleshooting-emulator-network.md を参照。"
       - |
         export JAVA_HOME=$(/usr/libexec/java_home -v 17 2>/dev/null) || true
         npx expo run:android
