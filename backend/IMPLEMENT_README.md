@@ -4,7 +4,36 @@
 
 ---
 
-## 1. プロジェクト概要
+## 1. Issue をチェックアウトして実装する
+
+バックエンドの作業は **GitHub Issue 単位**で行う。実装を始めるときは次の手順に従う。
+
+1. **Issue 一覧を確認する**  
+   - リポジトリの Issues で、`[Phase1]` / `[Phase2]` / `[Phase3]` などのラベルやタイトルで該当する Issue を探す。  
+   - 実装計画に対応する Issue は `docs/implementation-plan.md` のチェックリスト（1.1, 1.2, 2.1 等）と対応している（例: Issue #18 = 1.1 認証ミドルウェア）。
+
+2. **実装する Issue を 1 つ選び、内容を把握する**  
+   - ブラウザで Issue を開くか、GitHub CLI で `gh issue view <番号>` を実行する。  
+   - Issue の「目的」「成果物」「依存」「参照」を読み、`docs/backend-design.md` や `docs/implementation-plan.md` の該当節を確認する。
+
+3. **Issue 用のブランチを切る**  
+   - 例: `git checkout -b fix/issue-18-auth-middleware`（Issue 番号と内容が分かる名前にする）。  
+   - GitHub CLI で Issue と紐づけたブランチを作る場合: `gh issue develop 18 --base main --checkout`（番号は適宜変更）。
+
+4. **Issue の「成果物」に沿って実装する**  
+   - 本 README の §2 以降（ディレクトリ構成・ビルド・実装の流れ）に従う。  
+   - 完了したら **`task test`** でテストが通ることを確認する。
+
+5. **コミット・PR で Issue を参照する**  
+   - コミットメッセージや PR の説明に `Closes #18` のように書くと、マージ時に Issue が自動で閉じる。  
+   - 例: `git commit -m "feat(auth): 認証ミドルウェアを追加 Closes #18"`
+
+**AI への指示の例（ユーザーがチャットで書くとき）**:  
+「Issue #20 をチェックアウトして実装して。`backend/IMPLEMENT_README.md` の手順に従うこと。」
+
+---
+
+## 2. プロジェクト概要
 
 - **スタック**: Python 3.11, FastAPI, SQLAlchemy 2.0（async）, Alembic, Pydantic, uv
 - **アーキテクチャ**: オニオン（ドメイン → アプリケーション → インフラ → プレゼンテーション）。依存は内側向きのみ。
@@ -12,7 +41,7 @@
 
 ---
 
-## 2. ディレクトリ構成
+## 3. ディレクトリ構成
 
 ```
 backend/
@@ -49,7 +78,7 @@ backend/
 
 ---
 
-## 3. ビルド・実行・テスト（Taskfile とコマンド）
+## 4. ビルド・実行・テスト（Taskfile とコマンド）
 
 リポジトリルートに **Taskfile** がある。バックエンド関連は以下を使う。
 
@@ -93,7 +122,7 @@ docker-compose up -d
 
 ---
 
-## 4. 実装の流れ（新機能を追加するとき）
+## 5. 実装の流れ（新機能を追加するとき）
 
 1. **設計の確認**  
    `docs/backend-design.md` と `docs/implementation-plan.md` で、追加する API・テーブル・署名の仕様を確認する。
@@ -129,7 +158,7 @@ docker-compose up -d
 
 ---
 
-## 5. 既存コードの参照
+## 6. 既存コードの参照
 
 - **プラン API**: `app/presentation/api/plan.py`, `app/application/plan/get_or_create_plan.py`, `app/infrastructure/persistence/repositories/sleep_plan_cache_repository.py`
 - **署名ハッシュ**: `app/domain/plan/value_objects.py` の `build_signature_hash`（設計書 §5 に従い、todayOverride を入力に含める）
@@ -138,7 +167,7 @@ docker-compose up -d
 
 ---
 
-## 6. 禁止・推奨
+## 7. 禁止・推奨
 
 - **禁止**: ドメイン層がインフラやプレゼンテーションに依存すること。依存は常に内側（ドメイン ← アプリケーション ← インフラ ← プレゼンテーション）。
 - **推奨**: 新規エンドポイントは設計書の URL・メソッド・Body に合わせる（例: `GET/PUT /api/v1/settings`, `GET/POST/PATCH /api/v1/sleep-logs`, `POST /api/v1/sleep-plans` の Body に todayOverride）。
@@ -146,8 +175,8 @@ docker-compose up -d
 
 ---
 
-## 7. まとめ
+## 8. まとめ
 
 - 仕様は **`docs/backend-design.md`** と **`docs/implementation-plan.md`** を参照する。  
 - ビルド・テスト・DB 反映は **Taskfile**（`task test`, `task dev-up`）および **backend 内の `uv` / `alembic`** を使う。  
-- 新機能は **モデル → マイグレーション → リポジトリ → ユースケース → スキーマ → ルーター** の順で実装し、認証を全 API に掛ける。
+- 新機能は **Issue をチェックアウトしてから**、**モデル → マイグレーション → リポジトリ → ユースケース → スキーマ → ルーター** の順で実装し、認証を全 API に掛ける。
