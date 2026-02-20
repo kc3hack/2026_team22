@@ -93,8 +93,8 @@ class GeminiClient {
    * 指定された画像にターゲット（targetLabel）が写っているか判定する
    */
   async verifyMissionImage(base64Image: string, targetLabel: string): Promise<boolean> {
-    // ユーザー指定: APIキーは空欄
-    const apiKey = 'AIzaSyC0DXZJYdoNm5iMTaKapC90ER8vLrXacAk';
+    // ユーザー指定: APIキーは環境変数から取得
+    const apiKey = process.env.EXPO_PUBLIC_GEMINI_API_KEY;
     // const apiKey = this.config.apiKey || '';
 
     if (!apiKey) {
