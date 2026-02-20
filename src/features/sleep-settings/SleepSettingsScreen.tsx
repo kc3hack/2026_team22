@@ -9,7 +9,9 @@ import {
   TextInput,
   ScrollView,
 } from 'react-native';
+import { useRouter } from 'expo-router';
 import { COLORS } from '@shared/constants';
+import { useAuthStore } from '@features/auth';
 import { useSleepSettingsStore } from './sleepSettingsStore';
 
 /**
@@ -17,7 +19,14 @@ import { useSleepSettingsStore } from './sleepSettingsStore';
  * 起床時刻と睡眠時間を設定し、就寝予定時刻を自動計算する
  */
 export const SleepSettingsScreen: React.FC = () => {
+  const router = useRouter();
   const settings = useSleepSettingsStore();
+  const logout = useAuthStore(s => s.logout);
+
+  const handleLogout = async () => {
+    await logout();
+    router.replace('/(auth)/login');
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -125,6 +134,13 @@ export const SleepSettingsScreen: React.FC = () => {
               <Text style={styles.durationButtonText}>＋</Text>
             </TouchableOpacity>
           </View>
+        </View>
+
+        {/* ログアウト */}
+        <View style={styles.logoutCard}>
+          <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
+            <Text style={styles.logoutButtonText}>ログアウト</Text>
+          </TouchableOpacity>
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -241,5 +257,21 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 8,
     width: '100%',
+  },
+  logoutCard: {
+    marginTop: 24,
+    marginBottom: 32,
+  },
+  logoutButton: {
+    backgroundColor: 'transparent',
+    borderRadius: 12,
+    padding: 16,
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#64748B',
+  },
+  logoutButtonText: {
+    color: '#94A3B8',
+    fontSize: 18,
   },
 });

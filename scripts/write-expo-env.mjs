@@ -63,14 +63,21 @@ function main() {
   const serviceRoleKey = statusEnv.SERVICE_ROLE_KEY || '';
 
   const rawApi = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:8000';
-  const apiHost = /localhost|127\.0\.0\.1/.test(rawApi)
+  const isEmulator = /10\.0\.2\.2/.test(rawApi);
+  const useLanIpForApi = /localhost|127\.0\.0\.1/.test(rawApi);
+  const apiHost = useLanIpForApi
     ? `http://${getLocalNetworkIp()}:8000`
     : rawApi;
+  // 実機・エミュレータからは 127.0.0.1 に届かないため、Supabase URL のホストを差し替える
+  const hostForSupabase = isEmulator ? '10.0.2.2' : (useLanIpForApi ? getLocalNetworkIp() : null);
+  const supabaseUrlForApp = hostForSupabase && apiUrl
+    ? apiUrl.replace(/127\.0\.0\.1|localhost/, hostForSupabase)
+    : apiUrl;
   const newVars = {
-    EXPO_PUBLIC_SUPABASE_URL: apiUrl,
+    EXPO_PUBLIC_SUPABASE_URL: supabaseUrlForApp,
     EXPO_PUBLIC_SUPABASE_ANON_KEY: anonKey,
     EXPO_PUBLIC_API_URL: apiHost, // 実機・エミュレータ用に localhost なら LAN IP に変換済み
-    SUPABASE_URL: apiUrl,
+    SUPABASE_URL: supabaseUrlForApp,
     SUPABASE_ANON_KEY: anonKey,
     SUPABASE_JWT_SECRET: jwtSecret,
     SUPABASE_SERVICE_ROLE_KEY: serviceRoleKey,

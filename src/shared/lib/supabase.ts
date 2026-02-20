@@ -17,6 +17,9 @@ const extra = (Constants.expoConfig?.extra ?? {}) as {
 const supabaseUrl = (extra.supabaseUrl ?? '').trim();
 const supabaseAnonKey = (extra.supabaseAnonKey ?? '').trim();
 
+if (__DEV__ && (supabaseUrl || supabaseAnonKey)) {
+  console.log('[supabase] using url:', supabaseUrl || '(missing)');
+}
 if (!supabaseUrl || !supabaseAnonKey) {
   console.warn(
     '[supabase] EXPO_PUBLIC_SUPABASE_URL or EXPO_PUBLIC_SUPABASE_ANON_KEY is missing. Auth will not work until .env.expo.local is set (e.g. task dev-up).'
