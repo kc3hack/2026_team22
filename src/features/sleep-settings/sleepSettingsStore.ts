@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import type { SleepSettings, TodayOverride } from './types';
+import { fetchSettingsFromApi, saveSettingsToApi } from './settingsApi';
 
 interface SleepSettingsActions {
   /** 起床時刻を設定 */
@@ -25,6 +26,13 @@ interface SleepSettingsActions {
   getEffectiveSleepTime: () => { hour: number; minute: number };
   /** オーバーライド考慮の有効な起床時刻を取得 */
   getEffectiveWakeTime: () => { hour: number; minute: number };
+
+  /* ── API 連携 ── */
+
+  /** バックエンドから設定を取得して store を更新 */
+  fetchSettings: () => Promise<void>;
+  /** 現在の store の値をバックエンドに保存 */
+  saveSettings: () => Promise<void>;
 }
 
 /**
@@ -77,6 +85,11 @@ export const useSleepSettingsStore = create<SleepSettings & SleepSettingsActions
     icsUrl: defaultIcsUrl,
 
     todayOverride: null as TodayOverride | null,
+
+    // API 連携用ステート
+    isLoading: false,
+    isSaving: false,
+    lastFetchedAt: null,
 
     setIcsUrl: (url: string) => set({ icsUrl: url }),
 
@@ -140,6 +153,52 @@ export const useSleepSettingsStore = create<SleepSettings & SleepSettingsActions
         return { hour: state.todayOverride.wakeHour, minute: state.todayOverride.wakeMinute };
       }
       return { hour: state.wakeUpHour, minute: state.wakeUpMinute };
+    },
+
+    /* ── API 連携アクション ── */
+
+    fetchSettings: async () => {
+      set({ isLoading: true });
+      try {
+        const data = await fetchSettingsFromApi();
+        const wakeH = data.wakeUpHour ?? get().wakeUpHour;
+        const wakeM = data.wakeUpMinute ?? get().wakeUpMinute;
+        const durH = data.sleepDurationHours ?? get().sleepDurationHours;
+        const sleep = calculateSleepTime(wakeH, wakeM, durH);
+        set({
+          ...data,
+          calculatedSleepHour: sleep.hour,
+          calculatedSleepMinute: sleep.minute,
+          isLoading: false,
+          lastFetchedAt: Date.now(),
+        });
+      } catch (err) {
+        console.warn('[sleepSettingsStore] fetchSettings failed:', err);
+        set({ isLoading: false });
+      }
+    },
+
+    saveSettings: async () => {
+      const state = get();
+      set({ isSaving: true });
+      try {
+        const data = await saveSettingsToApi(state);
+        const wakeH = data.wakeUpHour ?? state.wakeUpHour;
+        const wakeM = data.wakeUpMinute ?? state.wakeUpMinute;
+        const durH = data.sleepDurationHours ?? state.sleepDurationHours;
+        const sleep = calculateSleepTime(wakeH, wakeM, durH);
+        set({
+          ...data,
+          calculatedSleepHour: sleep.hour,
+          calculatedSleepMinute: sleep.minute,
+          isSaving: false,
+          lastFetchedAt: Date.now(),
+        });
+      } catch (err) {
+        console.warn('[sleepSettingsStore] saveSettings failed:', err);
+        set({ isSaving: false });
+        throw err; // 呼び出し側でエラーハンドリングできるように re-throw
+      }
     },
   };
 });
