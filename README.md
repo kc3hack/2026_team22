@@ -106,6 +106,13 @@ SleepSupportApp は、AI 駆動の総合睡眠支援 Android アプリケーシ�
 | コード品質 | ESLint, Prettier, Ruff, MyPy |
 | 型チェック | TypeScript (tsc), MyPy |
 
+## チームメンバー
+- @taitaitai58
+- @yuito393439
+- @Taku-taku-Taku
+- @You8102
+- @taniharu1214
+
 <!--
 markdownの記法はこちらを参照してください！
 https://docs.github.com/ja/get-started/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax
