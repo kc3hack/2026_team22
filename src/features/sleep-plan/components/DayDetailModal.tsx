@@ -131,8 +131,14 @@ export const DayDetailModal: React.FC<DayDetailModalProps> = ({
         try {
           const [year, month, day] = plan.date.split('-').map(Number);
           if (year !== undefined && month !== undefined && day !== undefined) {
-            const startOfDay = new Date(year, month - 1, day, 0, 0, 0);
-            const endOfDay = new Date(year, month - 1, day, 23, 59, 59);
+            // plan.date は就寝日。明日の予定を取得するため +1 日する
+            const targetDate = new Date(year, month - 1, day + 1);
+            const targetYear = targetDate.getFullYear();
+            const targetMonth = targetDate.getMonth();
+            const targetDay = targetDate.getDate();
+
+            const startOfDay = new Date(targetYear, targetMonth, targetDay, 0, 0, 0);
+            const endOfDay = new Date(targetYear, targetMonth, targetDay, 23, 59, 59);
             const events = await googleCalendar.getEvents(startOfDay, endOfDay);
             // 翌日の予定なども含まれることがあるため、この日の予定だけにフィルタリング
             const filtered = events.filter(e => {
@@ -286,23 +292,7 @@ export const DayDetailModal: React.FC<DayDetailModalProps> = ({
             </View>
           </View>
 
-          {/* ── 翌日のスケジュール ── */}
-          {plan.nextDayEvent && (
-            <View style={styles.section}>
-              <Text style={styles.sectionTitle}>📅 翌日のスケジュール</Text>
-              <View style={styles.eventCard}>
-                <View style={styles.eventIconWrap}>
-                  <Text style={styles.eventCardIcon}>📋</Text>
-                </View>
-                <View style={styles.eventCardContent}>
-                  <Text style={styles.eventCardTitle}>{plan.nextDayEvent}</Text>
-                  <Text style={styles.eventCardSub}>
-                    しっかり睡眠を取って万全の状態で臨みましょう
-                  </Text>
-                </View>
-              </View>
-            </View>
-          )}
+
 
           {/* ── AIアドバイス全文 ── */}
           <View style={styles.section}>
@@ -312,9 +302,9 @@ export const DayDetailModal: React.FC<DayDetailModalProps> = ({
             </View>
           </View>
 
-          {/* ── 1日の予定タイムライン ── */}
+          {/* ── 明日の予定タイムライン ── */}
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>📅 1日の予定</Text>
+            <Text style={styles.sectionTitle}>📅 明日の予定</Text>
             <View style={styles.scheduleTimelineCard}>
               {isLoadingEvents ? (
                 <View style={styles.emptyScheduleContainer}>
@@ -323,8 +313,8 @@ export const DayDetailModal: React.FC<DayDetailModalProps> = ({
               ) : dayEvents.length === 0 ? (
                 <View style={styles.emptyScheduleContainer}>
                   <Text style={styles.emptyScheduleIcon}>☕️</Text>
-                  <Text style={styles.emptyScheduleText}>この日の予定はありません</Text>
-                  <Text style={styles.emptyScheduleSubText}>ゆっくりリラックスできる1日です</Text>
+                  <Text style={styles.emptyScheduleText}>明日の予定はありません</Text>
+                  <Text style={styles.emptyScheduleSubText}>ゆっくりリラックスできる1日になりそうです</Text>
                 </View>
               ) : (
                 <View style={styles.timeline}>
