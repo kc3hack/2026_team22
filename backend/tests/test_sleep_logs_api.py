@@ -35,7 +35,7 @@ async def test_create_sleep_log(client: AsyncClient, ensure_test_user):
     resp = await client.post(
         "/api/v1/sleep-logs",
         json={
-            "date": "2026-02-20",
+            "date": "2026-02-26",
             "score": 85,
             "usage_penalty": 5,
             "environment_penalty": 3,
@@ -48,7 +48,7 @@ async def test_create_sleep_log(client: AsyncClient, ensure_test_user):
     assert resp.status_code == 201
     data = resp.json()
     assert data["user_id"] == TEST_USER_ID
-    assert data["date"] == "2026-02-20"
+    assert data["date"] == "2026-02-26"
     assert data["score"] == 85
     assert data["mood"] is None
     assert data["id"] is not None
@@ -98,7 +98,7 @@ async def test_update_mood(client: AsyncClient, ensure_test_user):
     """PATCH /api/v1/sleep-logs/:id で気分を更新できる"""
     create_resp = await client.post(
         "/api/v1/sleep-logs",
-        json={"date": "2026-02-20", "score": 90},
+        json={"date": "2026-02-23", "score": 90},
     )
     log_id = create_resp.json()["id"]
 
@@ -111,8 +111,28 @@ async def test_update_mood(client: AsyncClient, ensure_test_user):
 
 
 @pytest.mark.asyncio
+async def test_update_log_partial(client: AsyncClient, ensure_test_user):
+    """PATCH でスコア・日付などを部分更新できる"""
+    create_resp = await client.post(
+        "/api/v1/sleep-logs",
+        json={"date": "2026-02-24", "score": 70},
+    )
+    log_id = create_resp.json()["id"]
+
+    patch_resp = await client.patch(
+        f"/api/v1/sleep-logs/{log_id}",
+        json={"score": 88, "usage_penalty": 2},
+    )
+    assert patch_resp.status_code == 200
+    data = patch_resp.json()
+    assert data["score"] == 88
+    assert data["usage_penalty"] == 2
+    assert data["date"] == "2026-02-24"
+
+
+@pytest.mark.asyncio
 async def test_update_mood_not_found(client: AsyncClient, ensure_test_user):
-    """存在しないログの気分更新は 404"""
+    """存在しないログの更新は 404"""
     resp = await client.patch(
         f"/api/v1/sleep-logs/{uuid.uuid4()}",
         json={"mood": 3},
@@ -125,10 +145,20 @@ async def test_create_sleep_log_with_mood(client: AsyncClient, ensure_test_user)
     """mood 付きで睡眠ログを作成できる"""
     resp = await client.post(
         "/api/v1/sleep-logs",
-        json={"date": "2026-02-20", "score": 75, "mood": 3},
+        json={"date": "2026-02-21", "score": 75, "mood": 3},
     )
     assert resp.status_code == 201
     assert resp.json()["mood"] == 3
+
+
+@pytest.mark.asyncio
+async def test_create_duplicate_date_returns_409(client: AsyncClient, ensure_test_user):
+    """同一 user・同一 date で 2 件目は 409"""
+    payload = {"date": "2026-02-22", "score": 80}
+    r1 = await client.post("/api/v1/sleep-logs", json=payload)
+    assert r1.status_code == 201
+    r2 = await client.post("/api/v1/sleep-logs", json=payload)
+    assert r2.status_code == 409
 
 
 @pytest.mark.asyncio
@@ -136,7 +166,7 @@ async def test_create_sleep_log_validation_error(client: AsyncClient, ensure_tes
     """不正なスコアは 422"""
     resp = await client.post(
         "/api/v1/sleep-logs",
-        json={"date": "2026-02-20", "score": 150},
+        json={"date": "2026-02-27", "score": 150},
     )
     assert resp.status_code == 422
 
@@ -146,7 +176,7 @@ async def test_mood_validation_error(client: AsyncClient, ensure_test_user):
     """不正な mood 値は 422"""
     create_resp = await client.post(
         "/api/v1/sleep-logs",
-        json={"date": "2026-02-20", "score": 80},
+        json={"date": "2026-02-25", "score": 80},
     )
     log_id = create_resp.json()["id"]
 

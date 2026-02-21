@@ -24,6 +24,21 @@ class SleepLogMoodUpdate(BaseModel):
     mood: int = Field(..., ge=1, le=5, description="気分 1-5")
 
 
+class SleepLogUpdate(BaseModel):
+    """睡眠ログの部分更新（指定したフィールドのみ送る）"""
+
+    date: dt.date | None = Field(None, description="記録日 YYYY-MM-DD")
+    score: int | None = Field(None, ge=0, le=100, description="睡眠スコア 0-100")
+    scheduled_sleep_time: dt.datetime | None = Field(None, description="予定就寝時刻")
+    usage_penalty: int | None = Field(None, ge=0)
+    environment_penalty: int | None = Field(None, ge=0)
+    phase1_warning: bool | None = None
+    phase2_warning: bool | None = None
+    light_exceeded: bool | None = None
+    noise_exceeded: bool | None = None
+    mood: int | None = Field(None, ge=1, le=5, description="気分 1-5")
+
+
 class SleepLogResponse(BaseModel):
     id: str
     user_id: str

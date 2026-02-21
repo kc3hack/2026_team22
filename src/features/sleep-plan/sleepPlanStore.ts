@@ -99,6 +99,7 @@ export const useSleepPlanStore = create<SleepPlanState & SleepPlanActions>((set,
         date: log.date,
         score: log.score,
         scheduledSleepTime: new Date(log.scheduledSleepTime).toISOString(),
+        mood: log.mood ?? null,
       }));
 
       // ── カレンダー予定を ICS から取得 ──

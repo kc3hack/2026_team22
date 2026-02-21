@@ -58,15 +58,25 @@ class GetOrCreatePlanUseCase(BaseUseCase[GetOrCreatePlanInput, dict[str, Any]]):
             input.today_override,
         )
         # デバッグ: リクエスト概要と signature_hash をログ（キャッシュ効きの切り分け用）
+        sleep_logs_summary = [
+            {"date": lg.get("date"), "score": lg.get("score"), "mood": lg.get("mood")}
+            for lg in input.sleep_logs
+        ]
         logger.info(
-            "plan request user_id=%s force=%s signature_hash=%s n_calendar_events=%s n_sleep_logs=%s settings_keys=%s today_override=%s",
+            "plan request user_id=%s force=%s signature_hash=%s n_calendar_events=%s n_sleep_logs=%s sleep_logs_summary=%s settings_keys=%s today_override=%s",
             input.user_id[:8] + "..." if len(input.user_id) > 8 else input.user_id,
             input.force,
             signature_hash,
             len(input.calendar_events),
             len(input.sleep_logs),
+            sleep_logs_summary,
             list(input.settings.keys()) if input.settings else [],
             input.today_override is not None,
+        )
+        # キャッシュ切り分けを確実に確認するため stdout にも出力（docker logs で見える）
+        print(
+            f"[plan] signature={signature_hash[:16]}... sleep_logs_moods={[lg.get('mood') for lg in input.sleep_logs]}",
+            flush=True,
         )
 
         # force=True でなければキャッシュを検索
@@ -74,11 +84,13 @@ class GetOrCreatePlanUseCase(BaseUseCase[GetOrCreatePlanInput, dict[str, Any]]):
             cached = await self.cache_repo.get_by_user_and_hash(input.user_id, signature_hash)
             if cached:
                 logger.info("plan cache_hit signature_hash=%s", signature_hash)
+                print(f"[plan] cache_hit signature={signature_hash[:16]}...", flush=True)
                 plan = cast(dict[str, Any], json.loads(cached.plan_json))
                 plan["cache_hit"] = True
                 return plan
 
         logger.info("plan cache_miss (or force) signature_hash=%s", signature_hash)
+        print(f"[plan] cache_miss (LLM生成) signature={signature_hash[:16]}...", flush=True)
         # キャッシュミス（または force）: LLM で週間プラン生成
         plan = await self.plan_generator.generate_week_plan(
             input.calendar_events,

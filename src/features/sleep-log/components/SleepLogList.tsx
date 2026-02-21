@@ -19,6 +19,8 @@ if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental
 interface SleepLogListProps {
   /** ログ一覧 */
   logs: SleepLogEntry[];
+  /** 編集ボタン押下時（未指定なら編集ボタン非表示） */
+  onEditRequest?: (log: SleepLogEntry) => void;
 }
 
 /** 気分アイコン */
@@ -58,7 +60,7 @@ const getScoreColor = (score: number): string => {
  * 睡眠ログ一覧コンポーネント
  * FlatList → map に変更し ScrollView 内ネスト問題を解消
  */
-export const SleepLogList: React.FC<SleepLogListProps> = ({ logs }) => {
+export const SleepLogList: React.FC<SleepLogListProps> = ({ logs, onEditRequest }) => {
   const [expandedId, setExpandedId] = useState<string | null>(null);
 
   if (logs.length === 0) {
@@ -195,6 +197,16 @@ export const SleepLogList: React.FC<SleepLogListProps> = ({ logs }) => {
                   <Text style={styles.moodDetailEmoji}>{getMoodEmoji(item.mood)}</Text>
                   <Text style={styles.moodDetailLabel}>{getMoodLabel(item.mood)}</Text>
                 </View>
+
+                {onEditRequest && (
+                  <TouchableOpacity
+                    style={styles.editButton}
+                    onPress={() => onEditRequest(item)}
+                    activeOpacity={0.7}
+                  >
+                    <Text style={styles.editButtonText}>✏️ 編集</Text>
+                  </TouchableOpacity>
+                )}
               </View>
             )}
           </TouchableOpacity>
@@ -384,5 +396,18 @@ const styles = StyleSheet.create({
   moodDetailLabel: {
     fontSize: 18,
     color: '#FFFFFF',
+  },
+  editButton: {
+    marginTop: 16,
+    paddingVertical: 10,
+    paddingHorizontal: 16,
+    backgroundColor: '#1E293B',
+    borderRadius: 10,
+    alignSelf: 'flex-start',
+  },
+  editButtonText: {
+    fontSize: 16,
+    color: COLORS.primary,
+    fontWeight: '600',
   },
 });

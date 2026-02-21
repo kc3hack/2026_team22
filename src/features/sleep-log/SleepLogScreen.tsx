@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -9,17 +9,22 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import { COLORS } from '@shared/constants';
+import type { SleepLogEntry } from './types';
 import { useSleepLogStore } from './sleepLogStore';
+import { AddSleepLogModal } from './components/AddSleepLogModal';
 import { SleepScoreDisplay } from './components/SleepScoreDisplay';
 import { SleepLogList } from './components/SleepLogList';
+import { SleepLogEditModal } from './components/SleepLogEditModal';
 import { WeeklyTrendChart } from './components/WeeklyTrendChart';
 
 /**
  * 睡眠ログ画面
- * 過去の睡眠準備スコアの履歴を表示
+ * 過去の睡眠準備スコアの履歴を表示・編集
  */
 export const SleepLogScreen: React.FC = () => {
-  const { logs, isLoading, error, fetchLogs, clearError } = useSleepLogStore();
+  const { logs, isLoading, error, fetchLogs, clearError, updateLog, addLog } = useSleepLogStore();
+  const [editingLog, setEditingLog] = useState<SleepLogEntry | null>(null);
+  const [addLogModalVisible, setAddLogModalVisible] = useState(false);
 
   useEffect(() => {
     void fetchLogs();
@@ -71,11 +76,36 @@ export const SleepLogScreen: React.FC = () => {
         <View style={styles.listContainer}>
           <View style={styles.sectionHeader}>
             <Text style={styles.sectionTitle}>📋 履歴</Text>
-            <Text style={styles.logCount}>{logs.length}件</Text>
+            <View style={styles.sectionHeaderRight}>
+              <TouchableOpacity
+                style={styles.addLogButton}
+                onPress={() => setAddLogModalVisible(true)}
+              >
+                <Text style={styles.addLogButtonText}>＋ 記録を追加</Text>
+              </TouchableOpacity>
+              <Text style={styles.logCount}>{logs.length}件</Text>
+            </View>
           </View>
-          <SleepLogList logs={logs} />
+          <SleepLogList logs={logs} onEditRequest={log => setEditingLog(log)} />
         </View>
       </ScrollView>
+
+      <AddSleepLogModal
+        visible={addLogModalVisible}
+        title="記録を追加"
+        onAdd={entry => addLog(entry)}
+        onSuccess={() => void fetchLogs()}
+        onClose={() => setAddLogModalVisible(false)}
+      />
+
+      <SleepLogEditModal
+        visible={editingLog !== null}
+        log={editingLog}
+        onSave={async updates => {
+          if (editingLog) await updateLog(editingLog.id, updates);
+        }}
+        onClose={() => setEditingLog(null)}
+      />
     </SafeAreaView>
   );
 };
@@ -120,6 +150,22 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 12,
     marginTop: 8,
+  },
+  sectionHeaderRight: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+  },
+  addLogButton: {
+    paddingVertical: 8,
+    paddingHorizontal: 14,
+    backgroundColor: COLORS.primary,
+    borderRadius: 10,
+  },
+  addLogButtonText: {
+    fontSize: 15,
+    fontWeight: '600',
+    color: '#fff',
   },
   sectionTitle: {
     fontSize: 21,
