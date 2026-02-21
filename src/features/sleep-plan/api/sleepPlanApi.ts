@@ -97,18 +97,23 @@ const planApiResponseToWeeklyPlan = (data: PlanApiResponse): WeeklySleepPlan => 
 
 /**
  * リクエスト Body をバックエンド向けに変換
- * 注意: today_override はバックエンドが camelCase で受け付けるため、そのまま渡す
+ * settings に today_override を含める（統合済み）
  */
 const toSnakeCaseBody = (req: SleepPlanRequest): Record<string, unknown> => {
-  const todayOverride = req.todayOverride
-    ? {
-        date: req.todayOverride.date,
-        sleepHour: req.todayOverride.sleepHour,
-        sleepMinute: req.todayOverride.sleepMinute,
-        wakeHour: req.todayOverride.wakeHour,
-        wakeMinute: req.todayOverride.wakeMinute,
-      }
-    : null;
+  const settings: Record<string, unknown> = {
+    wake_up_time: req.settings.wakeUpTime,
+    sleep_duration_hours: req.settings.sleepDurationHours,
+    preparation_minutes: req.settings.preparationMinutes ?? 60,
+  };
+  if (req.settings.todayOverride) {
+    settings.today_override = {
+      date: req.settings.todayOverride.date,
+      sleepHour: req.settings.todayOverride.sleepHour,
+      sleepMinute: req.settings.todayOverride.sleepMinute,
+      wakeHour: req.settings.todayOverride.wakeHour,
+      wakeMinute: req.settings.todayOverride.wakeMinute,
+    };
+  }
 
   const body: Record<string, unknown> = {
     calendar_events: req.calendarEvents.map(e => ({
@@ -123,11 +128,7 @@ const toSnakeCaseBody = (req: SleepPlanRequest): Record<string, unknown> => {
       scheduled_sleep_time: l.scheduledSleepTime,
       mood: l.mood ?? null,
     })),
-    settings: {
-      wake_up_time: req.settings.wakeUpTime,
-      sleep_duration_hours: req.settings.sleepDurationHours,
-    },
-    today_override: todayOverride,
+    settings,
   };
   if (req.todayDate) {
     body.today_date = req.todayDate;

@@ -100,15 +100,15 @@ class OpenRouterClient:
         calendar_events: list[Any],
         sleep_logs: list[Any],
         settings: dict[str, Any],
-        today_override: dict[str, Any] | None = None,
         today_date: str | None = None,
     ) -> dict[str, Any]:
         """
         週間睡眠プランを生成する（IPlanGenerator の実装）
-        todayOverride がある場合はプロンプトに含め、今日だけの就寝・起床時刻を反映する。
+        settings に today_override が含まれる場合はプロンプトに明示して反映する。
         today_date は「今日」の日付（YYYY-MM-DD）。プロンプトと出力の基準日となる。
         """
         today_str = today_date or ""
+        today_override = settings.get("today_override")
         user_content = (
             "以下を元に、このユーザー向けの「1週間の睡眠プラン」を JSON で返してください。\n"
             "タイムゾーンは Asia/Tokyo です。\n"
@@ -125,6 +125,7 @@ class OpenRouterClient:
             "- 各要素に date（YYYY-MM-DD）を必須で含める。曜日ではなく日付で返す。\n"
             "- importance: 翌日の予定の重要度。会議・試験・発表など重要な予定がある日は high、軽い予定は medium、予定なし・緩い日は low。\n"
             "- next_day_event: 翌日の最も重要な予定のタイトル。該当なければ null。\n"
+            "- preparation_minutes が設定にある場合、起床から家を出る（または予定に取りかかる）までにその分数が必要。外出予定の開始時刻から逆算して起床時刻を決める。\n"
             "- 平日: 理想就寝 23:00、理想起床 6:00。ただし予定を優先。\n"
             "- 休日: 理想就寝 24:00、理想起床 8:00。平日の睡眠不足を補うよう長めの睡眠を提案。\n"
             "- 十分な睡眠が取れない日は、前後数日で睡眠時間を長めに取り補う。\n"
@@ -134,7 +135,7 @@ class OpenRouterClient:
             "睡眠ログ: " + json.dumps(sleep_logs, ensure_ascii=False) + "\n\n"
             "設定: " + json.dumps(settings, ensure_ascii=False)
         )
-        if today_override is not None:
+        if today_override:
             user_content += (
                 "\n\n"
                 "今日のオーバーライド（今日だけの就寝・起床時刻の変更）: "

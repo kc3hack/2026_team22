@@ -38,8 +38,8 @@
 |------|-----|------|
 | calendar_events | 配列 | title, start, end, all_day |
 | sleep_logs | 配列 | date, score, scheduled_sleep_time, mood |
-| settings | オブジェクト | wake_up_time, sleep_duration_hours |
-| today_override | オブジェクト \| null | date, sleepHour, sleepMinute, wakeHour, wakeMinute |
+| settings | オブジェクト | wake_up_time, sleep_duration_hours, today_override（任意） |
+| today_date | 文字列 | YYYY-MM-DD（署名・プロンプト用） |
 
 ### 1.3 フロントが期待するが未実装の項目
 
@@ -126,12 +126,53 @@
 
 ---
 
-## 4. 入力データの対応状況
+## 4. today_override の統合（settings に含める）
 
-| 新プロンプトで必要な入力 | フロント | バックエンド | 対応 |
-|-------------------------|----------|--------------|------|
-| カレンダー予定 | ✅ | ✅ | 済 |
-| 過去1週間の睡眠記録 | ✅ | ✅ | 済 |
+`today_override` をトップレベルで分けず、`settings` に含める設計に統一する。
+
+### 4.1 方針
+
+| 項目 | 変更前 | 変更後 |
+|------|--------|--------|
+| API リクエスト | `settings` と `today_override` を別フィールド | `settings` 内に `today_override` を含める |
+| 署名ハッシュ | `calendar_events`, `sleep_logs`, `settings`, `today_override`, `today_date` | `calendar_events`, `sleep_logs`, `settings`, `today_date`（settings に today_override が含まれる） |
+| LLM プロンプト | 「設定」と「今日のオーバーライド」を別セクション | `settings` をそのまま渡す（today_override が含まれる）。必要なら settings から today_override を抽出してプロンプトに明示 |
+
+### 4.2 settings の構造
+
+```json
+{
+  "wake_up_time": "07:00",
+  "sleep_duration_hours": 8,
+  "today_override": {
+    "date": "2026-02-20",
+    "sleepHour": 23,
+    "sleepMinute": 30,
+    "wakeHour": 7,
+    "wakeMinute": 0
+  }
+}
+```
+
+- `today_override` は任意。未設定時は null またはキーなし。
+- 今日の日付に一致する場合のみ有効。フロントで今日のものだけ送る。
+
+### 4.3 メリット
+
+- API のトップレベルフィールドが減る
+- 一時オーバーライドも「設定」の一部として扱える
+- 署名・プロンプトの引数が減る
+
+---
+
+## 5. 入力データの対応状況（today_override 統合後）
+
+| 入力 | フロント | バックエンド | 対応 |
+|------|----------|--------------|------|
+| calendar_events | ✅ | ✅ | 済 |
+| sleep_logs | ✅ | ✅ | 済 |
+| settings（wake_up_time, sleep_duration_hours, today_override） | ✅ | ✅ | 済（today_override を settings 内に統合） |
+| today_date | ✅ | ✅ | 済 |
 | 起床〜出発の準備時間 | preparationMinutes あり | 未送付 | 要追加 |
 | 帰宅〜就寝の準備時間 | なし | なし | 新規要 |
 | 通勤・通学時間 | なし | なし | 新規要 |
@@ -139,7 +180,7 @@
 
 ---
 
-## 5. 段階的実装案
+## 6. 段階的実装案
 
 ### フェーズ1: 既存データのみでプロンプト強化
 
@@ -164,7 +205,7 @@
 
 ---
 
-## 6. プロンプト改善チェックリスト
+## 7. プロンプト改善チェックリスト
 
 - [ ] 出力に `date`（YYYY-MM-DD）を**必須**で返すよう指示（曜日ではなく日付で返す）
 - [ ] 出力に `importance` を追加
@@ -182,13 +223,13 @@
 
 ---
 
-## 7. 修正が必要な箇所一覧
+## 8. 修正が必要な箇所一覧
 
 プロンプト改善（フェーズ1〜3）を行う際に修正が必要な箇所を洗い出した。
 
 ---
 
-### 7.1 フェーズ1: 既存データのみでプロンプト強化
+### 8.1 フェーズ1: 既存データのみでプロンプト強化
 
 #### バックエンド
 
@@ -223,7 +264,7 @@
 
 ---
 
-### 7.2 フェーズ2: 設定の拡張（preparationMinutes 等）
+### 8.2 フェーズ2: 設定の拡張（preparationMinutes 等）
 
 #### フロントエンド
 
@@ -260,7 +301,7 @@
 
 ---
 
-### 7.3 フェーズ3: より詳細なライフスタイル設定
+### 8.3 フェーズ3: より詳細なライフスタイル設定
 
 | 対象 | 修正内容 |
 |------|----------|
@@ -273,7 +314,20 @@
 
 ---
 
-### 7.4 修正ファイル一覧（フェーズ1のみ・簡易版）
+### 8.4 today_override 統合の修正箇所
+
+| 対象 | 修正内容 |
+|------|----------|
+| PlanRequest | `today_override` フィールドを削除。`settings` 内に含める |
+| GetOrCreatePlanInput | `today_override` を削除。`settings` のみ |
+| build_signature_hash | `today_override` 引数を削除。`settings` に含まれる |
+| openrouter_client | `today_override` 引数を削除。`settings` から `today_override` を取得 |
+| SleepPlanRequest | `todayOverride` を削除。`SleepSettingsSummary.todayOverride` に含める |
+| toSnakeCaseBody | `settings.today_override` を含め、トップレベルの `today_override` を削除 |
+
+---
+
+### 8.5 修正ファイル一覧（フェーズ1のみ・簡易版）
 
 ```
 backend/
@@ -296,7 +350,7 @@ src/
 
 ---
 
-## 8. 参照
+## 9. 参照
 
 - 現状実装: `backend/app/infrastructure/llm/openrouter_client.py`（`generate_week_plan`）
 - フロント型定義: `src/features/sleep-plan/types.ts`

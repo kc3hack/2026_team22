@@ -67,56 +67,19 @@ class TestBuildSignatureHash:
 
     # --- todayOverride 関連テスト ---
 
-    def test_today_override_changes_hash(self):
-        """todayOverride ありとなしでハッシュが変わる"""
-        override = {
-            "date": "2026-02-20",
-            "sleepHour": 23,
-            "sleepMinute": 30,
-            "wakeHour": 7,
-            "wakeMinute": 0,
-        }
-        h_without = build_signature_hash([], [], {}, today_override=None)
-        h_with = build_signature_hash([], [], {}, today_override=override)
+    def test_today_override_in_settings_changes_hash(self):
+        """settings 内の today_override ありとなしでハッシュが変わる"""
+        settings_without = {}
+        settings_with = {"today_override": {"date": "2026-02-20", "sleepHour": 23}}
+        h_without = build_signature_hash([], [], settings_without)
+        h_with = build_signature_hash([], [], settings_with)
         assert h_without != h_with
 
-    def test_today_override_same_produces_same_hash(self):
-        """同じ todayOverride なら同じハッシュ"""
-        override = {
-            "date": "2026-02-20",
-            "sleepHour": 23,
-            "sleepMinute": 0,
-            "wakeHour": 7,
-            "wakeMinute": 0,
-        }
-        h1 = build_signature_hash([], [], {}, today_override=override)
-        h2 = build_signature_hash([], [], {}, today_override=override)
-        assert h1 == h2
-
-    def test_today_override_different_date_changes_hash(self):
-        """todayOverride の date が違えばハッシュも違う"""
-        override1 = {
-            "date": "2026-02-20",
-            "sleepHour": 23,
-            "sleepMinute": 0,
-            "wakeHour": 7,
-            "wakeMinute": 0,
-        }
-        override2 = {
-            "date": "2026-02-21",
-            "sleepHour": 23,
-            "sleepMinute": 0,
-            "wakeHour": 7,
-            "wakeMinute": 0,
-        }
-        h1 = build_signature_hash([], [], {}, today_override=override1)
-        h2 = build_signature_hash([], [], {}, today_override=override2)
-        assert h1 != h2
-
-    def test_today_override_none_is_deterministic(self):
-        """todayOverride=None を明示的に渡しても、省略時と同じハッシュ"""
-        h1 = build_signature_hash([], [], {})
-        h2 = build_signature_hash([], [], {}, today_override=None)
+    def test_today_override_in_settings_same_produces_same_hash(self):
+        """同じ settings（today_override 含む）なら同じハッシュ"""
+        settings = {"today_override": {"date": "2026-02-20", "sleepHour": 23}}
+        h1 = build_signature_hash([], [], settings)
+        h2 = build_signature_hash([], [], settings)
         assert h1 == h2
 
     def test_today_date_changes_hash(self):

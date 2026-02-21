@@ -43,10 +43,8 @@ export interface SleepPlanRequest {
   calendarEvents: CalendarEventSummary[];
   /** 睡眠ログ（直近7日分） */
   sleepLogs: SleepLogSummary[];
-  /** 睡眠設定 */
+  /** 睡眠設定（todayOverride を含む） */
   settings: SleepSettingsSummary;
-  /** 今日だけのオーバーライド（null なら無し） */
-  todayOverride?: TodayOverrideSummary | null;
   /** 今日の日付 YYYY-MM-DD（署名・プロンプト用。未指定時はバックエンドでサーバー日付を使用） */
   todayDate?: string | null;
 }
@@ -95,6 +93,10 @@ export interface SleepSettingsSummary {
   wakeUpTime: string;
   /** 希望睡眠時間（時間） */
   sleepDurationHours: number;
+  /** 起床〜出発までの準備時間（分） */
+  preparationMinutes?: number;
+  /** 今日だけのオーバーライド（null なら無し） */
+  todayOverride?: TodayOverrideSummary | null;
 }
 
 /** ストア状態 */

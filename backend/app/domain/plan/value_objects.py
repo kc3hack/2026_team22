@@ -1,9 +1,8 @@
 """
 プランドメインの値オブジェクト・ドメインサービス
-入力データ（カレンダー予定・睡眠ログ・設定・todayOverride）から署名ハッシュを生成する。
+入力データ（カレンダー予定・睡眠ログ・設定・today_date）から署名ハッシュを生成する。
+settings には today_override を含める（統合済み）。
 同じ入力なら同じハッシュになり、キャッシュヒット判定に使う。
-リストはソートしてからハッシュするため、フロントの送信順に依存しない。
-日時文字列は秒単位に正規化するため、ミリ秒やタイムゾーン表記の揺れでハッシュが変わらない。
 """
 
 import hashlib
@@ -60,21 +59,18 @@ def build_signature_hash(
     calendar_events: list[Any],
     sleep_logs: list[Any],
     settings: dict[str, Any],
-    today_override: dict[str, Any] | None = None,
     today_date: str | None = None,
 ) -> str:
     """
-    カレンダー予定・睡眠ログ・設定・todayOverride・today_date を正規化し、SHA-256 の先頭 64 文字を返す。
+    カレンダー予定・睡眠ログ・設定・today_date を正規化し、SHA-256 の先頭 64 文字を返す。
 
-    - 辞書はキーソート、リストは内容でソートしてからハッシュ（送信順に依存しない）
-    - todayOverride が None の場合も null としてペイロードに含める（ハッシュの一貫性のため）
+    - settings には today_override を含める（統合済み）
     - today_date が日付跨ぎでキャッシュを区別するために署名に含まれる
     """
     payload = {
         "calendar_events": _sorted_canonical_list(calendar_events, sort_key="start"),
         "sleep_logs": _sorted_canonical_list(sleep_logs, sort_key="date"),
         "settings": _canonical_value(settings),
-        "today_override": _canonical_value(today_override),
         "today_date": today_date or "",
     }
     canonical = json.dumps(payload, sort_keys=True, ensure_ascii=False)

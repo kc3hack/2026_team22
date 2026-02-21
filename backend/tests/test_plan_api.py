@@ -173,14 +173,14 @@ class TestPlanAPI:
         finally:
             app.dependency_overrides.pop(get_plan_generator, None)
 
-    async def test_today_override_in_request(
+    async def test_today_override_in_settings_in_request(
         self,
         client: AsyncClient,
         unique_email: str,
         mock_llm_plan: dict,
         mock_plan_generator,
     ):
-        """todayOverride 付きリクエストが正常に受け付けられる"""
+        """settings 内の today_override 付きリクエストが正常に受け付けられる"""
         app.dependency_overrides[get_plan_generator] = lambda: mock_plan_generator
 
         try:
@@ -195,13 +195,16 @@ class TestPlanAPI:
             body = {
                 "calendar_events": [],
                 "sleep_logs": [],
-                "settings": {},
-                "today_override": {
-                    "date": "2026-02-20",
-                    "sleepHour": 23,
-                    "sleepMinute": 30,
-                    "wakeHour": 7,
-                    "wakeMinute": 0,
+                "settings": {
+                    "wake_up_time": "07:00",
+                    "sleep_duration_hours": 8,
+                    "today_override": {
+                        "date": "2026-02-20",
+                        "sleepHour": 23,
+                        "sleepMinute": 30,
+                        "wakeHour": 7,
+                        "wakeMinute": 0,
+                    },
                 },
             }
 
@@ -211,10 +214,10 @@ class TestPlanAPI:
             assert "week_plan" in data
             assert data["cache_hit"] is False
 
-            # LLM に todayOverride が渡されていること
-            call_kwargs = mock_plan_generator.generate_week_plan.call_args[1]
-            assert call_kwargs["today_override"] is not None
-            assert call_kwargs["today_override"]["date"] == "2026-02-20"
+            # LLM に settings（today_override 含む）が渡されていること
+            settings = mock_plan_generator.generate_week_plan.call_args[0][2]
+            assert settings.get("today_override") is not None
+            assert settings["today_override"]["date"] == "2026-02-20"
         finally:
             app.dependency_overrides.pop(get_plan_generator, None)
 
@@ -252,14 +255,14 @@ class TestPlanAPI:
         finally:
             app.dependency_overrides.pop(get_plan_generator, None)
 
-    async def test_today_override_changes_cache_key(
+    async def test_today_override_in_settings_changes_cache_key(
         self,
         client: AsyncClient,
         unique_email: str,
         mock_llm_plan: dict,
         mock_plan_generator,
     ):
-        """todayOverride ありとなしで別キャッシュになる（両方キャッシュミス）"""
+        """settings 内の today_override ありとなしで別キャッシュになる"""
         app.dependency_overrides[get_plan_generator] = lambda: mock_plan_generator
 
         try:
@@ -279,13 +282,16 @@ class TestPlanAPI:
             body_with_override = {
                 "calendar_events": [],
                 "sleep_logs": [],
-                "settings": {},
-                "today_override": {
-                    "date": "2026-02-20",
-                    "sleepHour": 23,
-                    "sleepMinute": 30,
-                    "wakeHour": 7,
-                    "wakeMinute": 0,
+                "settings": {
+                    "wake_up_time": "07:00",
+                    "sleep_duration_hours": 8,
+                    "today_override": {
+                        "date": "2026-02-20",
+                        "sleepHour": 23,
+                        "sleepMinute": 30,
+                        "wakeHour": 7,
+                        "wakeMinute": 0,
+                    },
                 },
             }
 
@@ -294,7 +300,6 @@ class TestPlanAPI:
 
             assert res1.status_code == 200
             assert res2.status_code == 200
-            # 両方キャッシュミス（異なるハッシュのため）
             assert res1.json()["cache_hit"] is False
             assert res2.json()["cache_hit"] is False
             assert mock_plan_generator.generate_week_plan.call_count == 2

@@ -93,8 +93,8 @@ class TestGetOrCreatePlanUseCase:
         mock_cache_repo.get_by_user_and_hash.assert_not_called()
         mock_cache_repo.upsert.assert_called_once()
 
-    async def test_today_override_passed_to_generator(self, mock_cache_repo, mock_plan_generator):
-        """todayOverride が LLM ジェネレータに渡されること"""
+    async def test_today_override_in_settings_passed_to_generator(self, mock_cache_repo, mock_plan_generator):
+        """settings 内の today_override が LLM ジェネレータに渡されること"""
         mock_cache_repo.get_by_user_and_hash.return_value = None
         llm_plan = {"week_plan": [{"day": "月曜", "advice": "オーバーライド反映"}]}
         mock_plan_generator.generate_week_plan = AsyncMock(return_value=llm_plan)
@@ -110,15 +110,15 @@ class TestGetOrCreatePlanUseCase:
             user_id="user-001",
             calendar_events=[],
             sleep_logs=[],
-            settings={},
-            today_override=override,
+            settings={"today_override": override},
         )
 
         usecase = GetOrCreatePlanUseCase(mock_cache_repo, mock_plan_generator)
         await usecase.execute(input_data)
 
-        call_kwargs = mock_plan_generator.generate_week_plan.call_args[1]
-        assert call_kwargs["today_override"] == override
+        call_args = mock_plan_generator.generate_week_plan.call_args
+        settings = call_args[0][2]  # 3番目の位置引数
+        assert settings.get("today_override") == override
 
     async def test_today_date_passed_to_generator(self, mock_cache_repo, mock_plan_generator):
         """today_date が LLM ジェネレータに渡されること"""
@@ -140,8 +140,8 @@ class TestGetOrCreatePlanUseCase:
         call_kwargs = mock_plan_generator.generate_week_plan.call_args[1]
         assert call_kwargs["today_date"] == "2026-02-20"
 
-    async def test_today_override_changes_signature(self, mock_cache_repo, mock_plan_generator):
-        """todayOverride が異なると署名ハッシュも変わるため、キャッシュ検索のハッシュが異なる"""
+    async def test_today_override_in_settings_changes_signature(self, mock_cache_repo, mock_plan_generator):
+        """settings 内の today_override が異なると署名ハッシュも変わる"""
         mock_cache_repo.get_by_user_and_hash.return_value = None
         llm_plan = {"week_plan": []}
         mock_plan_generator.generate_week_plan = AsyncMock(return_value=llm_plan)
@@ -166,13 +166,14 @@ class TestGetOrCreatePlanUseCase:
             user_id="user-001",
             calendar_events=[],
             sleep_logs=[],
-            settings={},
-            today_override={
-                "date": "2026-02-20",
-                "sleepHour": 23,
-                "sleepMinute": 0,
-                "wakeHour": 7,
-                "wakeMinute": 0,
+            settings={
+                "today_override": {
+                    "date": "2026-02-20",
+                    "sleepHour": 23,
+                    "sleepMinute": 0,
+                    "wakeHour": 7,
+                    "wakeMinute": 0,
+                }
             },
         )
         await usecase.execute(input_with_override)
