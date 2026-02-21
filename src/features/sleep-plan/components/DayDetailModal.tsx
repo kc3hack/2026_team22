@@ -50,32 +50,27 @@ const sleepEvaluation = (hours: number): { text: string; emoji: string; color: s
   return { text: '睡眠不足です。体調に注意しましょう', emoji: '🚨', color: COLORS.error };
 };
 
-/** 重要度の詳細解説 */
+/** 重要度に応じたスタイリング情報 */
 const importanceDetail = (
   importance: DailyPlan['importance'],
   nextDayEvent?: string
-): { title: string; description: string; color: string; bg: string } => {
-  const eventText = nextDayEvent ? `「${nextDayEvent}」` : '予定';
+): { title: string; color: string; bg: string } => {
   switch (importance) {
     case 'high':
       return {
         title: '高い重要度',
-        description: `翌日に${eventText}が控えています。十分な睡眠で万全の状態を整えましょう。パフォーマンスに直結する睡眠を確保することが大切です。`,
         color: '#F87171',
         bg: 'rgba(239, 68, 68, 0.1)',
       };
     case 'medium':
       return {
         title: '通常の重要度',
-        description: `翌日は${eventText}があります。通常通りの睡眠で十分対応できますが、規則正しい就寝を心がけましょう。`,
         color: '#FBBF24',
         bg: 'rgba(245, 158, 11, 0.1)',
       };
     case 'low':
       return {
         title: '低い重要度',
-        description:
-          '翌日は特に重要な予定がありません。リラックスして自然な眠気を待てる日です。ただし生活リズムを崩しすぎないようにしましょう。',
         color: '#34D399',
         bg: 'rgba(16, 185, 129, 0.1)',
       };
@@ -273,31 +268,26 @@ export const DayDetailModal: React.FC<DayDetailModalProps> = ({
             </View>
           </View>
 
-          {/* ── 重要度の理由 ── */}
+          {/* ── 翌日の重要度 & AIアドバイス ── */}
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>⚡ 翌日の重要度</Text>
+            <Text style={styles.sectionTitle}>💡 AIアドバイス</Text>
             <View
               style={[
-                styles.importanceCard,
-                { backgroundColor: impDetail.bg, borderColor: impDetail.color + '30' },
+                styles.adviceCard,
+                {
+                  borderLeftColor: impDetail.color,
+                  borderColor: impDetail.color + '30',
+                  backgroundColor: impDetail.bg,
+                },
               ]}
             >
-              <View style={styles.importanceHeader}>
+              <View style={styles.adviceImportanceHeader}>
                 <View style={[styles.importanceDot, { backgroundColor: impDetail.color }]} />
-                <Text style={[styles.importanceTitle, { color: impDetail.color }]}>
+                <Text style={[styles.adviceImportanceTitle, { color: impDetail.color }]}>
                   {impDetail.title}
                 </Text>
               </View>
-              <Text style={styles.importanceDesc}>{impDetail.description}</Text>
-            </View>
-          </View>
 
-
-
-          {/* ── AIアドバイス全文 ── */}
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle}>💡 AIアドバイス</Text>
-            <View style={styles.adviceCard}>
               <Text style={styles.adviceFullText}>{plan.advice}</Text>
             </View>
           </View>
@@ -543,31 +533,33 @@ const styles = StyleSheet.create({
     letterSpacing: 0.3,
   },
 
-  // ── 重要度 ──
-  importanceCard: {
+  // ── AIアドバイス (重要度統合版) ──
+  adviceCard: {
     borderRadius: 16,
     padding: 18,
     borderWidth: 1,
+    borderLeftWidth: 4,
   },
-  importanceHeader: {
+  adviceImportanceHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 10,
-    marginBottom: 10,
+    gap: 8,
+    marginBottom: 8,
   },
   importanceDot: {
     width: 10,
     height: 10,
     borderRadius: 5,
   },
-  importanceTitle: {
-    fontSize: 19,
+  adviceImportanceTitle: {
+    fontSize: 15,
     fontWeight: '700',
+    letterSpacing: 0.5,
   },
-  importanceDesc: {
+  adviceFullText: {
     fontSize: 17,
-    color: '#CBD5E1',
-    lineHeight: 21,
+    color: '#F8FAFC',
+    lineHeight: 25,
   },
 
   // ── 翌日スケジュール ──
@@ -605,22 +597,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#94A3B8',
     lineHeight: 18,
-  },
-
-  // ── AIアドバイス ──
-  adviceCard: {
-    backgroundColor: 'rgba(15, 23, 42, 0.6)',
-    borderRadius: 16,
-    padding: 18,
-    borderWidth: 1,
-    borderColor: 'rgba(99, 102, 241, 0.15)',
-    borderLeftWidth: 3,
-    borderLeftColor: COLORS.primary,
-  },
-  adviceFullText: {
-    fontSize: 18,
-    color: '#CBD5E1',
-    lineHeight: 24,
   },
 
   // ── 1日の予定タイムライン ──
