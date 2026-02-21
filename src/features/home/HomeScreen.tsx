@@ -8,6 +8,7 @@ import {
   ScrollView,
   Modal,
   Pressable,
+  Switch,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { COLORS } from '@shared/constants';
@@ -65,12 +66,6 @@ export const HomeScreen: React.FC = () => {
     }
   }, [todayPlan, settings]);
 
-  // オーバーライド考慮の有効な時刻
-  const effectiveSleep = settings.getEffectiveSleepTime();
-  const effectiveWake = settings.getEffectiveWakeTime();
-  const sleepTimeStr = `${effectiveSleep.hour.toString().padStart(2, '0')}:${effectiveSleep.minute.toString().padStart(2, '0')}`;
-  const wakeTimeStr = `${effectiveWake.hour.toString().padStart(2, '0')}:${effectiveWake.minute.toString().padStart(2, '0')}`;
-
   /** オーバーライドが有効か（今日の日付で todayOverride が設定されている） */
   const isOverrideActive = useMemo(() => {
     if (!settings.todayOverride) return false;
@@ -78,15 +73,35 @@ export const HomeScreen: React.FC = () => {
     return settings.todayOverride.date === todayStr;
   }, [settings.todayOverride]);
 
-  /** オーバーライドが AI プランと異なるか（手動で変更した状態） */
-  const isManuallyOverridden = useMemo(() => {
-    if (!isOverrideActive || !todayPlan) return false;
-    const planSleep = todayPlan.recommendedSleepTime;
-    const planWake = todayPlan.recommendedWakeTime;
-    const overrideSleep = `${settings.todayOverride!.sleepHour.toString().padStart(2, '0')}:${settings.todayOverride!.sleepMinute.toString().padStart(2, '0')}`;
-    const overrideWake = `${settings.todayOverride!.wakeHour.toString().padStart(2, '0')}:${settings.todayOverride!.wakeMinute.toString().padStart(2, '0')}`;
-    return planSleep !== overrideSleep || planWake !== overrideWake;
+  /** 表示用の時刻の前回値（オーバーライドOFF・プランなしのとき設定デフォルトに切り替えず維持する用） */
+  const lastDisplayedTimeRef = useRef<{ sleep: { hour: number; minute: number }; wake: { hour: number; minute: number } } | null>(null);
+
+  // 表示用の時刻（オーバーライドON＝override、OFF＝プラン推奨。設定のデフォルトには切り替えず今ある情報を維持）
+  const effectiveSleep = useMemo(() => {
+    if (isOverrideActive) return settings.getEffectiveSleepTime();
+    if (todayPlan) {
+      const [h, m] = todayPlan.recommendedSleepTime.split(':').map(Number);
+      return { hour: h ?? 0, minute: m ?? 0 };
+    }
+    return lastDisplayedTimeRef.current?.sleep ?? { hour: 22, minute: 0 };
   }, [isOverrideActive, todayPlan, settings.todayOverride]);
+  const effectiveWake = useMemo(() => {
+    if (isOverrideActive) return settings.getEffectiveWakeTime();
+    if (todayPlan) {
+      const [h, m] = todayPlan.recommendedWakeTime.split(':').map(Number);
+      return { hour: h ?? 0, minute: m ?? 0 };
+    }
+    return lastDisplayedTimeRef.current?.wake ?? { hour: 6, minute: 0 };
+  }, [isOverrideActive, todayPlan, settings.todayOverride]);
+
+  useEffect(() => {
+    if (isOverrideActive || todayPlan) {
+      lastDisplayedTimeRef.current = { sleep: effectiveSleep, wake: effectiveWake };
+    }
+  }, [isOverrideActive, todayPlan, effectiveSleep, effectiveWake]);
+
+  const sleepTimeStr = `${effectiveSleep.hour.toString().padStart(2, '0')}:${effectiveSleep.minute.toString().padStart(2, '0')}`;
+  const wakeTimeStr = `${effectiveWake.hour.toString().padStart(2, '0')}:${effectiveWake.minute.toString().padStart(2, '0')}`;
 
   // カスタムピッカー（ホイール）用の状態
   const [isPickerVisible, setPickerVisible] = useState(false);
@@ -321,14 +336,32 @@ export const HomeScreen: React.FC = () => {
           {/* スケジュールカード */}
           <View style={[styles.scheduleCard, isOverrideActive && styles.scheduleCardOverridden]}>
             <View style={styles.scheduleHeader}>
-              <Text style={styles.cardTitle}>📅 今日のスケジュール</Text>
-              {isOverrideActive && (
-                <View style={styles.overrideBadge}>
-                  <Text style={styles.overrideBadgeText}>
-                    {isManuallyOverridden ? '変更あり' : 'オーバーライド中'}
-                  </Text>
-                </View>
-              )}
+              <Text style={styles.cardTitle}>📅今日の時刻をカスタム</Text>
+              <Switch
+                value={isOverrideActive}
+                onValueChange={async (value: boolean) => {
+                  if (value) {
+                    settings.setTodayOverride({
+                      sleepHour: effectiveSleep.hour,
+                      sleepMinute: effectiveSleep.minute,
+                      wakeHour: effectiveWake.hour,
+                      wakeMinute: effectiveWake.minute,
+                    });
+                    hasSyncedPlanToOverride.current = true;
+                  } else {
+                    settings.clearTodayOverride();
+                    hasSyncedPlanToOverride.current = true;
+                  }
+                  try {
+                    await settings.saveSettings();
+                    void fetchPlan();
+                  } catch {
+                    // ローカルは更新済み
+                  }
+                }}
+                trackColor={{ false: '#334155', true: COLORS.primary }}
+                thumbColor="#fff"
+              />
             </View>
 
             <View style={styles.scheduleRow}>
@@ -344,25 +377,6 @@ export const HomeScreen: React.FC = () => {
                 <Text style={styles.scheduleTime}>{wakeTimeStr}</Text>
               </TouchableOpacity>
             </View>
-
-            {isOverrideActive && (
-              <View style={styles.editSection}>
-                <TouchableOpacity
-                  style={styles.resetButton}
-                  onPress={async () => {
-                    settings.clearTodayOverride();
-                    try {
-                      await settings.saveSettings();
-                      void fetchPlan();
-                    } catch {
-                      // ローカルはクリア済み。次回 saveSettings で同期される
-                    }
-                  }}
-                >
-                  <Text style={styles.resetButtonText}>↩ オーバーライドを解除</Text>
-                </TouchableOpacity>
-              </View>
-            )}
 
             {!isOverrideActive && <Text style={styles.tapHint}>時刻をタップして変更</Text>}
 
@@ -596,37 +610,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 16,
   },
-  overrideBadge: {
-    backgroundColor: 'rgba(245, 158, 11, 0.15)',
-    borderRadius: 8,
-    paddingHorizontal: 8,
-    paddingVertical: 3,
-  },
-  overrideBadgeText: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: COLORS.warning,
-  },
   tapHint: {
     textAlign: 'center',
     fontSize: 16,
     color: '#475569',
     marginTop: 4,
-  },
-  // 編集UI
-  editSection: {
-    marginTop: 16,
-  },
-  resetButton: {
-    backgroundColor: 'rgba(245, 158, 11, 0.1)',
-    borderRadius: 10,
-    paddingVertical: 10,
-    alignItems: 'center',
-  },
-  resetButtonText: {
-    fontSize: 17,
-    fontWeight: '600',
-    color: COLORS.warning,
   },
   // モーダル周り
   modalOverlay: {
