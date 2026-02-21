@@ -52,6 +52,7 @@ const evaluateSleepEnvironment = (lux: number): SleepEnvironment => {
  * バックグラウンドタスク機能にも対応
  */
 export const LightSensorScreen: React.FC = () => {
+  console.warn('[LightSensorScreen] mounted');
   const {
     lux,
     source,

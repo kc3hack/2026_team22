@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useDeviceOrientation } from './useDeviceOrientation';
 import { useLightSensor } from './useLightSensor';
 import { useCameraBrightness } from './useCameraBrightness';
@@ -37,7 +37,6 @@ interface UseAmbientLightReturn {
  *
  * - face_up → 照度センサー（カメラ停止でバッテリー節約）
  * - face_down → カメラ輝度推定
- * - other → 照度センサー優先、取れなければカメラにフォールバック
  */
 export function useAmbientLight(): UseAmbientLightReturn {
   const { orientation } = useDeviceOrientation();
@@ -74,20 +73,16 @@ export function useAmbientLight(): UseAmbientLightReturn {
         return { lux: null, source: 'unavailable' };
       }
 
-      case 'other': {
-        if (sensorAvailable && sensorLux !== null) {
-          return { lux: sensorLux, source: 'light_sensor' };
-        }
-        if (cameraActive && cameraLux !== null) {
-          return { lux: cameraLux, source: 'camera' };
-        }
-        return { lux: null, source: 'unavailable' };
-      }
-
       default:
         return { lux: null, source: 'unavailable' };
     }
   }, [orientation, sensorLux, sensorAvailable, cameraLux, cameraActive]);
+
+  useEffect(() => {
+    console.warn(
+      `[useAmbientLight] orientation=${orientation}, source=${result.source}, cameraEnabled=${cameraEnabled}, cameraActive=${cameraActive}, lux=${result.lux}`,
+    );
+  }, [orientation, result.source, cameraEnabled, cameraActive, result.lux]);
 
   return {
     lux: result.lux,

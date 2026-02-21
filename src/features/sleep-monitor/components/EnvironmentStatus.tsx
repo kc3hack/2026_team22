@@ -12,6 +12,8 @@ interface EnvironmentStatusProps {
   isLightExceeded: boolean;
   /** 音がNGか */
   isNoiseExceeded: boolean;
+  /** 照度の取得元 */
+  lightSource: 'light_sensor' | 'camera' | 'unknown';
 }
 
 /**
@@ -23,7 +25,10 @@ export const EnvironmentStatus: React.FC<EnvironmentStatusProps> = ({
   noiseDb,
   isLightExceeded,
   isNoiseExceeded,
+  lightSource,
 }) => {
+  const sourceLabel =
+    lightSource === 'camera' ? 'カメラ' : lightSource === 'light_sensor' ? '照度センサー' : '未確定';
   return (
     <View style={styles.container}>
       <Text style={styles.title}>🏠 睡眠環境</Text>
@@ -69,6 +74,8 @@ export const EnvironmentStatus: React.FC<EnvironmentStatusProps> = ({
           <Text style={styles.threshold}>基準: {ENVIRONMENT_THRESHOLDS.NOISE_MAX_DB} dB以下</Text>
         </View>
       </View>
+
+      <Text style={styles.sourceText}>照度取得元: {sourceLabel}</Text>
     </View>
   );
 };
@@ -136,5 +143,11 @@ const styles = StyleSheet.create({
     fontSize: 13,
     color: '#64748B',
     textAlign: 'center',
+  },
+  sourceText: {
+    fontSize: 14,
+    color: '#94A3B8',
+    textAlign: 'center',
+    marginTop: 12,
   },
 });
