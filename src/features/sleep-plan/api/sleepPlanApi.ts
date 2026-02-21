@@ -55,6 +55,28 @@ const normalizeImportance = (
 };
 
 /**
+ * 就寝時刻と起床時刻から睡眠時間（時間）を計算する
+ * @param sleepTime "HH:mm"
+ * @param wakeTime "HH:mm"
+ */
+const calculateSleepDuration = (sleepTime: string, wakeTime: string): number => {
+  const [sleepH, sleepM] = sleepTime.split(':').map(Number);
+  const [wakeH, wakeM] = wakeTime.split(':').map(Number);
+
+  if (sleepH === undefined || sleepM === undefined || wakeH === undefined || wakeM === undefined ||
+    isNaN(sleepH) || isNaN(sleepM) || isNaN(wakeH) || isNaN(wakeM)) {
+    return 8; // フォールバック
+  }
+
+  let sleepMinutes = (wakeH * 60 + wakeM) - (sleepH * 60 + sleepM);
+  if (sleepMinutes < 0) {
+    sleepMinutes += 24 * 60; // 日またぎ
+  }
+
+  return Math.round((sleepMinutes / 60) * 10) / 10;
+};
+
+/**
  * バックエンドの week_plan 形式をフロントの WeeklySleepPlan に変換
  * - 各要素に date があれば日付ベースでマッピング
  * - date がなければ従来通りインデックスベースでフォールバック
@@ -76,12 +98,16 @@ const planApiResponseToWeeklyPlan = (data: PlanApiResponse): WeeklySleepPlan => 
       raw?.recommended_wakeup ?? raw?.wake_up ?? '07:00';
     const importance = normalizeImportance(raw?.importance);
     const nextDayEvent = raw?.next_day_event ?? undefined;
+
+    // 計算により睡眠時間を算出
+    const sleepDurationHours = calculateSleepDuration(recommendedSleepTime, recommendedWakeTime);
+
     return {
       date: d.date,
       dayOfWeek: raw?.day ?? d.dayOfWeek,
       recommendedSleepTime,
       recommendedWakeTime,
-      sleepDurationHours: 8,
+      sleepDurationHours,
       importance,
       advice: raw?.advice ?? '',
       nextDayEvent: nextDayEvent ?? undefined,
