@@ -2,7 +2,7 @@
 GetOrCreatePlanUseCase - 週間睡眠プラン取得
 キャッシュヒットなら返却、ミスなら LLM で生成して保存して返す。
 force=True の場合はキャッシュを無視して再計算する。
-todayOverride を署名ハッシュと LLM 入力に含める。
+settings には today_override を含める（統合済み）。
 """
 
 from __future__ import annotations
@@ -20,7 +20,7 @@ logger = logging.getLogger(__name__)
 
 
 class GetOrCreatePlanInput:
-    """プラン取得の入力"""
+    """プラン取得の入力（settings に today_override を含む）"""
 
     def __init__(
         self,
@@ -28,14 +28,14 @@ class GetOrCreatePlanInput:
         calendar_events: list[Any],
         sleep_logs: list[Any],
         settings: dict[str, Any],
-        today_override: dict[str, Any] | None = None,
+        today_date: str | None = None,
         force: bool = False,
     ):
         self.user_id = user_id
         self.calendar_events = calendar_events
         self.sleep_logs = sleep_logs
         self.settings = settings
-        self.today_override = today_override
+        self.today_date = today_date
         self.force = force
 
 
@@ -55,7 +55,7 @@ class GetOrCreatePlanUseCase(BaseUseCase[GetOrCreatePlanInput, dict[str, Any]]):
             input.calendar_events,
             input.sleep_logs,
             input.settings,
-            input.today_override,
+            input.today_date,
         )
         # デバッグ: リクエスト概要と signature_hash をログ（キャッシュ効きの切り分け用）
         sleep_logs_summary = [
@@ -63,7 +63,7 @@ class GetOrCreatePlanUseCase(BaseUseCase[GetOrCreatePlanInput, dict[str, Any]]):
             for lg in input.sleep_logs
         ]
         logger.info(
-            "plan request user_id=%s force=%s signature_hash=%s n_calendar_events=%s n_sleep_logs=%s sleep_logs_summary=%s settings_keys=%s today_override=%s",
+            "plan request user_id=%s force=%s signature_hash=%s n_calendar_events=%s n_sleep_logs=%s sleep_logs_summary=%s settings_keys=%s",
             input.user_id[:8] + "..." if len(input.user_id) > 8 else input.user_id,
             input.force,
             signature_hash,
@@ -71,7 +71,6 @@ class GetOrCreatePlanUseCase(BaseUseCase[GetOrCreatePlanInput, dict[str, Any]]):
             len(input.sleep_logs),
             sleep_logs_summary,
             list(input.settings.keys()) if input.settings else [],
-            input.today_override is not None,
         )
         # キャッシュ切り分けを確実に確認するため stdout にも出力（docker logs で見える）
         print(
@@ -96,7 +95,7 @@ class GetOrCreatePlanUseCase(BaseUseCase[GetOrCreatePlanInput, dict[str, Any]]):
             input.calendar_events,
             input.sleep_logs,
             input.settings,
-            today_override=input.today_override,
+            today_date=input.today_date,
         )
         plan_json = json.dumps(plan, ensure_ascii=False)
 

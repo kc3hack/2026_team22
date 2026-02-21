@@ -2,6 +2,7 @@
 
 import json
 import logging
+from datetime import date
 
 from fastapi import APIRouter, Depends, Query
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -46,7 +47,7 @@ async def get_or_create_plan(
     同じ入力ならキャッシュを返し、違う入力なら LLM で生成してキャッシュに保存して返す。
     認証必須。user_id はトークンから確定される。
     force=true の場合はキャッシュを無視して再計算する。
-    todayOverride を含む場合、署名ハッシュと LLM 入力に反映される。
+    settings に today_override を含める場合、署名ハッシュと LLM 入力に反映される。
     """
     # デバッグ: フロントから受信したペイロードをログ（キャッシュ・ハッシュ差分確認用）
     try:
@@ -62,11 +63,14 @@ async def get_or_create_plan(
     except Exception as e:
         logger.warning("plan request payload log failed: %s", e)
 
+    today_date = body.today_date or date.today().isoformat()
+
     logger.info(
-        "POST /sleep-plans request len(calendar_events)=%s len(sleep_logs)=%s force=%s",
+        "POST /sleep-plans request len(calendar_events)=%s len(sleep_logs)=%s force=%s today_date=%s",
         len(body.calendar_events),
         len(body.sleep_logs),
         force,
+        today_date,
     )
     usecase = GetOrCreatePlanUseCase(cache_repo, plan_generator)
     input_data = GetOrCreatePlanInput(
@@ -74,7 +78,7 @@ async def get_or_create_plan(
         calendar_events=body.calendar_events,
         sleep_logs=body.sleep_logs,
         settings=body.settings,
-        today_override=body.today_override.model_dump() if body.today_override else None,
+        today_date=today_date,
         force=force,
     )
     plan = await usecase.execute(input_data)
