@@ -69,8 +69,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="light-sensor"
         options={{
-          title: '照度',
-          tabBarIcon: ({ color }) => <Text style={{ color, fontSize: 20 }}>💡</Text>,
+          href: null,
         }}
       />
       <Tabs.Screen

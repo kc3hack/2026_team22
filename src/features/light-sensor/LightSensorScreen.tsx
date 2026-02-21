@@ -1,3 +1,7 @@
+/**
+ * 開発用画面
+ * 製品版には不要
+*/
 import React, { useEffect } from 'react';
 import { View, Text, StyleSheet, Platform, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
