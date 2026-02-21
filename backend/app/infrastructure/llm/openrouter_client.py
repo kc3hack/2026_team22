@@ -24,6 +24,8 @@ def _enrich_calendar_events_with_date_jst(events: list[Any]) -> list[dict[str, A
     """
     カレンダー予定に日本時間での日付（date_jst）を付与する。
     さらに、LLMが時間帯を誤認しないように、start と end を日本時間 (JST) の文字列に変換する。
+    start が ISO 8601 形式の場合、JST に変換して YYYY-MM-DD (date_jst) を付与。
+    これにより LLM が「当日か翌日か」を確実に判断できる。
     """
     result: list[dict[str, Any]] = []
     for ev in events:
@@ -31,7 +33,6 @@ def _enrich_calendar_events_with_date_jst(events: list[Any]) -> list[dict[str, A
             enriched = dict(ev)
         else:
             enriched = {"title": str(ev)}
-            
         for key in ["start", "end"]:
             val = enriched.get(key)
             if isinstance(val, str):
@@ -54,7 +55,7 @@ def _enrich_calendar_events_with_date_jst(events: list[Any]) -> list[dict[str, A
         
         if "date_jst" not in enriched:
             enriched["date_jst"] = None
-            
+        
         result.append(enriched)
     return result
 
