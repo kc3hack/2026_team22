@@ -7,6 +7,7 @@ import { useLightSensorStore } from '../LightSensorStore';
 import type { LightSensorData, SleepEnvironment } from '../types';
 import { usePendingLastNightStore } from '@features/sleep-log/pendingLastNightStore';
 import { useSleepSettingsStore } from '@features/sleep-settings';
+import { getYesterdayLocalString } from '@shared/lib';
 
 let isBackgroundRunning = false;
 
@@ -116,9 +117,8 @@ function savePendingFromMonitorReadings(): void {
   const { score, lightExceeded } = aggregateReadingsToScore(nightReadings);
   nightReadings = []; // クリア
 
-  const d = new Date();
-  d.setDate(d.getDate() - 1);
-  const yesterdayStr = d.toISOString().slice(0, 10);
+  const yesterdayStr = getYesterdayLocalString();
+  const d = new Date(yesterdayStr);
 
   const settings = useSleepSettingsStore.getState();
   const { hour, minute } = settings.getEffectiveSleepTime();

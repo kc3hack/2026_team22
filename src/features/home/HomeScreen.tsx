@@ -12,6 +12,7 @@ import {
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { COLORS } from '@shared/constants';
+import { getTodayLocalString, getYesterdayLocalString } from '@shared/lib';
 import { useSleepSettingsStore } from '@features/sleep-settings';
 import { WheelPicker } from '@shared/components/WheelPicker';
 import { useSleepLogStore } from '@features/sleep-log';
@@ -27,7 +28,7 @@ export const HomeScreen: React.FC = () => {
   const router = useRouter();
   const settings = useSleepSettingsStore();
   const { logs, setMood, fetchLogs, addLog } = useSleepLogStore();
-  const { pending: pendingLastNight, clearPending: clearPendingLastNight } =
+  const { pending: pendingLastNight, setPending: setPendingLastNight, clearPending: clearPendingLastNight } =
     usePendingLastNightStore();
   const latestLog = logs[0] ?? null;
   const { fetchPlan } = useSleepPlanStore();
@@ -43,7 +44,7 @@ export const HomeScreen: React.FC = () => {
   const hasSyncedPlanToOverride = useRef(false);
   const lastSyncedDate = useRef<string | null>(null);
   useEffect(() => {
-    const todayStr = new Date().toISOString().slice(0, 10);
+    const todayStr = getTodayLocalString();
     if (lastSyncedDate.current !== todayStr) {
       hasSyncedPlanToOverride.current = false;
       lastSyncedDate.current = todayStr;
@@ -67,8 +68,7 @@ export const HomeScreen: React.FC = () => {
   /** オーバーライドが有効か（今日の日付で todayOverride が設定されている） */
   const isOverrideActive = useMemo(() => {
     if (!settings.todayOverride) return false;
-    const todayStr = new Date().toISOString().slice(0, 10);
-    return settings.todayOverride.date === todayStr;
+    return settings.todayOverride.date === getTodayLocalString();
   }, [settings.todayOverride]);
 
   /** 表示用の時刻の前回値（オーバーライドOFF・プランなしのとき設定デフォルトに切り替えず維持する用） */
@@ -186,25 +186,19 @@ export const HomeScreen: React.FC = () => {
     return currentMinutes >= wakeMinutes;
   }, [settings.wakeUpHour, settings.wakeUpMinute]);
 
-  const yesterdayStr = useMemo(() => {
-    const d = new Date();
-    d.setDate(d.getDate() - 1);
-    return d.toISOString().slice(0, 10);
-  }, []);
+  const yesterdayStr = useMemo(() => getYesterdayLocalString(), []);
 
   /** 昨日のログ（あれば） */
   const logForYesterday = useMemo(
     () => logs.find(l => l.date === yesterdayStr) ?? null,
     [logs, yesterdayStr],
   );
-  const hasLogForYesterday = logForYesterday !== null;
 
   /**
-   * 朝の振り返りカードを表示: 昨日のログが既にある、またはアプリが記録した昨夜分の仮データがある。
-   * 気分を選んだら → ログありなら PATCH、ログなしなら 仮データ＋気分で POST して保存。
+   * 朝の振り返りカードを表示: 朝の時間帯 or __DEV__ なら常に表示。
+   * 気分を選んだら → ログありなら PATCH、pending ありなら 仮データ＋気分で POST、どちらもなければ デフォルト値＋気分で POST。
    */
-  const showMorningReview =
-    (__DEV__ || isMorning) && (hasLogForYesterday || pendingLastNight !== null);
+  const showMorningReview = __DEV__ || isMorning;
 
   const importanceColor = {
     high: COLORS.error,
@@ -218,22 +212,44 @@ export const HomeScreen: React.FC = () => {
         <View style={styles.header}>
           <Text style={styles.greeting}>おやすみサポート</Text>
           <Text style={styles.subtitle}>良質な睡眠のための準備を</Text>
+          {__DEV__ && pendingLastNight === null && (
+            <TouchableOpacity
+              style={styles.devButton}
+              onPress={() => {
+                const yesterdayStr = getYesterdayLocalString();
+                setPendingLastNight({
+                  date: yesterdayStr,
+                  score: 88,
+                  scheduledSleepTime: Date.now() - 8 * 60 * 60 * 1000,
+                  usagePenalty: 0,
+                  usageMinutes: 5,
+                  environmentPenalty: 0,
+                  phase1Warning: false,
+                  phase2Warning: false,
+                  lightExceeded: false,
+                  noiseExceeded: false,
+                });
+              }}
+            >
+              <Text style={styles.devButtonText}>[Dev] 登録テスト用: 仮データをセット</Text>
+            </TouchableOpacity>
+          )}
         </View>
 
         <View style={styles.content}>
-          {/* 朝の振り返りカード（ログあり→気分だけ更新 / 仮データあり→気分選択で自動保存） */}
-          {showMorningReview && (logForYesterday || pendingLastNight) && (
+          {/* 朝の振り返りカード（ログあり→PATCH / pending or なし→POST） */}
+          {showMorningReview && (
             <MorningReviewCard
               score={
                 logForYesterday
                   ? logForYesterday.score
-                  : pendingLastNight!.score
+                  : pendingLastNight?.score ?? 0
               }
               initialMood={logForYesterday?.mood ?? null}
               onSelectMood={mood => {
                 if (logForYesterday) {
                   void setMood(logForYesterday.id, mood).then(() => {
-                    void fetchPlan(); // 気分変更でプラン再生成（sleep_logs の入力が変わるため）
+                    void fetchPlan();
                   });
                 } else if (pendingLastNight) {
                   void addLog({
@@ -251,7 +267,28 @@ export const HomeScreen: React.FC = () => {
                   }).then(() => {
                     clearPendingLastNight();
                     void fetchLogs();
-                    void fetchPlan(); // 新規ログ追加でプラン再生成
+                    void fetchPlan();
+                  });
+                } else {
+                  // ログも pending もない → デフォルト値で新規登録
+                  const yesterdayStr = getYesterdayLocalString();
+                  const [y, m, day] = yesterdayStr.split('-').map(Number);
+                  const d = new Date(y, m - 1, day, 22, 0, 0, 0);
+                  void addLog({
+                    date: yesterdayStr,
+                    score: 0,
+                    scheduledSleepTime: d.getTime(),
+                    usagePenalty: 0,
+                    usageMinutes: 0,
+                    environmentPenalty: 0,
+                    phase1Warning: false,
+                    phase2Warning: false,
+                    lightExceeded: false,
+                    noiseExceeded: false,
+                    mood,
+                  }).then(() => {
+                    void fetchLogs();
+                    void fetchPlan();
                   });
                 }
               }}
@@ -446,6 +483,16 @@ const styles = StyleSheet.create({
   subtitle: {
     fontSize: 18,
     color: '#94A3B8',
+  },
+  devButton: {
+    marginTop: 12,
+    padding: 8,
+    backgroundColor: '#fef3c7',
+    borderRadius: 6,
+  },
+  devButtonText: {
+    fontSize: 12,
+    color: '#92400e',
   },
   content: {
     flex: 1,

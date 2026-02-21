@@ -38,9 +38,10 @@ def main() -> None:
                 (user_id, email, name),
             )
 
-            # 過去6日分の日付（今日の前日から6日間）
+            # 過去6日分の日付（今日の2日前から7日間＝就寝日。起床日表示なら昨日〜6日前）
+            # 昨日を含めない → 登録テスト時は Home の「登録テスト用」ボタンで仮データをセット
             today = date.today()
-            dates = [today - timedelta(days=i) for i in range(1, 7)]
+            dates = [today - timedelta(days=i) for i in range(2, 8)]
 
             # 既存の (user_id, date) がある日はスキップ
             cur.execute(
@@ -58,13 +59,14 @@ def main() -> None:
             # バリエーションのあるテストデータ（UI確認用）
             # 各日: (score, usage_penalty, usage_minutes, environment_penalty,
             #        phase1_warning, phase2_warning, light_exceeded, noise_exceeded, mood)
+            # 就寝日 = today-2〜today-7 → 起床日表示なら昨日〜6日前
             samples = [
-                (95, 0, 5, 0, False, False, False, False, 5),   # 昨日: 良好
-                (75, 20, 22, 0, True, False, False, False, 4),  # 2日前: スマホ22分→減点
-                (55, 60, 38, 0, True, True, False, False, 2),   # 3日前: スマホ38分→大減点
-                (100, 0, 0, 0, False, False, False, False, 5),  # 4日前: 完璧
-                (85, 0, 8, 5, False, False, True, False, 4),    # 5日前: 光オーバー
-                (70, 20, 25, 5, True, False, True, False, 3),   # 6日前: スマホ+環境
+                (95, 0, 5, 0, False, False, False, False, 5),   # 就寝 today-2: 良好
+                (75, 20, 22, 0, True, False, False, False, 4),  # 就寝 today-3: スマホ22分→減点
+                (55, 60, 38, 0, True, True, False, False, 2),   # 就寝 today-4: スマホ38分→大減点
+                (100, 0, 0, 0, False, False, False, False, 5),  # 就寝 today-5: 完璧
+                (85, 0, 8, 5, False, False, True, False, 4),    # 就寝 today-6: 光オーバー
+                (70, 20, 25, 5, True, False, True, False, 3),   # 就寝 today-7: スマホ+環境
             ]
             rows = []
             for i, d in enumerate(to_insert):

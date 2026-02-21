@@ -1,4 +1,5 @@
-import React, { useEffect } from 'react';
+import React, { useCallback } from 'react';
+import { useFocusEffect } from '@react-navigation/native';
 import {
   View,
   Text,
@@ -28,9 +29,11 @@ const formatDateLabel = (dateStr: string): string => {
 export const SleepLogScreen: React.FC = () => {
   const { logs, isLoading, error, fetchLogs, clearError } = useSleepLogStore();
 
-  useEffect(() => {
-    void fetchLogs();
-  }, [fetchLogs]);
+  useFocusEffect(
+    useCallback(() => {
+      void fetchLogs();
+    }, [fetchLogs])
+  );
   const latestLog = logs[0] ?? null;
 
   return (
