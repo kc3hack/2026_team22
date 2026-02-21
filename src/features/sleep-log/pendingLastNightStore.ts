@@ -12,6 +12,8 @@ export interface PendingLastNightData {
   score: number;
   scheduledSleepTime: number;
   usagePenalty: number;
+  /** スマホ使用時間（分） */
+  usageMinutes: number;
   environmentPenalty: number;
   phase1Warning: boolean;
   phase2Warning: boolean;

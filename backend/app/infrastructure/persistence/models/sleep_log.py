@@ -35,6 +35,7 @@ class SleepLog(Base):
         DateTime(timezone=True), nullable=True
     )
     usage_penalty: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
+    usage_minutes: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
     environment_penalty: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
     phase1_warning: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
     phase2_warning: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)

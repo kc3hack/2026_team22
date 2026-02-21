@@ -23,6 +23,7 @@ interface SleepLogApiResponse {
   score: number;
   scheduled_sleep_time: string | null; // ISO datetime
   usage_penalty: number;
+  usage_minutes: number;
   environment_penalty: number;
   phase1_warning: boolean;
   phase2_warning: boolean;
@@ -44,6 +45,7 @@ interface SleepLogCreateRequest {
   score: number;
   scheduled_sleep_time: string | null;
   usage_penalty: number;
+  usage_minutes: number;
   environment_penalty: number;
   phase1_warning: boolean;
   phase2_warning: boolean;
@@ -58,6 +60,7 @@ export interface SleepLogUpdateRequest {
   score?: number;
   scheduled_sleep_time?: string | null;
   usage_penalty?: number;
+  usage_minutes?: number;
   environment_penalty?: number;
   phase1_warning?: boolean;
   phase2_warning?: boolean;
@@ -72,6 +75,7 @@ export type SleepLogEntryUpdate = Partial<{
   score: number;
   scheduledSleepTime: number | null;
   usagePenalty: number;
+  usageMinutes: number;
   environmentPenalty: number;
   phase1Warning: boolean;
   phase2Warning: boolean;
@@ -90,6 +94,7 @@ function updatesToSnake(updates: SleepLogEntryUpdate): SleepLogUpdateRequest {
         ? new Date(updates.scheduledSleepTime).toISOString()
         : null;
   if (updates.usagePenalty !== undefined) body.usage_penalty = updates.usagePenalty;
+  if (updates.usageMinutes !== undefined) body.usage_minutes = updates.usageMinutes;
   if (updates.environmentPenalty !== undefined) body.environment_penalty = updates.environmentPenalty;
   if (updates.phase1Warning !== undefined) body.phase1_warning = updates.phase1Warning;
   if (updates.phase2Warning !== undefined) body.phase2_warning = updates.phase2Warning;
@@ -107,6 +112,7 @@ function responseToCamel(res: SleepLogApiResponse): SleepLogEntry {
     score: res.score,
     scheduledSleepTime: res.scheduled_sleep_time ? new Date(res.scheduled_sleep_time).getTime() : 0,
     usagePenalty: res.usage_penalty,
+    usageMinutes: res.usage_minutes ?? 0,
     environmentPenalty: res.environment_penalty,
     phase1Warning: res.phase1_warning,
     phase2Warning: res.phase2_warning,
@@ -126,6 +132,7 @@ function entryToSnake(entry: Omit<SleepLogEntry, 'id' | 'createdAt'>): SleepLogC
       ? new Date(entry.scheduledSleepTime).toISOString()
       : null,
     usage_penalty: entry.usagePenalty,
+    usage_minutes: entry.usageMinutes ?? 0,
     environment_penalty: entry.environmentPenalty,
     phase1_warning: entry.phase1Warning,
     phase2_warning: entry.phase2Warning,

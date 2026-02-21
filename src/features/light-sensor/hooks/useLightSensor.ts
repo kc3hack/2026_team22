@@ -131,6 +131,7 @@ function savePendingFromMonitorReadings(): void {
     score,
     scheduledSleepTime,
     usagePenalty: 0,
+    usageMinutes: 0,
     environmentPenalty: lightExceeded ? 5 : 0,
     phase1Warning: false,
     phase2Warning: false,

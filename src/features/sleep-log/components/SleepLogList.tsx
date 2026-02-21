@@ -49,6 +49,13 @@ const getMoodLabel = (mood: number | null): string => {
   return labels[mood] ?? '未記録';
 };
 
+/** 日付を読みやすくフォーマット (2025-02-21 → 2/21 金) */
+const formatDate = (dateStr: string): string => {
+  const d = new Date(dateStr);
+  const weekDays = ['日', '月', '火', '水', '木', '金', '土'];
+  return `${d.getMonth() + 1}/${d.getDate()} (${weekDays[d.getDay()]})`;
+};
+
 /** スコアに応じた色 */
 const getScoreColor = (score: number): string => {
   if (score >= 80) return COLORS.success;
@@ -66,9 +73,13 @@ export const SleepLogList: React.FC<SleepLogListProps> = ({ logs, onEditRequest 
   if (logs.length === 0) {
     return (
       <View style={styles.emptyContainer}>
-        <Text style={styles.emptyEmoji}>📝</Text>
-        <Text style={styles.emptyText}>まだ睡眠ログがありません</Text>
-        <Text style={styles.emptyHint}>睡眠モニターを使って就寝準備を記録しましょう</Text>
+        <View style={styles.emptyIconWrapper}>
+          <Text style={styles.emptyEmoji}>😴</Text>
+        </View>
+        <Text style={styles.emptyText}>まだ記録がありません</Text>
+        <Text style={styles.emptyHint}>
+          睡眠モニターや照度センサーで{'\n'}就寝準備を記録すると{'\n'}ここに表示されます
+        </Text>
       </View>
     );
   }
@@ -87,28 +98,32 @@ export const SleepLogList: React.FC<SleepLogListProps> = ({ logs, onEditRequest 
         return (
           <TouchableOpacity
             key={item.id}
-            activeOpacity={0.7}
+            activeOpacity={0.85}
             onPress={() => handlePress(item.id)}
             style={[styles.logCard, { borderLeftColor: scoreColor }]}
           >
             {/* ヘッダー行 */}
             <View style={styles.logHeader}>
               <View style={styles.dateRow}>
-                <Text style={styles.logDate}>{item.date}</Text>
+                <Text style={styles.logDate}>{formatDate(item.date)}</Text>
                 <Text style={styles.moodEmoji}>{getMoodEmoji(item.mood)}</Text>
               </View>
               <View style={styles.scoreRow}>
                 <Text style={[styles.logScore, { color: scoreColor }]}>{item.score}</Text>
                 <Text style={styles.scoreUnit}>点</Text>
-                <Text style={styles.chevron}>{isExpanded ? '▲' : '▼'}</Text>
+                <Text style={[styles.chevron, isExpanded && styles.chevronExpanded]}>
+                  {isExpanded ? '▲' : '▼'}
+                </Text>
               </View>
             </View>
 
             {/* タグ行 */}
             <View style={styles.tagsContainer}>
-              {item.usagePenalty > 0 && (
+              {(item.usageMinutes > 0 || item.usagePenalty > 0) && (
                 <View style={styles.tagPenalty}>
-                  <Text style={styles.tagText}>📱 スマホ</Text>
+                  <Text style={styles.tagText}>
+                    📱 {item.usageMinutes > 0 ? `${item.usageMinutes}分` : 'スマホ'}
+                  </Text>
                 </View>
               )}
               {item.lightExceeded && (
@@ -121,7 +136,7 @@ export const SleepLogList: React.FC<SleepLogListProps> = ({ logs, onEditRequest 
                   <Text style={styles.tagText}>🔊 音</Text>
                 </View>
               )}
-              {!item.usagePenalty && !item.lightExceeded && !item.noiseExceeded && (
+              {!item.usageMinutes && !item.usagePenalty && !item.lightExceeded && !item.noiseExceeded && (
                 <View style={styles.tagSuccess}>
                   <Text style={styles.tagTextSuccess}>✨ 完璧</Text>
                 </View>
@@ -133,16 +148,24 @@ export const SleepLogList: React.FC<SleepLogListProps> = ({ logs, onEditRequest 
               <View style={styles.detailContainer}>
                 <View style={styles.divider} />
 
-                {/* スコア内訳 */}
-                <Text style={styles.detailSectionTitle}>スコア内訳</Text>
-                {item.usagePenalty > 0 && (
-                  <View style={styles.detailRow}>
-                    <Text style={styles.detailLabel}>📱 スマホ使用</Text>
-                    <Text style={[styles.detailValue, { color: COLORS.error }]}>
-                      −{item.usagePenalty}
-                    </Text>
-                  </View>
+                {/* スマホ使用時間 */}
+                {(item.usageMinutes > 0 || item.usagePenalty > 0) && (
+                  <>
+                    <Text style={styles.detailSectionTitle}>スマホ使用時間</Text>
+                    <View style={styles.detailRow}>
+                      <Text style={styles.detailLabel}>📱 使用時間</Text>
+                      <Text style={[styles.detailValue, item.usagePenalty > 0 && { color: COLORS.error }]}>
+                        {item.usageMinutes > 0 ? `${item.usageMinutes}分` : '–'}
+                        {item.usagePenalty > 0 ? `  （減点 −${item.usagePenalty}）` : ''}
+                      </Text>
+                    </View>
+                  </>
                 )}
+
+                {/* スコア内訳（環境） */}
+                <Text style={[styles.detailSectionTitle, { marginTop: item.usageMinutes || item.usagePenalty ? 12 : 0 }]}>
+                  スコア内訳
+                </Text>
                 {item.environmentPenalty > 0 && (
                   <View style={styles.detailRow}>
                     <Text style={styles.detailLabel}>🌙 環境（光・音）</Text>
@@ -155,41 +178,6 @@ export const SleepLogList: React.FC<SleepLogListProps> = ({ logs, onEditRequest 
                 {item.usagePenalty === 0 && item.environmentPenalty === 0 && (
                   <Text style={styles.perfectText}>✨ 減点なし！完璧です</Text>
                 )}
-
-                {/* 警告情報 */}
-                <Text style={[styles.detailSectionTitle, { marginTop: 12 }]}>警告履歴</Text>
-                <View style={styles.warningRow}>
-                  <View
-                    style={[
-                      styles.warningBadge,
-                      item.phase1Warning ? styles.warningActive : styles.warningInactive,
-                    ]}
-                  >
-                    <Text
-                      style={[
-                        styles.warningText,
-                        item.phase1Warning ? styles.warningTextActive : styles.warningTextInactive,
-                      ]}
-                    >
-                      Phase1
-                    </Text>
-                  </View>
-                  <View
-                    style={[
-                      styles.warningBadge,
-                      item.phase2Warning ? styles.warningActive : styles.warningInactive,
-                    ]}
-                  >
-                    <Text
-                      style={[
-                        styles.warningText,
-                        item.phase2Warning ? styles.warningTextActive : styles.warningTextInactive,
-                      ]}
-                    >
-                      Phase2
-                    </Text>
-                  </View>
-                </View>
 
                 {/* 気分 */}
                 <Text style={[styles.detailSectionTitle, { marginTop: 12 }]}>朝の気分</Text>
@@ -219,33 +207,43 @@ export const SleepLogList: React.FC<SleepLogListProps> = ({ logs, onEditRequest 
 const styles = StyleSheet.create({
   emptyContainer: {
     alignItems: 'center',
-    paddingVertical: 60,
-    paddingHorizontal: 20,
+    paddingVertical: 48,
+    paddingHorizontal: 24,
+  },
+  emptyIconWrapper: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    backgroundColor: 'rgba(99, 102, 241, 0.12)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 20,
   },
   emptyEmoji: {
-    fontSize: 62,
-    marginBottom: 16,
+    fontSize: 40,
   },
   emptyText: {
-    fontSize: 23,
+    fontSize: 18,
     fontWeight: '600',
     color: COLORS.text.dark,
     marginBottom: 8,
   },
   emptyHint: {
-    fontSize: 18,
-    color: '#94A3B8',
+    fontSize: 15,
+    color: '#64748B',
     textAlign: 'center',
+    lineHeight: 24,
   },
   listContent: {
-    paddingBottom: 20,
+    paddingBottom: 24,
   },
   logCard: {
-    backgroundColor: '#0F172A',
-    borderRadius: 12,
-    padding: 16,
+    backgroundColor: '#1E293B',
+    borderRadius: 14,
+    padding: 18,
     marginBottom: 10,
     borderLeftWidth: 4,
+    overflow: 'hidden',
   },
   logHeader: {
     flexDirection: 'row',
@@ -259,12 +257,12 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   logDate: {
-    fontSize: 19,
+    fontSize: 17,
     fontWeight: '600',
     color: COLORS.text.dark,
   },
   moodEmoji: {
-    fontSize: 21,
+    fontSize: 20,
   },
   scoreRow: {
     flexDirection: 'row',
@@ -277,13 +275,16 @@ const styles = StyleSheet.create({
     fontVariant: ['tabular-nums'],
   },
   scoreUnit: {
-    fontSize: 16,
-    color: '#94A3B8',
-    marginRight: 6,
+    fontSize: 15,
+    color: '#64748B',
+    marginRight: 8,
   },
   chevron: {
-    fontSize: 13,
+    fontSize: 11,
     color: '#64748B',
+  },
+  chevronExpanded: {
+    color: COLORS.primary,
   },
   tagsContainer: {
     flexDirection: 'row',
@@ -324,16 +325,15 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
   divider: {
-    height: 1,
-    backgroundColor: '#1E293B',
-    marginBottom: 12,
+    height: StyleSheet.hairlineWidth,
+    backgroundColor: 'rgba(148, 163, 184, 0.2)',
+    marginBottom: 14,
   },
   detailSectionTitle: {
-    fontSize: 16,
+    fontSize: 13,
     fontWeight: '600',
-    color: '#FFFFFF',
+    color: '#94A3B8',
     marginBottom: 8,
-    textTransform: 'uppercase',
     letterSpacing: 0.5,
   },
   detailRow: {

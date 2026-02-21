@@ -22,10 +22,17 @@ interface WeeklyTrendChartProps {
 }
 
 /** スコアに応じた色 */
-const getBarColor = (score: number) => {
+const getBarColor = (score: number): string => {
   if (score >= 80) return COLORS.success;
   if (score >= 50) return COLORS.warning;
   return COLORS.error;
+};
+
+/** スコアに応じた背景色（バッジ用） */
+const getBadgeBgColor = (score: number): string => {
+  if (score >= 80) return 'rgba(16, 185, 129, 0.18)';
+  if (score >= 50) return 'rgba(245, 158, 11, 0.18)';
+  return 'rgba(239, 68, 68, 0.18)';
 };
 
 export const WeeklyTrendChart: React.FC<WeeklyTrendChartProps> = ({ logs }) => {
@@ -55,8 +62,8 @@ export const WeeklyTrendChart: React.FC<WeeklyTrendChartProps> = ({ logs }) => {
     <View style={styles.container}>
       {/* ヘッダー */}
       <View style={styles.headerRow}>
-        <Text style={styles.title}>📈 週間トレンド</Text>
-        <View style={styles.avgBadge}>
+        <Text style={styles.title}>週間トレンド</Text>
+        <View style={[styles.avgBadge, { backgroundColor: getBadgeBgColor(avgScore) }]}>
           <Text style={styles.avgLabel}>平均</Text>
           <Text style={[styles.avgValue, { color: getBarColor(avgScore) }]}>{avgScore}点</Text>
         </View>
@@ -115,38 +122,41 @@ export const WeeklyTrendChart: React.FC<WeeklyTrendChartProps> = ({ logs }) => {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#0F172A',
-    borderRadius: 16,
+    backgroundColor: '#1E293B',
+    borderRadius: 18,
     padding: 20,
     marginHorizontal: 16,
-    marginBottom: 16,
+    marginBottom: 20,
+    borderWidth: 1,
+    borderColor: 'rgba(99, 102, 241, 0.12)',
   },
   headerRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 20,
+    marginBottom: 24,
   },
   title: {
-    fontSize: 21,
+    fontSize: 18,
     fontWeight: '700',
     color: COLORS.text.dark,
+    letterSpacing: 0.2,
   },
   avgBadge: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'rgba(99, 102, 241, 0.15)',
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 8,
-    gap: 4,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 10,
+    gap: 6,
   },
   avgLabel: {
-    fontSize: 16,
+    fontSize: 14,
     color: '#94A3B8',
+    fontWeight: '500',
   },
   avgValue: {
-    fontSize: 18,
+    fontSize: 17,
     fontWeight: '700',
     fontVariant: ['tabular-nums'],
   },
@@ -154,7 +164,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'flex-end',
-    height: 190,
+    height: 160,
   },
   barColumn: {
     alignItems: 'center',
@@ -178,22 +188,23 @@ const styles = StyleSheet.create({
     fontVariant: ['tabular-nums'],
   },
   barWrapper: {
-    height: 110,
+    height: 100,
     width: '100%',
     justifyContent: 'flex-end',
     alignItems: 'center',
   },
   bar: {
-    width: 20,
-    borderRadius: 10,
-    minHeight: 6,
+    width: 24,
+    borderRadius: 8,
+    minHeight: 8,
   },
   dayLabel: {
-    fontSize: 13,
+    fontSize: 12,
     color: '#94A3B8',
-    marginTop: 6,
+    marginTop: 8,
     textAlign: 'center',
-    lineHeight: 14,
+    lineHeight: 16,
+    fontWeight: '500',
   },
   dayLabelSelected: {
     color: COLORS.text.dark,

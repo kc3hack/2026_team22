@@ -111,7 +111,7 @@ async function main() {
 
   const userId = await ensureSupabaseUser(apiUrl, serviceRoleKey);
   runSeedPython(userId);
-  console.log('シード完了: テストユーザーと過去6日分の睡眠ログを登録しました。');
+  console.log('シード完了: テストユーザーと過去6日分の睡眠ログ（スマホ使用時間・減点・気分のバリエーション付き）を登録しました。');
 }
 
 main().catch((e) => {
