@@ -181,6 +181,26 @@ export const SleepSettingsScreen: React.FC = () => {
           </View>
         </View>
 
+        {/* カレンダー ICS URL */}
+        <View style={styles.settingCard}>
+          <Text style={styles.settingLabel}>📅 カレンダー（ICS URL）</Text>
+          <View style={styles.inputContainer}>
+            <Text style={styles.inputLabel}>
+              Google Calendar などの公開 ICS URL を入力（睡眠プラン計算に利用）
+            </Text>
+            <TextInput
+              style={[styles.input, styles.icsInput]}
+              value={settings.icsUrl ?? ''}
+              onChangeText={text => settings.setIcsUrl(text)}
+              placeholder="https://calendar.google.com/calendar/ical/.../basic.ics"
+              placeholderTextColor="#94A3B8"
+              autoCapitalize="none"
+              autoCorrect={false}
+              keyboardType="url"
+            />
+          </View>
+        </View>
+
         {/* 保存ボタン */}
         <TouchableOpacity
           style={[styles.saveButton, settings.isSaving && styles.saveButtonDisabled]}
@@ -319,6 +339,9 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 8,
     width: '100%',
+  },
+  icsInput: {
+    fontSize: 12,
   },
   /* ── エラー表示 ── */
   errorCard: {
