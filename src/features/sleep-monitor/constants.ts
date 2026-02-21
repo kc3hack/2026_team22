@@ -17,7 +17,7 @@ export const PHASE_DURATION = {
 /** スマホ操作の警告閾値（分） */
 export const USAGE_THRESHOLDS = {
   /** Phase 1: 20分以上で警告 */
-  PHASE1_WARN: 1,
+  PHASE1_WARN: 0.25,
   /** Phase 2: 15分以上で警告 */
   PHASE2_WARN: 15,
 } as const;
