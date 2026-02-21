@@ -100,8 +100,8 @@ export const useUsageTracker = (): UseUsageTrackerReturn => {
   }, []);
 
   return {
-    // 秒を分に変換（切り上げ: 1秒でも操作していれば1分として表示）
-    usageMinutes: Math.ceil(usageSeconds / 60),
+    // 秒を分に変換（四捨五入: 30秒以上で1分、30秒未満は切り捨て）
+    usageMinutes: Math.round(usageSeconds / 60),
     isOutsideApp,
     startTracking,
     stopTracking,
