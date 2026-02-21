@@ -218,6 +218,40 @@ class TestPlanAPI:
         finally:
             app.dependency_overrides.pop(get_plan_generator, None)
 
+    async def test_today_date_in_request(
+        self,
+        client: AsyncClient,
+        unique_email: str,
+        mock_llm_plan: dict,
+        mock_plan_generator,
+    ):
+        """today_date 付きリクエストが LLM に渡される"""
+        app.dependency_overrides[get_plan_generator] = lambda: mock_plan_generator
+
+        try:
+            create_res = await client.post(
+                "/api/v1/users",
+                json={"email": unique_email, "name": "TodayDateTest"},
+            )
+            assert create_res.status_code == 201
+            user_id = create_res.json()["id"]
+            app.dependency_overrides[get_current_user_id] = lambda: user_id
+
+            body = {
+                "calendar_events": [],
+                "sleep_logs": [],
+                "settings": {},
+                "today_date": "2026-02-20",
+            }
+
+            res = await client.post("/api/v1/sleep-plans", json=body)
+            assert res.status_code == 200
+
+            call_kwargs = mock_plan_generator.generate_week_plan.call_args[1]
+            assert call_kwargs["today_date"] == "2026-02-20"
+        finally:
+            app.dependency_overrides.pop(get_plan_generator, None)
+
     async def test_today_override_changes_cache_key(
         self,
         client: AsyncClient,

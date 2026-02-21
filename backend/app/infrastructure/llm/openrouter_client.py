@@ -101,20 +101,35 @@ class OpenRouterClient:
         sleep_logs: list[Any],
         settings: dict[str, Any],
         today_override: dict[str, Any] | None = None,
+        today_date: str | None = None,
     ) -> dict[str, Any]:
         """
         週間睡眠プランを生成する（IPlanGenerator の実装）
         todayOverride がある場合はプロンプトに含め、今日だけの就寝・起床時刻を反映する。
+        today_date は「今日」の日付（YYYY-MM-DD）。プロンプトと出力の基準日となる。
         """
+        today_str = today_date or ""
         user_content = (
             "以下を元に、このユーザー向けの「1週間の睡眠プラン」を JSON で返してください。\n"
-            "返却形式は必ず次の JSON のみにしてください（他に説明は不要）。\n"
+            "タイムゾーンは Asia/Tokyo です。\n"
+            "今日の日付は " + today_str + " です。この日を起点に、7日分のプランを作成してください。\n\n"
+            "返却形式は必ず次の JSON のみにしてください（他に説明は不要、マークダウン修飾も不要）。\n"
             "{\n"
             '  "week_plan": [\n'
-            '    { "day": "月曜", "recommended_bedtime": "22:00", "recommended_wakeup": "06:30", "advice": "短いアドバイス" },\n'
-            "    ... 7日分\n"
+            '    { "date": "YYYY-MM-DD", "recommended_bedtime": "22:00", "recommended_wakeup": "06:30", '
+            '"importance": "high|medium|low", "next_day_event": "翌日の主要予定またはnull", "advice": "短いアドバイス" },\n'
+            "    ... 7日分（今日から7日間、date を必須で含める）\n"
             "  ]\n"
             "}\n\n"
+            "ルール:\n"
+            "- 各要素に date（YYYY-MM-DD）を必須で含める。曜日ではなく日付で返す。\n"
+            "- importance: 翌日の予定の重要度。会議・試験・発表など重要な予定がある日は high、軽い予定は medium、予定なし・緩い日は low。\n"
+            "- next_day_event: 翌日の最も重要な予定のタイトル。該当なければ null。\n"
+            "- 平日: 理想就寝 23:00、理想起床 6:00。ただし予定を優先。\n"
+            "- 休日: 理想就寝 24:00、理想起床 8:00。平日の睡眠不足を補うよう長めの睡眠を提案。\n"
+            "- 十分な睡眠が取れない日は、前後数日で睡眠時間を長めに取り補う。\n"
+            "- 睡眠ログの評価（score）が悪い日は、実質的な睡眠時間が短い可能性があると解釈して提案。\n"
+            "- mood（気分）が低い日が続く場合は、睡眠の質や量の改善をアドバイスに含める。\n\n"
             "カレンダー予定: " + json.dumps(calendar_events, ensure_ascii=False) + "\n\n"
             "睡眠ログ: " + json.dumps(sleep_logs, ensure_ascii=False) + "\n\n"
             "設定: " + json.dumps(settings, ensure_ascii=False)
@@ -129,7 +144,11 @@ class OpenRouterClient:
         messages = [
             {
                 "role": "system",
-                "content": "あなたは睡眠アドバイザーです。与えられた予定と睡眠ログから、現実的な就寝・起床時刻と短いアドバイスを JSON 形式で返してください。",
+                "content": (
+                    "あなたは睡眠アドバイザーです。与えられた予定と睡眠ログから、"
+                    "現実的な就寝・起床時刻と短いアドバイスを JSON 形式で返してください。"
+                    "各日には date（YYYY-MM-DD）・importance・next_day_event を必ず含めてください。"
+                ),
             },
             {"role": "user", "content": user_content},
         ]

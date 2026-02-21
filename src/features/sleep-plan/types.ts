@@ -47,6 +47,8 @@ export interface SleepPlanRequest {
   settings: SleepSettingsSummary;
   /** 今日だけのオーバーライド（null なら無し） */
   todayOverride?: TodayOverrideSummary | null;
+  /** 今日の日付 YYYY-MM-DD（署名・プロンプト用。未指定時はバックエンドでサーバー日付を使用） */
+  todayDate?: string | null;
 }
 
 /** 今日だけの一時的な時刻オーバーライド（リクエスト用） */

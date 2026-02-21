@@ -61,18 +61,21 @@ def build_signature_hash(
     sleep_logs: list[Any],
     settings: dict[str, Any],
     today_override: dict[str, Any] | None = None,
+    today_date: str | None = None,
 ) -> str:
     """
-    カレンダー予定・睡眠ログ・設定・todayOverride を正規化し、SHA-256 の先頭 64 文字を返す。
+    カレンダー予定・睡眠ログ・設定・todayOverride・today_date を正規化し、SHA-256 の先頭 64 文字を返す。
 
     - 辞書はキーソート、リストは内容でソートしてからハッシュ（送信順に依存しない）
     - todayOverride が None の場合も null としてペイロードに含める（ハッシュの一貫性のため）
+    - today_date が日付跨ぎでキャッシュを区別するために署名に含まれる
     """
     payload = {
         "calendar_events": _sorted_canonical_list(calendar_events, sort_key="start"),
         "sleep_logs": _sorted_canonical_list(sleep_logs, sort_key="date"),
         "settings": _canonical_value(settings),
         "today_override": _canonical_value(today_override),
+        "today_date": today_date or "",
     }
     canonical = json.dumps(payload, sort_keys=True, ensure_ascii=False)
     return hashlib.sha256(canonical.encode("utf-8")).hexdigest()

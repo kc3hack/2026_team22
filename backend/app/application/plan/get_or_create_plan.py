@@ -29,6 +29,7 @@ class GetOrCreatePlanInput:
         sleep_logs: list[Any],
         settings: dict[str, Any],
         today_override: dict[str, Any] | None = None,
+        today_date: str | None = None,
         force: bool = False,
     ):
         self.user_id = user_id
@@ -36,6 +37,7 @@ class GetOrCreatePlanInput:
         self.sleep_logs = sleep_logs
         self.settings = settings
         self.today_override = today_override
+        self.today_date = today_date
         self.force = force
 
 
@@ -56,6 +58,7 @@ class GetOrCreatePlanUseCase(BaseUseCase[GetOrCreatePlanInput, dict[str, Any]]):
             input.sleep_logs,
             input.settings,
             input.today_override,
+            input.today_date,
         )
         # デバッグ: リクエスト概要と signature_hash をログ（キャッシュ効きの切り分け用）
         sleep_logs_summary = [
@@ -97,6 +100,7 @@ class GetOrCreatePlanUseCase(BaseUseCase[GetOrCreatePlanInput, dict[str, Any]]):
             input.sleep_logs,
             input.settings,
             today_override=input.today_override,
+            today_date=input.today_date,
         )
         plan_json = json.dumps(plan, ensure_ascii=False)
 

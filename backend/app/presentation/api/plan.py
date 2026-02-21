@@ -2,6 +2,7 @@
 
 import json
 import logging
+from datetime import date
 
 from fastapi import APIRouter, Depends, Query
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -62,11 +63,14 @@ async def get_or_create_plan(
     except Exception as e:
         logger.warning("plan request payload log failed: %s", e)
 
+    today_date = body.today_date or date.today().isoformat()
+
     logger.info(
-        "POST /sleep-plans request len(calendar_events)=%s len(sleep_logs)=%s force=%s",
+        "POST /sleep-plans request len(calendar_events)=%s len(sleep_logs)=%s force=%s today_date=%s",
         len(body.calendar_events),
         len(body.sleep_logs),
         force,
+        today_date,
     )
     usecase = GetOrCreatePlanUseCase(cache_repo, plan_generator)
     input_data = GetOrCreatePlanInput(
@@ -75,6 +79,7 @@ async def get_or_create_plan(
         sleep_logs=body.sleep_logs,
         settings=body.settings,
         today_override=body.today_override.model_dump() if body.today_override else None,
+        today_date=today_date,
         force=force,
     )
     plan = await usecase.execute(input_data)

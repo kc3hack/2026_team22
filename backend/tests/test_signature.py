@@ -119,6 +119,18 @@ class TestBuildSignatureHash:
         h2 = build_signature_hash([], [], {}, today_override=None)
         assert h1 == h2
 
+    def test_today_date_changes_hash(self):
+        """today_date が異なるとハッシュも異なる"""
+        h1 = build_signature_hash([], [], {}, today_date="2026-02-20")
+        h2 = build_signature_hash([], [], {}, today_date="2026-02-21")
+        assert h1 != h2
+
+    def test_today_date_same_produces_same_hash(self):
+        """同じ today_date なら同じハッシュ"""
+        h1 = build_signature_hash([], [], {}, today_date="2026-02-20")
+        h2 = build_signature_hash([], [], {}, today_date="2026-02-20")
+        assert h1 == h2
+
     def test_iso_datetime_normalized_same_hash(self):
         """ISO 日時のミリ秒・タイムゾーン表記が違っても同じハッシュになる（キャッシュ安定）"""
         cal1 = [{"title": "A", "start": "2026-02-18T09:00:00.000Z", "end": "2026-02-18T10:00:00Z"}]

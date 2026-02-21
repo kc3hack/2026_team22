@@ -26,3 +26,7 @@ class PlanRequest(BaseModel):
     today_override: TodayOverride | None = Field(
         default=None, description="今日だけの就寝・起床オーバーライド（null 可）"
     )
+    today_date: str | None = Field(
+        default=None,
+        description="今日の日付 YYYY-MM-DD（署名・プロンプト用。未指定時はサーバー日付を使用）",
+    )

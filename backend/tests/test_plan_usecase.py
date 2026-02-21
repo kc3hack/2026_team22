@@ -120,6 +120,26 @@ class TestGetOrCreatePlanUseCase:
         call_kwargs = mock_plan_generator.generate_week_plan.call_args[1]
         assert call_kwargs["today_override"] == override
 
+    async def test_today_date_passed_to_generator(self, mock_cache_repo, mock_plan_generator):
+        """today_date が LLM ジェネレータに渡されること"""
+        mock_cache_repo.get_by_user_and_hash.return_value = None
+        llm_plan = {"week_plan": [{"date": "2026-02-20", "advice": "テスト"}]}
+        mock_plan_generator.generate_week_plan = AsyncMock(return_value=llm_plan)
+
+        input_data = GetOrCreatePlanInput(
+            user_id="user-001",
+            calendar_events=[],
+            sleep_logs=[],
+            settings={},
+            today_date="2026-02-20",
+        )
+
+        usecase = GetOrCreatePlanUseCase(mock_cache_repo, mock_plan_generator)
+        await usecase.execute(input_data)
+
+        call_kwargs = mock_plan_generator.generate_week_plan.call_args[1]
+        assert call_kwargs["today_date"] == "2026-02-20"
+
     async def test_today_override_changes_signature(self, mock_cache_repo, mock_plan_generator):
         """todayOverride が異なると署名ハッシュも変わるため、キャッシュ検索のハッシュが異なる"""
         mock_cache_repo.get_by_user_and_hash.return_value = None

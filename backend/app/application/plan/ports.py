@@ -15,6 +15,7 @@ class IPlanGenerator(Protocol):
         sleep_logs: list[Any],
         settings: dict[str, Any],
         today_override: dict[str, Any] | None = None,
+        today_date: str | None = None,
     ) -> dict[str, Any]:
-        """カレンダー・睡眠ログ・設定・todayOverride から週間プラン JSON を生成する"""
+        """カレンダー・睡眠ログ・設定・todayOverride・today_date から週間プラン JSON を生成する"""
         ...
