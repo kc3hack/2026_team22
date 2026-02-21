@@ -17,8 +17,8 @@
 | ------------------- | ------------------------------------------------------------------ |
 | **calendar_events** | ICS から取得したカレンダー予定（タイトル・開始・終了・終日フラグ） |
 | **sleep_logs**      | 直近7件の睡眠ログ（日付・スコア・就寝予定時刻）                    |
-| **settings**        | 起床時刻（wake_up_time）・希望睡眠時間（sleep_duration_hours）     |
-| **today_override**  | 今日だけの就寝・起床オーバーライド（未設定なら null）              |
+| **settings**        | 起床時刻・希望睡眠時間・**today_override**（今日の就寝・起床オーバーライド、任意） |
+| **today_date**      | 今日の日付 YYYY-MM-DD                                             |
 
 - 実装: `backend/app/domain/plan/value_objects.py` の `build_signature_hash()`
 - 辞書はキーソート、**リスト（calendar_events / sleep_logs）は内容でソート**してからハッシュするため、フロントの送信順や ICS の取得順に依存せず、**同じ内容なら必ず同じハッシュ**になりキャッシュが安定する。
@@ -33,7 +33,7 @@
 ### バックエンドの動作フロー
 
 ```
-1. リクエスト受信（user_id, calendar_events, sleep_logs, settings, today_override, force）
+1. リクエスト受信（user_id, calendar_events, sleep_logs, settings, today_date, force）。settings に today_override を含む
 2. 上記4入力から signature_hash を計算
 3. force=True なら → キャッシュを見ずに LLM で生成 → 保存 → 返却（cache_hit: false）
 4. force=False なら:

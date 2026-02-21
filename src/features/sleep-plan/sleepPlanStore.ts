@@ -75,6 +75,7 @@ export const useSleepPlanStore = create<SleepPlanState & SleepPlanActions>((set,
         sleepDurationHours,
         wakeUpHour,
         wakeUpMinute,
+        preparationMinutes,
         todayOverride: rawOverride,
       } = settingsState;
 
@@ -123,8 +124,10 @@ export const useSleepPlanStore = create<SleepPlanState & SleepPlanActions>((set,
           settings: {
             wakeUpTime,
             sleepDurationHours,
+            preparationMinutes: preparationMinutes ?? 60,
+            todayOverride,
           },
-          todayOverride,
+          todayDate: todayStr,
         },
         force
       );

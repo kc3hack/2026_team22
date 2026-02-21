@@ -9,13 +9,20 @@ import { apiV1Fetch } from '@shared/lib';
 import type { SleepPlanRequest, WeeklySleepPlan, DailyPlan } from '../types';
 
 /** バックエンドが返すプラン形式（week_plan + cache_hit） */
+interface PlanApiDayRaw {
+  date?: string;
+  day?: string;
+  recommended_bedtime?: string;
+  recommended_wakeup?: string;
+  bed_time?: string;
+  wake_up?: string;
+  importance?: 'high' | 'medium' | 'low';
+  next_day_event?: string | null;
+  advice?: string;
+}
+
 interface PlanApiResponse {
-  week_plan: Array<{
-    day?: string;
-    recommended_bedtime?: string;
-    recommended_wakeup?: string;
-    advice?: string;
-  }>;
+  week_plan: PlanApiDayRaw[];
   cache_hit?: boolean;
 }
 
@@ -39,26 +46,45 @@ const generateDates = (): { date: string; dayOfWeek: string }[] => {
   return result;
 };
 
+/** importance を正規化 */
+const normalizeImportance = (
+  v: string | undefined
+): 'high' | 'medium' | 'low' => {
+  if (v === 'high' || v === 'medium' || v === 'low') return v;
+  return 'medium';
+};
+
 /**
  * バックエンドの week_plan 形式をフロントの WeeklySleepPlan に変換
+ * - 各要素に date があれば日付ベースでマッピング
+ * - date がなければ従来通りインデックスベースでフォールバック
  */
 const planApiResponseToWeeklyPlan = (data: PlanApiResponse): WeeklySleepPlan => {
   const dates = generateDates();
   const weekPlan = data.week_plan ?? [];
+  const byDate = new Map<string, PlanApiDayRaw>();
+  weekPlan.forEach(raw => {
+    const date = raw?.date;
+    if (date) byDate.set(date, raw);
+  });
+
   const dailyPlans: DailyPlan[] = dates.map((d, i) => {
-    const raw = weekPlan[i];
-    const recommendedSleepTime = raw?.recommended_bedtime ?? '23:00';
-    const recommendedWakeTime = raw?.recommended_wakeup ?? '07:00';
-    const sleepDurationHours = 8;
+    const raw = byDate.get(d.date) ?? weekPlan[i];
+    const recommendedSleepTime =
+      raw?.recommended_bedtime ?? raw?.bed_time ?? '23:00';
+    const recommendedWakeTime =
+      raw?.recommended_wakeup ?? raw?.wake_up ?? '07:00';
+    const importance = normalizeImportance(raw?.importance);
+    const nextDayEvent = raw?.next_day_event ?? undefined;
     return {
       date: d.date,
-      dayOfWeek: d.dayOfWeek,
+      dayOfWeek: raw?.day ?? d.dayOfWeek,
       recommendedSleepTime,
       recommendedWakeTime,
-      sleepDurationHours,
-      importance: 'medium',
+      sleepDurationHours: 8,
+      importance,
       advice: raw?.advice ?? '',
-      nextDayEvent: undefined,
+      nextDayEvent: nextDayEvent ?? undefined,
     };
   });
   return {
@@ -71,20 +97,25 @@ const planApiResponseToWeeklyPlan = (data: PlanApiResponse): WeeklySleepPlan => 
 
 /**
  * リクエスト Body をバックエンド向けに変換
- * 注意: today_override はバックエンドが camelCase で受け付けるため、そのまま渡す
+ * settings に today_override を含める（統合済み）
  */
 const toSnakeCaseBody = (req: SleepPlanRequest): Record<string, unknown> => {
-  const todayOverride = req.todayOverride
-    ? {
-        date: req.todayOverride.date,
-        sleepHour: req.todayOverride.sleepHour,
-        sleepMinute: req.todayOverride.sleepMinute,
-        wakeHour: req.todayOverride.wakeHour,
-        wakeMinute: req.todayOverride.wakeMinute,
-      }
-    : null;
+  const settings: Record<string, unknown> = {
+    wake_up_time: req.settings.wakeUpTime,
+    sleep_duration_hours: req.settings.sleepDurationHours,
+    preparation_minutes: req.settings.preparationMinutes ?? 60,
+  };
+  if (req.settings.todayOverride) {
+    settings.today_override = {
+      date: req.settings.todayOverride.date,
+      sleepHour: req.settings.todayOverride.sleepHour,
+      sleepMinute: req.settings.todayOverride.sleepMinute,
+      wakeHour: req.settings.todayOverride.wakeHour,
+      wakeMinute: req.settings.todayOverride.wakeMinute,
+    };
+  }
 
-  return {
+  const body: Record<string, unknown> = {
     calendar_events: req.calendarEvents.map(e => ({
       title: e.title,
       start: e.start,
@@ -97,12 +128,12 @@ const toSnakeCaseBody = (req: SleepPlanRequest): Record<string, unknown> => {
       scheduled_sleep_time: l.scheduledSleepTime,
       mood: l.mood ?? null,
     })),
-    settings: {
-      wake_up_time: req.settings.wakeUpTime,
-      sleep_duration_hours: req.settings.sleepDurationHours,
-    },
-    today_override: todayOverride,
+    settings,
   };
+  if (req.todayDate) {
+    body.today_date = req.todayDate;
+  }
+  return body;
 };
 
 /**
