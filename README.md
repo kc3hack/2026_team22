@@ -71,47 +71,52 @@ SleepSupportApp は、AI 駆動の総合睡眠支援 Android アプリケーシ�
 
 ### フロントエンド
 
-| カテゴリ | 技術 | バージョン |
-| --- | --- | --- |
-| フレームワーク | React Native (Expo) | SDK 54 |
-| 言語 | TypeScript | strict mode |
-| ルーティング | Expo Router | v6 (file-based) |
-| 状態管理 | Zustand | v5 |
-| パッケージマネージャ | pnpm | 9.x |
-| 認証 | Supabase Auth | - |
-| センサー | expo-sensors, expo-camera, expo-av | - |
-| 通知 | expo-notifications | - |
-| バックグラウンド処理 | react-native-background-actions | - |
+| カテゴリ             | 技術                               | バージョン      |
+| -------------------- | ---------------------------------- | --------------- |
+| フレームワーク       | React Native (Expo)                | SDK 54          |
+| 言語                 | TypeScript                         | strict mode     |
+| ルーティング         | Expo Router                        | v6 (file-based) |
+| 状態管理             | Zustand                            | v5              |
+| パッケージマネージャ | pnpm                               | 9.x             |
+| 認証                 | Supabase Auth                      | -               |
+| センサー             | expo-sensors, expo-camera, expo-av | -               |
+| 通知                 | expo-notifications                 | -               |
+| バックグラウンド処理 | react-native-background-actions    | -               |
 
 ### バックエンド
 
-| カテゴリ | 技術 | バージョン |
-| --- | --- | --- |
-| フレームワーク | FastAPI | v0.109+ |
-| 言語 | Python | 3.11+ |
-| ORM | SQLAlchemy 2 (async) | v2.0+ |
-| データベース | PostgreSQL | asyncpg |
-| マイグレーション | Alembic | v1.13+ |
-| パッケージマネージャ | uv | - |
-| LLM 連携 | OpenRouter API (httpx) | - |
-| 認証 | Supabase JWT + PyJWT | - |
+| カテゴリ             | 技術                   | バージョン |
+| -------------------- | ---------------------- | ---------- |
+| フレームワーク       | FastAPI                | v0.109+    |
+| 言語                 | Python                 | 3.11+      |
+| ORM                  | SQLAlchemy 2 (async)   | v2.0+      |
+| データベース         | PostgreSQL             | asyncpg    |
+| マイグレーション     | Alembic                | v1.13+     |
+| パッケージマネージャ | uv                     | -          |
+| LLM 連携             | OpenRouter API (httpx) | -          |
+| 認証                 | Supabase JWT + PyJWT   | -          |
 
 ### インフラ・DevOps
 
-| カテゴリ | 技術 |
-| --- | --- |
-| コンテナ | Docker / Docker Compose |
-| 認証基盤 | Supabase (Cloud) |
-| タスク自動化 | Taskfile (go-task) |
-| コード品質 | ESLint, Prettier, Ruff, MyPy |
-| 型チェック | TypeScript (tsc), MyPy |
+| カテゴリ     | 技術                         |
+| ------------ | ---------------------------- |
+| コンテナ     | Docker / Docker Compose      |
+| 認証基盤     | Supabase (Cloud)             |
+| タスク自動化 | Taskfile (go-task)           |
+| コード品質   | ESLint, Prettier, Ruff, MyPy |
+| 型チェック   | TypeScript (tsc), MyPy       |
 
 ## チームメンバー
 - @taitaitai58
+  - バックエンド
 - @yuito393439
+  - フロントエンドデザイン
 - @Taku-taku-Taku
+  - センサ
 - @You8102
+  - バックグラウンド処理
 - @taniharu1214
+  - アラーム・カレンダー
 
 <!--
 markdownの記法はこちらを参照してください！
