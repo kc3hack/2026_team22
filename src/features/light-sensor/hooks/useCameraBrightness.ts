@@ -40,6 +40,7 @@ export function useCameraBrightness(enabled: boolean): UseCameraBrightnessReturn
 
   useEffect(() => {
     if (enabled && Platform.OS === 'android' && Camera2Brightness) {
+      console.log('[useCameraBrightness] Camera started');
       setActive(true);
 
       // Initial capture with small delay

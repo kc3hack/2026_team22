@@ -70,6 +70,7 @@ export const SleepMonitorScreen: React.FC = () => {
             noiseDb={monitor.noiseDb}
             isLightExceeded={monitor.isLightExceeded}
             isNoiseExceeded={monitor.isNoiseExceeded}
+            lightSource={monitor.lightSource}
           />
         </ScrollView>
 

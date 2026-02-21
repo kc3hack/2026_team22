@@ -3,6 +3,8 @@ import { useSleepMonitorStore } from '../sleepMonitorStore';
 import { useUsageTracker } from './useUsageTracker';
 import { useNoiseSensor } from './useNoiseSensor';
 import { useLightSensor } from '@features/light-sensor';
+import { useDeviceOrientation } from '@features/light-sensor/hooks/useDeviceOrientation';
+import { useCameraBrightness } from '@features/light-sensor/hooks/useCameraBrightness';
 import { geminiClient } from '@shared/lib/gemini';
 import { googleCalendar } from '@shared/lib/googleCalendar';
 import {
@@ -53,6 +55,8 @@ interface UseSleepMonitorReturn {
   stopMonitoring: () => void;
   /** 警告を閉じる */
   dismissWarning: () => void;
+  /** 照度の取得元 */
+  lightSource: 'light_sensor' | 'camera' | 'unknown';
 }
 
 /**
@@ -74,6 +78,21 @@ export const useSleepMonitor = (): UseSleepMonitorReturn => {
   const usageTracker = useUsageTracker();
   const noiseSensor = useNoiseSensor();
   const lightSensor = useLightSensor();
+  const { orientation } = useDeviceOrientation();
+  const cameraEnabled = orientation !== 'face_up';
+  const { active: cameraActive } = useCameraBrightness(cameraEnabled);
+
+  // useEffect(() => {
+  //   const source = cameraEnabled ? (cameraActive ? 'camera' : 'camera(starting...)') : 'light_sensor';
+  //   console.log(
+  //     `[useSleepMonitor] orientation=${orientation}, cameraEnabled=${cameraEnabled}, cameraActive=${cameraActive}, activeSource=${source}`,
+  //   );
+  // }, [orientation, cameraEnabled, cameraActive]);
+
+  useEffect(() => {
+    const lux = lightSensor.data?.illuminance ?? null;
+    console.log(`[useSleepMonitor] illuminance=${lux} lux`);
+  }, [lightSensor.data?.illuminance]);
 
   const [remainingSeconds, setRemainingSeconds] = useState(0);
   const [totalRemainingSeconds, setTotalRemainingSeconds] = useState(0);
@@ -363,5 +382,6 @@ export const useSleepMonitor = (): UseSleepMonitorReturn => {
     startMonitoring,
     stopMonitoring,
     dismissWarning,
+    lightSource: orientation === 'face_down' ? (cameraActive ? 'camera' : 'unknown') : 'light_sensor',
   };
 };
