@@ -88,35 +88,28 @@ class GeminiClient {
     return messages.length > 0 ? messages.join('\n') : '睡眠環境は良好です。おやすみなさい。';
   }
 
-  /**
-   * ミッション画像の判定 (Gemini Vision API)
-   * 指定された画像にターゲット（targetLabel）が写っているか判定する
-   */
   async verifyMissionImage(base64Image: string, targetLabel: string): Promise<boolean> {
     // ユーザー指定: APIキーは環境変数から取得
-    const apiKey = process.env.EXPO_PUBLIC_GEMINI_API_KEY;
-    // const apiKey = this.config.apiKey || '';
+    const apiKey = process.env.EXPO_PUBLIC_OPENROUTER_API_KEY;
 
     if (!apiKey) {
-      console.warn('⚠️ Gemini API Key is missing. Please set it in src/shared/lib/gemini.ts');
-      // APIキーがない場合はデバッグ用に成功とするか、エラーにするか。
-      // ここではユーザーの意図（AIで判別）を尊重し、キーがないと動作しない（false）とするが、
-      // 動作確認のためにログを出す。
+      console.warn('⚠️ OpenRouter API Key is missing. Please set EXPO_PUBLIC_OPENROUTER_API_KEY in .env');
       return false;
     }
 
-    // 高速なFlash Liteモデルを使用
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent?key=${apiKey}`;
+    const url = 'https://openrouter.ai/api/v1/chat/completions';
 
     const body = {
-      contents: [
+      model: 'google/gemini-2.5-flash', // Vision対応かつ高速なモデル
+      messages: [
         {
-          parts: [
-            { text: `Does this image show a "${targetLabel}"? Answer strictly with YES or NO.` },
+          role: 'user',
+          content: [
+            { type: 'text', text: `Does this image show a "${targetLabel}"? Answer strictly with YES or NO.` },
             {
-              inline_data: {
-                mime_type: 'image/jpeg',
-                data: base64Image,
+              type: 'image_url',
+              image_url: {
+                url: `data:image/jpeg;base64,${base64Image}`,
               },
             },
           ],
@@ -129,6 +122,8 @@ class GeminiClient {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${apiKey}`,
+          'HTTP-Referer': 'https://sleepsupport.app',
         },
         body: JSON.stringify(body),
       });
@@ -136,16 +131,16 @@ class GeminiClient {
       const data = await response.json();
 
       if (data.error) {
-        console.error('Gemini API Error:', data.error);
+        console.error('OpenRouter API Error:', data.error);
         return false;
       }
 
-      const text = data?.candidates?.[0]?.content?.parts?.[0]?.text?.trim().toUpperCase();
-      console.warn(`[Gemini Vision] Target: ${targetLabel}, Result: ${text}`);
+      const text = data?.choices?.[0]?.message?.content?.trim().toUpperCase();
+      console.warn(`[OpenRouter Vision] Target: ${targetLabel}, Result: ${text}`);
 
-      return text?.includes('YES');
+      return text?.includes('YES') || false;
     } catch (error) {
-      console.error('Gemini Verification Integration Failed:', error);
+      console.error('OpenRouter Verification Integration Failed:', error);
       return false;
     }
   }
