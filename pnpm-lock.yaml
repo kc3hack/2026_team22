@@ -11,6 +11,9 @@ patchedDependencies:
   react-native-background-actions:
     hash: jodnx7iqrqaxp5ejm4224xwq3e
     path: patches/react-native-background-actions.patch
+  react-native-screen-lock-unlock-listener:
+    hash: mnbtec7octnjpm2igjarl5uadu
+    path: patches/react-native-screen-lock-unlock-listener.patch
 
 importers:
 
@@ -79,6 +82,9 @@ importers:
       react-native-safe-area-context:
         specifier: ^5.6.2
         version: 5.6.2(react-native@0.81.5(@babel/core@7.29.0)(@types/react@19.1.17)(react@19.1.0))(react@19.1.0)
+      react-native-screen-lock-unlock-listener:
+        specifier: ^1.0.1
+        version: 1.0.1(patch_hash=mnbtec7octnjpm2igjarl5uadu)(react-native@0.81.5(@babel/core@7.29.0)(@types/react@19.1.17)(react@19.1.0))(react@19.1.0)
       react-native-screens:
         specifier: ~4.16.0
         version: 4.16.0(react-native@0.81.5(@babel/core@7.29.0)(@types/react@19.1.17)(react@19.1.0))(react@19.1.0)
@@ -4545,6 +4551,12 @@ packages:
     peerDependencies:
       react: '*'
       react-native: '*'
+
+  react-native-screen-lock-unlock-listener@1.0.1:
+    resolution: {integrity: sha512-Mh8kpn4zNfm+yIHAJKxxTVVzDaZPdYFlsum3RLlkGZoXRUH7fjxnSaXOuiCbSbRqYWhICQUxeRSrSznCvBX+zw==}
+    peerDependencies:
+      react: ^16.8.1
+      react-native: '>=0.59.0-rc.0 <1.0.x'
 
   react-native-screens@4.16.0:
     resolution: {integrity: sha512-yIAyh7F/9uWkOzCi1/2FqvNvK6Wb9Y1+Kzn16SuGfN9YFJDTbwlzGRvePCNTOX0recpLQF3kc2FmvMUhyTCH1Q==}
@@ -10903,6 +10915,11 @@ snapshots:
       react-native: 0.81.5(@babel/core@7.29.0)(@types/react@19.1.17)(react@19.1.0)
 
   react-native-safe-area-context@5.6.2(react-native@0.81.5(@babel/core@7.29.0)(@types/react@19.1.17)(react@19.1.0))(react@19.1.0):
+    dependencies:
+      react: 19.1.0
+      react-native: 0.81.5(@babel/core@7.29.0)(@types/react@19.1.17)(react@19.1.0)
+
+  react-native-screen-lock-unlock-listener@1.0.1(patch_hash=mnbtec7octnjpm2igjarl5uadu)(react-native@0.81.5(@babel/core@7.29.0)(@types/react@19.1.17)(react@19.1.0))(react@19.1.0):
     dependencies:
       react: 19.1.0
       react-native: 0.81.5(@babel/core@7.29.0)(@types/react@19.1.17)(react@19.1.0)
