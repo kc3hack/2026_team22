@@ -17,7 +17,7 @@ export const PHASE_DURATION = {
 /** スマホ操作の警告閾値（分） */
 export const USAGE_THRESHOLDS = {
   /** Phase 1: 20分以上で警告 */
-  PHASE1_WARN: 20,
+  PHASE1_WARN: 0.25,
   /** Phase 2: 15分以上で警告 */
   PHASE2_WARN: 15,
 } as const;
@@ -68,5 +68,5 @@ export const NOISE_CONFIG = {
 /** 通知設定 */
 export const NOTIFICATION_CONFIG = {
   /** 通知クールダウン（ミリ秒）= 1分 */
-  COOLDOWN_MS: 60 * 1000,
+  COOLDOWN_MS: 30 * 1000,
 } as const;
