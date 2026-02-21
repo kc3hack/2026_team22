@@ -23,8 +23,7 @@ JST = ZoneInfo("Asia/Tokyo")
 def _enrich_calendar_events_with_date_jst(events: list[Any]) -> list[dict[str, Any]]:
     """
     カレンダー予定に日本時間での日付（date_jst）を付与する。
-    start が ISO 8601 形式の場合、JST に変換して YYYY-MM-DD を付与。
-    これにより LLM が「当日か翌日か」を確実に判断できる。
+    さらに、LLMが時間帯を誤認しないように、start と end を日本時間 (JST) の文字列に変換する。
     """
     result: list[dict[str, Any]] = []
     for ev in events:
@@ -32,23 +31,30 @@ def _enrich_calendar_events_with_date_jst(events: list[Any]) -> list[dict[str, A
             enriched = dict(ev)
         else:
             enriched = {"title": str(ev)}
-        start_val = enriched.get("start")
-        if isinstance(start_val, str):
-            try:
-                if "T" in start_val:
-                    dt = datetime.fromisoformat(
-                        start_val.replace("Z", "+00:00")
-                    ).astimezone(JST)
-                    enriched["date_jst"] = dt.strftime("%Y-%m-%d")
-                elif len(start_val) >= 10 and start_val[:10].count("-") == 2:
-                    # YYYY-MM-DD 形式（終日イベントなど）
-                    enriched["date_jst"] = start_val[:10]
-                else:
-                    enriched["date_jst"] = None
-            except (ValueError, TypeError):
-                enriched["date_jst"] = None
-        else:
+            
+        for key in ["start", "end"]:
+            val = enriched.get(key)
+            if isinstance(val, str):
+                try:
+                    if "T" in val:
+                        dt = datetime.fromisoformat(
+                            val.replace("Z", "+00:00")
+                        ).astimezone(JST)
+                        # LLMが時間帯を誤認しないよう JST の文字列表現にする
+                        enriched[key] = dt.strftime("%Y-%m-%d %H:%M")
+                        if key == "start":
+                            enriched["date_jst"] = dt.strftime("%Y-%m-%d")
+                    elif len(val) >= 10 and val[:10].count("-") == 2:
+                        # YYYY-MM-DD 形式（終日イベントなど）
+                        if key == "start":
+                            enriched["date_jst"] = val[:10]
+                except (ValueError, TypeError):
+                    if key == "start" and "date_jst" not in enriched:
+                        enriched["date_jst"] = None
+        
+        if "date_jst" not in enriched:
             enriched["date_jst"] = None
+            
         result.append(enriched)
     return result
 
@@ -165,7 +171,7 @@ class OpenRouterClient:
             "- 各要素に date（YYYY-MM-DD）を必須で含める。曜日ではなく日付で返す。\n"
             "- week_plan の各 date は「その日に就寝する日」を表します。つまり date が 2026-02-21 なら、21日の夜に寝て22日の朝に起きる日のプランです。\n"
             "- importance と next_day_event は「翌日」の予定に基づきます。ここで「翌日」= date の次の日（date+1日）です。例: date が 2026-02-21 なら翌日は 2026-02-22。\n"
-            "- カレンダー予定の date_jst が各予定の「日本時間での日付」です。必ず date_jst を参照して、どの日付の予定かを判断してください。start/end の ISO 形式だけでは UTC と JST で日付がずれる場合があるため、date_jst を優先してください。\n"
+            "- カレンダー予定の start と end、および date_jst はすべて日本時間 (JST) で統一されています。必ずこれらを参照して、どの日付・時間帯の予定かを判断してください。\n"
             "- importance: 翌日（date+1日）の予定の重要度。会議・試験・発表など重要な予定がある日は high、軽い予定は medium、予定なし・緩い日は low。\n"
             "- next_day_event: 翌日（date+1日）の最も重要な予定のタイトル。該当なければ null。\n"
             "- preparation_minutes が設定にある場合、起床から家を出る（または予定に取りかかる）までにその分数が必要。外出予定の開始時刻から逆算して起床時刻を決める。\n"
