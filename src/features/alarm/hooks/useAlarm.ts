@@ -101,6 +101,10 @@ export const useAlarm = () => {
   // Check alarm time
   useEffect(() => {
     checkIntervalRef.current = setInterval(async () => {
+      // Refresh state to avoid stale closure if todayOverride changed
+      const currentStore = useSleepSettingsStore.getState();
+      const { hour: effHour, minute: effMinute } = currentStore.getEffectiveWakeTime();
+
       if (alarmStore.isAlarmRinging) return;
 
       const now = new Date();
@@ -108,8 +112,8 @@ export const useAlarm = () => {
       const currentMinute = now.getMinutes();
 
       if (
-        currentHour === sleepSettings.wakeUpHour &&
-        currentMinute === sleepSettings.wakeUpMinute &&
+        currentHour === effHour &&
+        currentMinute === effMinute &&
         now.getSeconds() < 2 // Check only at 00-01 seconds
       ) {
         alarmStore.startAlarm();
@@ -119,8 +123,8 @@ export const useAlarm = () => {
     return () => {
       if (checkIntervalRef.current) clearInterval(checkIntervalRef.current);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- alarmStore を依存に含めると毎回 interval が張り直されるため意図的に除外
-  }, [sleepSettings.wakeUpHour, sleepSettings.wakeUpMinute, alarmStore.isAlarmRinging]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [alarmStore.isAlarmRinging]);
 
   // Handle Alarm Ringing State & Phase Changes
   // Monitor phase changes to switch sounds
