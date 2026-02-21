@@ -164,7 +164,7 @@ class OpenRouterClient:
             "{\n"
             '  "week_plan": [\n'
             '    { "date": "YYYY-MM-DD", "recommended_bedtime": "22:00", "recommended_wakeup": "06:30", '
-            '"importance": "high|medium|low", "next_day_event": "翌日の主要予定またはnull", "advice": "短いアドバイス" },\n'
+            '"importance": "high|medium|low", "next_day_event": "翌日の主要予定またはnull", "advice": "翌日の予定と重要度を考慮した1つの自然なアドバイス文。必ず翌日の重要度（高い・普通・低い等）に関する言及を含めること" },\n'
             "    ... 7日分（今日から7日間、date を必須で含める）\n"
             "  ]\n"
             "}\n\n"
@@ -199,7 +199,7 @@ class OpenRouterClient:
                 "role": "system",
                 "content": (
                     "あなたは睡眠アドバイザーです。与えられた予定と睡眠ログから、"
-                    "現実的な就寝・起床時刻と短いアドバイスを JSON 形式で返してください。"
+                    "現実的な就寝・起床時刻と、翌日の予定・重要度を踏まえた1つの自然なアドバイス文を JSON 形式で返してください。"
                     "各日には date（YYYY-MM-DD）・importance・next_day_event を必ず含めてください。"
                 ),
             },
