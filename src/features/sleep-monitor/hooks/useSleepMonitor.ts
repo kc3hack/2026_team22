@@ -382,6 +382,6 @@ export const useSleepMonitor = (): UseSleepMonitorReturn => {
     startMonitoring,
     stopMonitoring,
     dismissWarning,
-    lightSource: orientation === 'face_down' ? (cameraActive ? 'camera' : 'unknown') : 'light_sensor',
+    lightSource: orientation === 'face_down' ? 'camera' : 'light_sensor',
   };
 };
