@@ -42,9 +42,9 @@
     "expo-av": "^16.0.8",
     "expo-build-properties": "~1.0.10",
     "expo-camera": "~17.0.10",
-    "expo-image-manipulator": "~14.0.8",
     "expo-constants": "^18.0.13",
     "expo-dev-client": "~6.0.20",
+    "expo-image-manipulator": "~14.0.8",
     "expo-linking": "^8.0.11",
     "expo-notifications": "^0.32.16",
     "expo-router": "^6.0.23",
@@ -56,6 +56,7 @@
     "react-native": "0.81.5",
     "react-native-background-actions": "^1.1.0",
     "react-native-safe-area-context": "^5.6.2",
+    "react-native-screen-lock-unlock-listener": "^1.0.1",
     "react-native-screens": "~4.16.0",
     "react-native-web": "^0.21.0",
     "zustand": "^5.0.11"
@@ -82,7 +83,8 @@
   "pnpm": {
     "patchedDependencies": {
       "react-native-background-actions": "patches/react-native-background-actions.patch",
-      "expo-sensors": "patches/expo-sensors.patch"
+      "expo-sensors": "patches/expo-sensors.patch",
+      "react-native-screen-lock-unlock-listener": "patches/react-native-screen-lock-unlock-listener.patch"
     }
   }
 }

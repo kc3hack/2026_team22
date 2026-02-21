@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { AppState, type AppStateStatus } from 'react-native';
+import { AppState, type AppStateStatus, NativeEventEmitter } from 'react-native';
+import ScreenLockUnlockListener from 'react-native-screen-lock-unlock-listener';
 
 interface UseUsageTrackerReturn {
   /** 累積操作時間（分） */
@@ -40,6 +41,8 @@ export const useUsageTracker = (): UseUsageTrackerReturn => {
   const backgroundStartRef = useRef<number | null>(null);
   /** 追跡中フラグ（AppStateコールバック内で参照するためrefで保持） */
   const isTrackingRef = useRef(false);
+  /** 画面が点灯しているかどうか（Androidの画面オフ中の時間除外用） */
+  const isScreenOnRef = useRef(true);
 
   // AppStateの変化をリスニング
   useEffect(() => {
@@ -47,7 +50,7 @@ export const useUsageTracker = (): UseUsageTrackerReturn => {
       if (!isTrackingRef.current) return;
 
       if (nextState === 'active') {
-        // フォアグラウンドに復帰 → バックグラウンドにいた時間を加算
+        // フォアグラウンドに復帰 → バックグラウンドで操作していた時間を加算
         setIsOutsideApp(false);
 
         if (backgroundStartRef.current !== null) {
@@ -61,15 +64,48 @@ export const useUsageTracker = (): UseUsageTrackerReturn => {
           backgroundStartRef.current = null;
         }
       } else {
-        // バックグラウンドまたはinactiveへ移行 → 時刻を記録
-        if (backgroundStartRef.current === null) {
+        // バックグラウンドまたはinactiveへ移行
+        setIsOutsideApp(true);
+        // 画面が点灯している場合のみ、操作時間としてカウント開始
+        if (isScreenOnRef.current && backgroundStartRef.current === null) {
           backgroundStartRef.current = Date.now();
-          setIsOutsideApp(true);
         }
       }
     });
 
-    return () => subscription.remove();
+    // 画面のオンオフ（Android用）をリスニング
+    const eventEmitter = new NativeEventEmitter(ScreenLockUnlockListener);
+    const screenListener = eventEmitter.addListener('EventReminder', (res) => {
+      if (!isTrackingRef.current) return;
+
+      const event = res?.action;
+      if (event === 'ACTION_SCREEN_OFF') {
+        // 画面が消灯した → スマホ操作終了（カウント停止）
+        isScreenOnRef.current = false;
+
+        if (backgroundStartRef.current !== null) {
+          const backgroundMs = Date.now() - backgroundStartRef.current;
+          const backgroundSecs = Math.floor(backgroundMs / 1000);
+          if (backgroundSecs > 0) {
+            setUsageSeconds(prev => prev + backgroundSecs);
+          }
+          backgroundStartRef.current = null;
+        }
+      } else if (event === 'ACTION_SCREEN_ON') {
+        // 画面が点灯した → スマホ操作開始
+        isScreenOnRef.current = true;
+
+        // アプリがバックグラウンドなら操作時間としてカウントを再開
+        if (AppState.currentState !== 'active' && backgroundStartRef.current === null) {
+          backgroundStartRef.current = Date.now();
+        }
+      }
+    });
+
+    return () => {
+      subscription.remove();
+      screenListener.remove();
+    };
   }, []);
 
   const startTracking = useCallback(() => {
