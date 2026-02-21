@@ -8,42 +8,42 @@
 
 ### フロントエンド
 
-| カテゴリ         | 技術                                   | バージョン         |
-| ---------------- | -------------------------------------- | ------------------ |
-| Package Manager  | pnpm                                   | 9.x                |
-| Framework        | React Native (Expo)                    | SDK 54             |
-| Routing          | Expo Router                            | v6 (File-based)    |
-| Language         | TypeScript                             | strict mode        |
-| State Management | Zustand (Global) / React Hooks (Local) | v5                 |
-| Styling          | StyleSheet (React Native 標準)         | -                  |
-| 認証             | Supabase Auth                          | -                  |
-| センサー         | expo-sensors, expo-camera, expo-av     | -                  |
-| 通知             | expo-notifications                     | -                  |
-| バックグラウンド | react-native-background-actions        | -                  |
+| カテゴリ         | 技術                                   | バージョン      |
+| ---------------- | -------------------------------------- | --------------- |
+| Package Manager  | pnpm                                   | 9.x             |
+| Framework        | React Native (Expo)                    | SDK 54          |
+| Routing          | Expo Router                            | v6 (File-based) |
+| Language         | TypeScript                             | strict mode     |
+| State Management | Zustand (Global) / React Hooks (Local) | v5              |
+| Styling          | StyleSheet (React Native 標準)         | -               |
+| 認証             | Supabase Auth                          | -               |
+| センサー         | expo-sensors, expo-camera, expo-av     | -               |
+| 通知             | expo-notifications                     | -               |
+| バックグラウンド | react-native-background-actions        | -               |
 
 ### バックエンド
 
-| カテゴリ         | 技術                      | バージョン |
-| ---------------- | ------------------------- | ---------- |
-| Framework        | FastAPI                   | v0.109+    |
-| Language         | Python                    | 3.11+      |
-| ORM              | SQLAlchemy 2 (async)      | v2.0+      |
-| Database         | PostgreSQL (asyncpg)      | -          |
-| Migration        | Alembic                   | v1.13+     |
-| Package Manager  | uv                        | -          |
-| LLM 連携        | OpenRouter API (httpx)    | -          |
-| 認証             | Supabase JWT + PyJWT      | -          |
-| Validation       | Pydantic v2               | -          |
+| カテゴリ        | 技術                   | バージョン |
+| --------------- | ---------------------- | ---------- |
+| Framework       | FastAPI                | v0.109+    |
+| Language        | Python                 | 3.11+      |
+| ORM             | SQLAlchemy 2 (async)   | v2.0+      |
+| Database        | PostgreSQL (asyncpg)   | -          |
+| Migration       | Alembic                | v1.13+     |
+| Package Manager | uv                     | -          |
+| LLM 連携        | OpenRouter API (httpx) | -          |
+| 認証            | Supabase JWT + PyJWT   | -          |
+| Validation      | Pydantic v2            | -          |
 
 ### インフラ・DevOps
 
-| カテゴリ       | 技術                              |
-| -------------- | --------------------------------- |
-| コンテナ       | Docker / Docker Compose           |
-| 認証基盤       | Supabase (Cloud)                  |
-| タスク自動化   | Taskfile (go-task)                |
-| コード品質     | ESLint, Prettier, Ruff, MyPy      |
-| 型チェック     | TypeScript (tsc), MyPy            |
+| カテゴリ     | 技術                         |
+| ------------ | ---------------------------- |
+| コンテナ     | Docker / Docker Compose      |
+| 認証基盤     | Supabase (Cloud)             |
+| タスク自動化 | Taskfile (go-task)           |
+| コード品質   | ESLint, Prettier, Ruff, MyPy |
+| 型チェック   | TypeScript (tsc), MyPy       |
 
 ---
 
@@ -56,17 +56,17 @@
 │  ┌───────────────────────────────────────────────────────────┐  │
 │  │              React Native (Expo SDK 54)                   │  │
 │  │                                                           │  │
-│  │  ┌─────────┐ ┌──────────┐ ┌──────────┐ ┌─────────────┐  │  │
-│  │  │  Home   │ │ Monitor  │ │ SleepLog │ │  SleepPlan  │  │  │
-│  │  └────┬────┘ └────┬─────┘ └────┬─────┘ └──────┬──────┘  │  │
-│  │       │           │            │               │          │  │
-│  │  ┌────┴───────────┴────────────┴───────────────┴──────┐  │  │
+│  │  ┌─────────┐ ┌──────────┐ ┌──────────┐ ┌─────────────┐    │  │
+│  │  │  Home   │ │ Monitor  │ │ SleepLog │ │  SleepPlan  │    │  │
+│  │  └────┬────┘ └────┬─────┘ └────┬─────┘ └──────┬──────┘    │  │
+│  │       │           │            │              │           │  │
+│  │  ┌────┴───────────┴────────────┴──────────────┴────────┐  │  │
 │  │  │              Zustand Stores                         │  │  │
 │  │  │  (auth / settings / monitor / log / plan / alarm)   │  │  │
 │  │  └────────────────────┬────────────────────────────────┘  │  │
 │  │                       │                                   │  │
 │  │  ┌────────────────────┴────────────────────────────────┐  │  │
-│  │  │           apiClient (authenticatedFetch)             │  │  │
+│  │  │           apiClient (authenticatedFetch)            │  │  │
 │  │  └────────────────────┬────────────────────────────────┘  │  │
 │  └───────────────────────┼───────────────────────────────────┘  │
 │                          │                                      │
@@ -81,13 +81,13 @@
           ┌────────────────┼────────────────────┐
           │                │                    │
           ▼                ▼                    ▼
-┌──────────────┐  ┌────────────────┐  ┌─────────────────┐
+┌──────────────┐  ┌────────────────┐  ┌──────────────────┐
 │   Supabase   │  │  FastAPI       │  │  OpenRouter API  │
-│   (Auth)     │  │  Backend       │  │  (LLM)          │
+│   (Auth)     │  │  Backend       │  │  (LLM)           │
 │              │  │                │  │                  │
-│  - Sign Up   │  │  /api/v1/...   │  │  睡眠プラン生成  │
+│  - Sign Up   │  │  /api/v1/...   │  │  睡眠プラン生成    │
 │  - Login     │  │                │  │                  │
-│  - JWT発行   │  └───────┬────────┘  └─────────────────┘
+│  - JWT 発行   │  └───────┬────────┘  └─────────────────┘
 └──────────────┘          │
                           ▼
                  ┌─────────────────┐
@@ -318,22 +318,22 @@ backend/
 
 ## API エンドポイント一覧
 
-| メソッド | エンドポイント                  | 説明                                 | 認証 |
-| -------- | ------------------------------- | ------------------------------------ | ---- |
-| GET      | `/`                             | API 情報                             | 不要 |
-| GET      | `/api/v1/health`                | ヘルスチェック                       | 不要 |
-| GET      | `/api/v1/health/db`             | DB 接続チェック                      | 不要 |
-| POST     | `/api/v1/users`                 | ユーザー作成                         | 必要 |
-| GET      | `/api/v1/users`                 | ユーザー一覧取得                     | 必要 |
-| GET      | `/api/v1/users/{user_id}`       | ユーザー取得                         | 必要 |
-| PUT      | `/api/v1/users/{user_id}`       | ユーザー更新                         | 必要 |
-| DELETE   | `/api/v1/users/{user_id}`       | ユーザー削除                         | 必要 |
-| GET      | `/api/v1/sleep-logs`            | 睡眠ログ取得 (limit: 1-100)         | 必要 |
-| POST     | `/api/v1/sleep-logs`            | 睡眠ログ作成                         | 必要 |
-| PATCH    | `/api/v1/sleep-logs/{log_id}`   | 睡眠ログ部分更新                     | 必要 |
-| GET      | `/api/v1/settings`              | 設定取得 (未保存時はデフォルト返却)  | 必要 |
-| PUT      | `/api/v1/settings`              | 設定保存・更新 (upsert)             | 必要 |
-| POST     | `/api/v1/sleep-plans`           | 週間睡眠プラン取得・生成 (force=true でキャッシュ無視) | 必要 |
+| メソッド | エンドポイント                | 説明                                                   | 認証 |
+| -------- | ----------------------------- | ------------------------------------------------------ | ---- |
+| GET      | `/`                           | API 情報                                               | 不要 |
+| GET      | `/api/v1/health`              | ヘルスチェック                                         | 不要 |
+| GET      | `/api/v1/health/db`           | DB 接続チェック                                        | 不要 |
+| POST     | `/api/v1/users`               | ユーザー作成                                           | 必要 |
+| GET      | `/api/v1/users`               | ユーザー一覧取得                                       | 必要 |
+| GET      | `/api/v1/users/{user_id}`     | ユーザー取得                                           | 必要 |
+| PUT      | `/api/v1/users/{user_id}`     | ユーザー更新                                           | 必要 |
+| DELETE   | `/api/v1/users/{user_id}`     | ユーザー削除                                           | 必要 |
+| GET      | `/api/v1/sleep-logs`          | 睡眠ログ取得 (limit: 1-100)                            | 必要 |
+| POST     | `/api/v1/sleep-logs`          | 睡眠ログ作成                                           | 必要 |
+| PATCH    | `/api/v1/sleep-logs/{log_id}` | 睡眠ログ部分更新                                       | 必要 |
+| GET      | `/api/v1/settings`            | 設定取得 (未保存時はデフォルト返却)                    | 必要 |
+| PUT      | `/api/v1/settings`            | 設定保存・更新 (upsert)                                | 必要 |
+| POST     | `/api/v1/sleep-plans`         | 週間睡眠プラン取得・生成 (force=true でキャッシュ無視) | 必要 |
 
 ---
 
@@ -341,51 +341,51 @@ backend/
 
 ### users
 
-| カラム     | 型        | 制約               |
-| ---------- | --------- | ------------------ |
-| id         | UUID      | PK                 |
-| email      | VARCHAR   | UNIQUE, NOT NULL   |
-| name       | VARCHAR   | NOT NULL           |
-| created_at | TIMESTAMP | DEFAULT now()      |
-| updated_at | TIMESTAMP | DEFAULT now()      |
+| カラム     | 型        | 制約             |
+| ---------- | --------- | ---------------- |
+| id         | UUID      | PK               |
+| email      | VARCHAR   | UNIQUE, NOT NULL |
+| name       | VARCHAR   | NOT NULL         |
+| created_at | TIMESTAMP | DEFAULT now()    |
+| updated_at | TIMESTAMP | DEFAULT now()    |
 
 ### sleep_logs
 
-| カラム               | 型        | 制約                  |
-| -------------------- | --------- | --------------------- |
-| id                   | UUID      | PK                    |
-| user_id              | UUID      | FK -> users.id        |
-| date                 | DATE      | UNIQUE per user       |
-| score                | INT       | 0-100                 |
-| scheduled_sleep_time | TIMESTAMP | NULLABLE              |
-| usage_penalty        | INT       | DEFAULT 0             |
-| environment_penalty  | INT       | DEFAULT 0             |
-| phase1_warning       | BOOL      | DEFAULT false         |
-| phase2_warning       | BOOL      | DEFAULT false         |
-| light_exceeded       | BOOL      | DEFAULT false         |
-| noise_exceeded       | BOOL      | DEFAULT false         |
-| mood                 | INT       | 1-5, NULLABLE         |
-| created_at           | TIMESTAMP | DEFAULT now()         |
+| カラム               | 型        | 制約            |
+| -------------------- | --------- | --------------- |
+| id                   | UUID      | PK              |
+| user_id              | UUID      | FK -> users.id  |
+| date                 | DATE      | UNIQUE per user |
+| score                | INT       | 0-100           |
+| scheduled_sleep_time | TIMESTAMP | NULLABLE        |
+| usage_penalty        | INT       | DEFAULT 0       |
+| environment_penalty  | INT       | DEFAULT 0       |
+| phase1_warning       | BOOL      | DEFAULT false   |
+| phase2_warning       | BOOL      | DEFAULT false   |
+| light_exceeded       | BOOL      | DEFAULT false   |
+| noise_exceeded       | BOOL      | DEFAULT false   |
+| mood                 | INT       | 1-5, NULLABLE   |
+| created_at           | TIMESTAMP | DEFAULT now()   |
 
 ### sleep_settings
 
-| カラム                     | 型        | 制約                  |
-| -------------------------- | --------- | --------------------- |
-| user_id                    | UUID      | PK, FK -> users.id    |
-| wake_up_hour               | INT       | DEFAULT 7             |
-| wake_up_minute             | INT       | DEFAULT 0             |
-| sleep_duration_hours       | INT       | DEFAULT 8             |
-| resilience_window_minutes  | INT       | DEFAULT 20            |
-| mission_enabled            | BOOL      | DEFAULT false         |
-| mission_target             | VARCHAR   | NULLABLE              |
-| preparation_minutes        | INT       | DEFAULT 30            |
-| ics_url                    | VARCHAR   | NULLABLE              |
-| override_date              | DATE      | NULLABLE              |
-| override_sleep_hour        | INT       | NULLABLE              |
-| override_sleep_minute      | INT       | NULLABLE              |
-| override_wake_hour         | INT       | NULLABLE              |
-| override_wake_minute       | INT       | NULLABLE              |
-| updated_at                 | TIMESTAMP | DEFAULT now()         |
+| カラム                    | 型        | 制約               |
+| ------------------------- | --------- | ------------------ |
+| user_id                   | UUID      | PK, FK -> users.id |
+| wake_up_hour              | INT       | DEFAULT 7          |
+| wake_up_minute            | INT       | DEFAULT 0          |
+| sleep_duration_hours      | INT       | DEFAULT 8          |
+| resilience_window_minutes | INT       | DEFAULT 20         |
+| mission_enabled           | BOOL      | DEFAULT false      |
+| mission_target            | VARCHAR   | NULLABLE           |
+| preparation_minutes       | INT       | DEFAULT 30         |
+| ics_url                   | VARCHAR   | NULLABLE           |
+| override_date             | DATE      | NULLABLE           |
+| override_sleep_hour       | INT       | NULLABLE           |
+| override_sleep_minute     | INT       | NULLABLE           |
+| override_wake_hour        | INT       | NULLABLE           |
+| override_wake_minute      | INT       | NULLABLE           |
+| updated_at                | TIMESTAMP | DEFAULT now()      |
 
 ### sleep_plan_cache
 
