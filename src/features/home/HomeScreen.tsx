@@ -1,4 +1,4 @@
-import React, { useMemo, useState, useEffect } from 'react';
+import React, { useMemo, useState, useEffect, useRef } from 'react';
 import {
   View,
   Text,
@@ -40,9 +40,16 @@ export const HomeScreen: React.FC = () => {
     void fetchPlan();
   }, [fetchLogs, fetchPlan]);
 
-  // AIプランが読み込まれたらスケジュール初期値として設定（まだオーバーライドされていない場合）
+  // AIプランが読み込まれたらスケジュール初期値として設定（初回のみ。ユーザーが解除した後に再同期しない）
+  const hasSyncedPlanToOverride = useRef(false);
+  const lastSyncedDate = useRef<string | null>(null);
   useEffect(() => {
-    if (todayPlan && !settings.todayOverride) {
+    const todayStr = new Date().toISOString().slice(0, 10);
+    if (lastSyncedDate.current !== todayStr) {
+      hasSyncedPlanToOverride.current = false;
+      lastSyncedDate.current = todayStr;
+    }
+    if (todayPlan && !settings.todayOverride && !hasSyncedPlanToOverride.current) {
       const sleepParts = todayPlan.recommendedSleepTime.split(':');
       const wakeParts = todayPlan.recommendedWakeTime.split(':');
 
@@ -53,6 +60,7 @@ export const HomeScreen: React.FC = () => {
           wakeHour: parseInt(wakeParts[0], 10),
           wakeMinute: parseInt(wakeParts[1], 10),
         });
+        hasSyncedPlanToOverride.current = true;
       }
     }
   }, [todayPlan, settings]);
@@ -62,26 +70,23 @@ export const HomeScreen: React.FC = () => {
   const effectiveWake = settings.getEffectiveWakeTime();
   const sleepTimeStr = `${effectiveSleep.hour.toString().padStart(2, '0')}:${effectiveSleep.minute.toString().padStart(2, '0')}`;
   const wakeTimeStr = `${effectiveWake.hour.toString().padStart(2, '0')}:${effectiveWake.minute.toString().padStart(2, '0')}`;
-  const isOverridden = useMemo(() => {
+
+  /** オーバーライドが有効か（今日の日付で todayOverride が設定されている） */
+  const isOverrideActive = useMemo(() => {
     if (!settings.todayOverride) return false;
     const todayStr = new Date().toISOString().slice(0, 10);
-    if (settings.todayOverride.date !== todayStr) return false;
+    return settings.todayOverride.date === todayStr;
+  }, [settings.todayOverride]);
 
-    // AIプランが存在する場合、AIプランと現在の override が完全に一致していれば「変更あり」扱いしない
-    if (todayPlan) {
-      const planSleep = todayPlan.recommendedSleepTime; // "HH:mm"
-      const planWake = todayPlan.recommendedWakeTime; // "HH:mm"
-      const overrideSleep = `${settings.todayOverride.sleepHour.toString().padStart(2, '0')}:${settings.todayOverride.sleepMinute.toString().padStart(2, '0')}`;
-      const overrideWake = `${settings.todayOverride.wakeHour.toString().padStart(2, '0')}:${settings.todayOverride.wakeMinute.toString().padStart(2, '0')}`;
-
-      // AIプランと時刻が同一であれば、事実上の「初期状態」とみなす
-      if (planSleep === overrideSleep && planWake === overrideWake) {
-        return false;
-      }
-    }
-
-    return true;
-  }, [settings.todayOverride, todayPlan]);
+  /** オーバーライドが AI プランと異なるか（手動で変更した状態） */
+  const isManuallyOverridden = useMemo(() => {
+    if (!isOverrideActive || !todayPlan) return false;
+    const planSleep = todayPlan.recommendedSleepTime;
+    const planWake = todayPlan.recommendedWakeTime;
+    const overrideSleep = `${settings.todayOverride!.sleepHour.toString().padStart(2, '0')}:${settings.todayOverride!.sleepMinute.toString().padStart(2, '0')}`;
+    const overrideWake = `${settings.todayOverride!.wakeHour.toString().padStart(2, '0')}:${settings.todayOverride!.wakeMinute.toString().padStart(2, '0')}`;
+    return planSleep !== overrideSleep || planWake !== overrideWake;
+  }, [isOverrideActive, todayPlan, settings.todayOverride]);
 
   // カスタムピッカー（ホイール）用の状態
   const [isPickerVisible, setPickerVisible] = useState(false);
@@ -314,12 +319,14 @@ export const HomeScreen: React.FC = () => {
           )}
 
           {/* スケジュールカード */}
-          <View style={[styles.scheduleCard, isOverridden && styles.scheduleCardOverridden]}>
+          <View style={[styles.scheduleCard, isOverrideActive && styles.scheduleCardOverridden]}>
             <View style={styles.scheduleHeader}>
               <Text style={styles.cardTitle}>📅 今日のスケジュール</Text>
-              {isOverridden && (
+              {isOverrideActive && (
                 <View style={styles.overrideBadge}>
-                  <Text style={styles.overrideBadgeText}>変更あり</Text>
+                  <Text style={styles.overrideBadgeText}>
+                    {isManuallyOverridden ? '変更あり' : 'オーバーライド中'}
+                  </Text>
                 </View>
               )}
             </View>
@@ -338,18 +345,26 @@ export const HomeScreen: React.FC = () => {
               </TouchableOpacity>
             </View>
 
-            {isOverridden && (
+            {isOverrideActive && (
               <View style={styles.editSection}>
                 <TouchableOpacity
                   style={styles.resetButton}
-                  onPress={() => settings.clearTodayOverride()}
+                  onPress={async () => {
+                    settings.clearTodayOverride();
+                    try {
+                      await settings.saveSettings();
+                      void fetchPlan();
+                    } catch {
+                      // ローカルはクリア済み。次回 saveSettings で同期される
+                    }
+                  }}
                 >
-                  <Text style={styles.resetButtonText}>↩ デフォルトに戻す</Text>
+                  <Text style={styles.resetButtonText}>↩ オーバーライドを解除</Text>
                 </TouchableOpacity>
               </View>
             )}
 
-            {!isOverridden && <Text style={styles.tapHint}>時刻をタップして変更</Text>}
+            {!isOverrideActive && <Text style={styles.tapHint}>時刻をタップして変更</Text>}
 
             {/* カスタム時間ピッカーモーダル */}
             <Modal

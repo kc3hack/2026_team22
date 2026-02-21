@@ -7,6 +7,8 @@ from __future__ import annotations
 
 import json
 import logging
+from datetime import datetime
+from zoneinfo import ZoneInfo
 from typing import Any, cast
 
 import httpx
@@ -14,6 +16,41 @@ import httpx
 from app.config import settings
 
 logger = logging.getLogger(__name__)
+
+JST = ZoneInfo("Asia/Tokyo")
+
+
+def _enrich_calendar_events_with_date_jst(events: list[Any]) -> list[dict[str, Any]]:
+    """
+    カレンダー予定に日本時間での日付（date_jst）を付与する。
+    start が ISO 8601 形式の場合、JST に変換して YYYY-MM-DD を付与。
+    これにより LLM が「当日か翌日か」を確実に判断できる。
+    """
+    result: list[dict[str, Any]] = []
+    for ev in events:
+        if isinstance(ev, dict):
+            enriched = dict(ev)
+        else:
+            enriched = {"title": str(ev)}
+        start_val = enriched.get("start")
+        if isinstance(start_val, str):
+            try:
+                if "T" in start_val:
+                    dt = datetime.fromisoformat(
+                        start_val.replace("Z", "+00:00")
+                    ).astimezone(JST)
+                    enriched["date_jst"] = dt.strftime("%Y-%m-%d")
+                elif len(start_val) >= 10 and start_val[:10].count("-") == 2:
+                    # YYYY-MM-DD 形式（終日イベントなど）
+                    enriched["date_jst"] = start_val[:10]
+                else:
+                    enriched["date_jst"] = None
+            except (ValueError, TypeError):
+                enriched["date_jst"] = None
+        else:
+            enriched["date_jst"] = None
+        result.append(enriched)
+    return result
 
 # デバッグ用: LLM ペイロードログの最大文字数（超えたら省略表示）
 LLM_PAYLOAD_LOG_MAX_CHARS = 12000
@@ -109,6 +146,9 @@ class OpenRouterClient:
         """
         today_str = today_date or ""
         today_override = settings.get("today_override")
+        # カレンダー予定に date_jst（日本時間での日付）を付与し、当日/翌日の判断を確実にする
+        enriched_events = _enrich_calendar_events_with_date_jst(calendar_events)
+
         user_content = (
             "以下を元に、このユーザー向けの「1週間の睡眠プラン」を JSON で返してください。\n"
             "タイムゾーンは Asia/Tokyo です。\n"
@@ -123,15 +163,20 @@ class OpenRouterClient:
             "}\n\n"
             "ルール:\n"
             "- 各要素に date（YYYY-MM-DD）を必須で含める。曜日ではなく日付で返す。\n"
-            "- importance: 翌日の予定の重要度。会議・試験・発表など重要な予定がある日は high、軽い予定は medium、予定なし・緩い日は low。\n"
-            "- next_day_event: 翌日の最も重要な予定のタイトル。該当なければ null。\n"
+            "- week_plan の各 date は「その日に就寝する日」を表します。つまり date が 2026-02-21 なら、21日の夜に寝て22日の朝に起きる日のプランです。\n"
+            "- importance と next_day_event は「翌日」の予定に基づきます。ここで「翌日」= date の次の日（date+1日）です。例: date が 2026-02-21 なら翌日は 2026-02-22。\n"
+            "- カレンダー予定の date_jst が各予定の「日本時間での日付」です。必ず date_jst を参照して、どの日付の予定かを判断してください。start/end の ISO 形式だけでは UTC と JST で日付がずれる場合があるため、date_jst を優先してください。\n"
+            "- importance: 翌日（date+1日）の予定の重要度。会議・試験・発表など重要な予定がある日は high、軽い予定は medium、予定なし・緩い日は low。\n"
+            "- next_day_event: 翌日（date+1日）の最も重要な予定のタイトル。該当なければ null。\n"
             "- preparation_minutes が設定にある場合、起床から家を出る（または予定に取りかかる）までにその分数が必要。外出予定の開始時刻から逆算して起床時刻を決める。\n"
             "- 平日: 理想就寝 23:00、理想起床 6:00。ただし予定を優先。\n"
             "- 休日: 理想就寝 24:00、理想起床 8:00。平日の睡眠不足を補うよう長めの睡眠を提案。\n"
             "- 十分な睡眠が取れない日は、前後数日で睡眠時間を長めに取り補う。\n"
             "- 睡眠ログの評価（score）が悪い日は、実質的な睡眠時間が短い可能性があると解釈して提案。\n"
             "- mood（気分）が低い日が続く場合は、睡眠の質や量の改善をアドバイスに含める。\n\n"
-            "カレンダー予定: " + json.dumps(calendar_events, ensure_ascii=False) + "\n\n"
+            "カレンダー予定（date_jst = その予定の日本時間での日付。当日/翌日の判断に必ず使用）: "
+            + json.dumps(enriched_events, ensure_ascii=False)
+            + "\n\n"
             "睡眠ログ: " + json.dumps(sleep_logs, ensure_ascii=False) + "\n\n"
             "設定: " + json.dumps(settings, ensure_ascii=False)
         )
