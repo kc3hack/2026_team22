@@ -124,7 +124,8 @@ export const useSleepSettingsStore = create<SleepSettings & SleepSettingsActions
       const now = new Date();
       const state = get();
       const sleepTime = new Date(now);
-      sleepTime.setHours(state.calculatedSleepHour, state.calculatedSleepMinute, 0, 0);
+      const effectiveSleep = state.getEffectiveSleepTime();
+      sleepTime.setHours(effectiveSleep.hour, effectiveSleep.minute, 0, 0);
 
       // 就寝時刻が現在より前なら翌日に設定
       if (sleepTime.getTime() <= now.getTime()) {
