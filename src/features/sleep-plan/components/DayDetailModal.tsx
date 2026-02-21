@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   View,
   Text,
@@ -12,6 +12,7 @@ import {
 } from 'react-native';
 import { COLORS } from '@shared/constants';
 import type { DailyPlan } from '../types';
+import { googleCalendar, type CalendarEvent } from '@shared/lib/googleCalendar';
 
 interface DayDetailModalProps {
   /** 表示するプラン */
@@ -81,37 +82,15 @@ const importanceDetail = (
   }
 };
 
-/** 就寝準備タイムライン生成 */
-const generatePrepTimeline = (
-  sleepTime: string
-): { time: string; label: string; icon: string; description: string }[] => {
-  const sleepMinutes = timeToMinutes(sleepTime);
-  return [
-    {
-      time: minutesToTime(sleepMinutes - 60),
-      label: '1時間前',
-      icon: '📱',
-      description: 'スマホ・PCの使用を控え、ブルーライトを避けましょう',
-    },
-    {
-      time: minutesToTime(sleepMinutes - 30),
-      label: '30分前',
-      icon: '🛀',
-      description: 'ぬるめのお風呂やストレッチでリラックスしましょう',
-    },
-    {
-      time: minutesToTime(sleepMinutes - 15),
-      label: '15分前',
-      icon: '🌙',
-      description: '照明を暗くし、リラックスできる環境を整えましょう',
-    },
-    {
-      time: sleepTime,
-      label: '就寝',
-      icon: '😴',
-      description: '目を閉じて、ゆっくり深呼吸を繰り返しましょう',
-    },
-  ];
+const formatTime = (date: Date): string => {
+  const h = String(date.getHours()).padStart(2, '0');
+  const m = String(date.getMinutes()).padStart(2, '0');
+  return `${h}:${m}`;
+};
+
+const formatEventTimeRange = (event: CalendarEvent): string => {
+  if (event.allDay) return '終日';
+  return `${formatTime(event.start)} - ${formatTime(event.end)}`;
 };
 
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
@@ -127,6 +106,8 @@ export const DayDetailModal: React.FC<DayDetailModalProps> = ({
 }) => {
   const slideAnim = useRef(new Animated.Value(SCREEN_HEIGHT)).current;
   const backdropAnim = useRef(new Animated.Value(0)).current;
+  const [dayEvents, setDayEvents] = useState<CalendarEvent[]>([]);
+  const [isLoadingEvents, setIsLoadingEvents] = useState(false);
 
   useEffect(() => {
     if (plan) {
@@ -143,6 +124,37 @@ export const DayDetailModal: React.FC<DayDetailModalProps> = ({
           useNativeDriver: true,
         }),
       ]).start();
+
+      // Fetch calendar events for the selected day
+      const fetchEvents = async () => {
+        setIsLoadingEvents(true);
+        try {
+          const [year, month, day] = plan.date.split('-').map(Number);
+          if (year !== undefined && month !== undefined && day !== undefined) {
+            const startOfDay = new Date(year, month - 1, day, 0, 0, 0);
+            const endOfDay = new Date(year, month - 1, day, 23, 59, 59);
+            const events = await googleCalendar.getEvents(startOfDay, endOfDay);
+            // 翌日の予定なども含まれることがあるため、この日の予定だけにフィルタリング
+            const filtered = events.filter(e => {
+              const eStart = e.start.getTime();
+              const eEnd = e.end.getTime();
+              const dayStart = startOfDay.getTime();
+              const dayEnd = endOfDay.getTime();
+              // イベントがこの日の範囲に一部でも被っているか
+              return eStart <= dayEnd && eEnd >= dayStart;
+            });
+            // 開始時刻順にソート
+            filtered.sort((a, b) => a.start.getTime() - b.start.getTime());
+            setDayEvents(filtered);
+          }
+        } catch (error) {
+          console.error('Failed to fetch day schedule:', error);
+        } finally {
+          setIsLoadingEvents(false);
+        }
+      };
+
+      fetchEvents();
     }
   }, [plan, slideAnim, backdropAnim]);
 
@@ -166,7 +178,6 @@ export const DayDetailModal: React.FC<DayDetailModalProps> = ({
 
   const evaluation = sleepEvaluation(plan.sleepDurationHours);
   const impDetail = importanceDetail(plan.importance, plan.nextDayEvent);
-  const prepTimeline = generatePrepTimeline(plan.recommendedSleepTime);
   const goalHours = 8;
   const goalRatio = Math.min(plan.sleepDurationHours / goalHours, 1);
 
@@ -301,26 +312,46 @@ export const DayDetailModal: React.FC<DayDetailModalProps> = ({
             </View>
           </View>
 
-          {/* ── 就寝準備タイムライン ── */}
+          {/* ── 1日の予定タイムライン ── */}
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>🛏️ 就寝準備タイムライン</Text>
-            <View style={styles.timeline}>
-              {prepTimeline.map((step, i) => (
-                <View key={step.label} style={styles.timelineItem}>
-                  {/* 縦線 */}
-                  {i < prepTimeline.length - 1 && <View style={styles.timelineLine} />}
-                  <View style={styles.timelineDot}>
-                    <Text style={styles.timelineDotIcon}>{step.icon}</Text>
-                  </View>
-                  <View style={styles.timelineContent}>
-                    <View style={styles.timelineHeader}>
-                      <Text style={styles.timelineTime}>{step.time}</Text>
-                      <Text style={styles.timelineLabel}>{step.label}</Text>
-                    </View>
-                    <Text style={styles.timelineDesc}>{step.description}</Text>
-                  </View>
+            <Text style={styles.sectionTitle}>📅 1日の予定</Text>
+            <View style={styles.scheduleTimelineCard}>
+              {isLoadingEvents ? (
+                <View style={styles.emptyScheduleContainer}>
+                  <Text style={styles.emptyScheduleText}>予定を取得中...</Text>
                 </View>
-              ))}
+              ) : dayEvents.length === 0 ? (
+                <View style={styles.emptyScheduleContainer}>
+                  <Text style={styles.emptyScheduleIcon}>☕️</Text>
+                  <Text style={styles.emptyScheduleText}>この日の予定はありません</Text>
+                  <Text style={styles.emptyScheduleSubText}>ゆっくりリラックスできる1日です</Text>
+                </View>
+              ) : (
+                <View style={styles.timeline}>
+                  {dayEvents.map((event, i) => (
+                    <View key={event.id || `event-${i}`} style={styles.timelineItem}>
+                      {/* 縦線 */}
+                      {i < dayEvents.length - 1 && <View style={styles.timelineLine} />}
+                      <View style={styles.timelineDot}>
+                        <View style={styles.timelineInnerDot} />
+                      </View>
+                      <View style={styles.timelineContent}>
+                        <View style={styles.timelineHeader}>
+                          <Text style={styles.timelineTime}>{formatEventTimeRange(event)}</Text>
+                        </View>
+                        <Text style={styles.timelineTitle} numberOfLines={2}>
+                          {event.title}
+                        </Text>
+                        {event.description && (
+                          <Text style={styles.timelineDesc} numberOfLines={2}>
+                            {event.description}
+                          </Text>
+                        )}
+                      </View>
+                    </View>
+                  ))}
+                </View>
+              )}
             </View>
           </View>
 
@@ -602,62 +633,93 @@ const styles = StyleSheet.create({
     lineHeight: 24,
   },
 
-  // ── 就寝準備タイムライン ──
+  // ── 1日の予定タイムライン ──
+  scheduleTimelineCard: {
+    backgroundColor: 'rgba(15, 23, 42, 0.6)',
+    borderRadius: 20,
+    padding: 20,
+    borderWidth: 1,
+    borderColor: 'rgba(51, 65, 85, 0.4)',
+  },
+  emptyScheduleContainer: {
+    alignItems: 'center',
+    paddingVertical: 16,
+  },
+  emptyScheduleIcon: {
+    fontSize: 32,
+    marginBottom: 12,
+  },
+  emptyScheduleText: {
+    fontSize: 17,
+    fontWeight: '600',
+    color: COLORS.text.dark,
+    marginBottom: 4,
+  },
+  emptyScheduleSubText: {
+    fontSize: 15,
+    color: '#94A3B8',
+  },
   timeline: {
     paddingLeft: 4,
   },
   timelineItem: {
     flexDirection: 'row',
     alignItems: 'flex-start',
-    marginBottom: 16,
+    marginBottom: 20,
     position: 'relative',
   },
   timelineLine: {
     position: 'absolute',
-    left: 19,
-    top: 42,
-    bottom: -16,
+    left: 11,
+    top: 24,
+    bottom: -20,
     width: 2,
-    backgroundColor: 'rgba(99, 102, 241, 0.2)',
+    backgroundColor: 'rgba(51, 65, 85, 0.6)',
   },
   timelineDot: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: 'rgba(99, 102, 241, 0.12)',
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    backgroundColor: '#1E293B',
     alignItems: 'center',
     justifyContent: 'center',
-    marginRight: 14,
-    borderWidth: 1,
-    borderColor: 'rgba(99, 102, 241, 0.25)',
+    marginRight: 16,
+    borderWidth: 2,
+    borderColor: COLORS.primary,
+    marginTop: 2,
+    zIndex: 1,
   },
-  timelineDotIcon: {
-    fontSize: 23,
+  timelineInnerDot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: COLORS.primary,
   },
   timelineContent: {
     flex: 1,
-    paddingTop: 2,
   },
   timelineHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
-    marginBottom: 4,
+    marginBottom: 6,
   },
   timelineTime: {
-    fontSize: 19,
+    fontSize: 15,
     fontWeight: '700',
     color: COLORS.primary,
     fontVariant: ['tabular-nums'],
+    letterSpacing: 0.5,
   },
-  timelineLabel: {
-    fontSize: 16,
-    color: '#64748B',
+  timelineTitle: {
+    fontSize: 17,
     fontWeight: '600',
+    color: COLORS.text.dark,
+    lineHeight: 24,
   },
   timelineDesc: {
-    fontSize: 17,
+    fontSize: 15,
     color: '#94A3B8',
     lineHeight: 20,
+    marginTop: 4,
   },
 });
