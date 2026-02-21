@@ -38,16 +38,7 @@ const minutesToTime = (minutes: number): string => {
   return `${hh}:${mm}`;
 };
 
-/** 時刻差分のテキスト */
-const timeDiffText = (current: string, previous: string): string | null => {
-  const diff = timeToMinutes(current) - timeToMinutes(previous);
-  if (diff === 0) return null;
-  const absDiff = Math.abs(diff);
-  const hh = Math.floor(absDiff / 60);
-  const mm = absDiff % 60;
-  const label = hh > 0 ? `${hh}時間${mm > 0 ? `${mm}分` : ''}` : `${mm}分`;
-  return diff > 0 ? `前日より${label}遅い` : `前日より${label}早い`;
-};
+
 
 /** 睡眠時間の評価テキスト */
 const sleepEvaluation = (hours: number): { text: string; emoji: string; color: string } => {
@@ -173,13 +164,6 @@ export const DayDetailModal: React.FC<DayDetailModalProps> = ({
 
   if (!plan) return null;
 
-  const prevPlan = selectedIndex > 0 ? allPlans[selectedIndex - 1] : null;
-  const sleepDiff = prevPlan
-    ? timeDiffText(plan.recommendedSleepTime, prevPlan.recommendedSleepTime)
-    : null;
-  const wakeDiff = prevPlan
-    ? timeDiffText(plan.recommendedWakeTime, prevPlan.recommendedWakeTime)
-    : null;
   const evaluation = sleepEvaluation(plan.sleepDurationHours);
   const impDetail = importanceDetail(plan.importance, plan.nextDayEvent);
   const prepTimeline = generatePrepTimeline(plan.recommendedSleepTime);
@@ -215,50 +199,56 @@ export const DayDetailModal: React.FC<DayDetailModalProps> = ({
             </TouchableOpacity>
           </View>
 
-          {/* ── 就寝・起床の詳細 ── */}
+          {/* ── 睡眠スケジュールと評価 ── */}
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>🌙 就寝・起床スケジュール</Text>
-            <View style={styles.timeDetailRow}>
-              <View style={styles.timeDetailBlock}>
-                <Text style={styles.timeDetailLabel}>就寝</Text>
-                <Text style={styles.timeDetailValue}>{plan.recommendedSleepTime}</Text>
-                {sleepDiff && <Text style={styles.timeDiffText}>{sleepDiff}</Text>}
-              </View>
-              <View style={styles.timeDetailArrow}>
-                <Text style={styles.timeDetailArrowIcon}>→</Text>
-              </View>
-              <View style={styles.timeDetailBlock}>
-                <Text style={styles.timeDetailLabel}>起床</Text>
-                <Text style={styles.timeDetailValue}>{plan.recommendedWakeTime}</Text>
-                {wakeDiff && <Text style={styles.timeDiffText}>{wakeDiff}</Text>}
-              </View>
-            </View>
-          </View>
+            <Text style={styles.sectionTitle}>🌙 睡眠スケジュールと評価</Text>
 
-          {/* ── 睡眠時間評価 ── */}
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle}>📊 睡眠時間の評価</Text>
-            <View style={styles.evalCard}>
-              <View style={styles.evalHeader}>
-                <Text style={styles.evalHours}>
-                  {plan.sleepDurationHours}
-                  <Text style={styles.evalUnit}> 時間</Text>
-                </Text>
-                <Text style={styles.evalGoal}>目標: {goalHours}時間</Text>
+            <View style={styles.combinedCard}>
+              {/* スケジュール部分 */}
+              <View style={styles.scheduleContainer}>
+                <View style={styles.timeDetailBlock}>
+                  <Text style={styles.timeDetailLabel}>就寝</Text>
+                  <Text style={styles.timeDetailValue}>{plan.recommendedSleepTime}</Text>
+                </View>
+                <View style={styles.timeDetailArrow}>
+                  <Text style={styles.timeDetailArrowIcon}>→</Text>
+                </View>
+                <View style={styles.timeDetailBlock}>
+                  <Text style={styles.timeDetailLabel}>起床</Text>
+                  <Text style={styles.timeDetailValue}>{plan.recommendedWakeTime}</Text>
+                </View>
               </View>
-              <View style={styles.evalBarTrack}>
-                <View
-                  style={[
-                    styles.evalBarFill,
-                    {
-                      width: `${goalRatio * 100}%`,
-                      backgroundColor: evaluation.color,
-                    },
-                  ]}
-                />
-              </View>
-              <View style={styles.evalMessageRow}>
-                <Text style={styles.evalEmoji}>{evaluation.emoji}</Text>
+
+              {/* 区切り線 */}
+              <View style={styles.divider} />
+
+              {/* 評価部分 */}
+              <View style={styles.evalContainer}>
+                <View style={styles.evalHeader}>
+                  <View style={styles.evalHoursWrapper}>
+                    <Text style={styles.evalEmoji}>{evaluation.emoji}</Text>
+                    <Text style={styles.evalHours}>
+                      {plan.sleepDurationHours}
+                      <Text style={styles.evalUnit}> 時間</Text>
+                    </Text>
+                  </View>
+                  <View style={styles.goalChip}>
+                    <Text style={styles.evalGoal}>目標: {goalHours}時間</Text>
+                  </View>
+                </View>
+
+                <View style={styles.evalBarTrack}>
+                  <View
+                    style={[
+                      styles.evalBarFill,
+                      {
+                        width: `${goalRatio * 100}%`,
+                        backgroundColor: evaluation.color,
+                      },
+                    ]}
+                  />
+                </View>
+
                 <Text style={[styles.evalMessage, { color: evaluation.color }]}>
                   {evaluation.text}
                 </Text>
@@ -392,13 +382,13 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   headerDay: {
-    fontSize: 34,
+    fontSize: 28,
     fontWeight: '800',
     color: COLORS.text.dark,
     letterSpacing: 0.5,
   },
   headerDate: {
-    fontSize: 19,
+    fontSize: 16,
     color: '#94A3B8',
     fontWeight: '500',
   },
@@ -428,99 +418,108 @@ const styles = StyleSheet.create({
     letterSpacing: 0.3,
   },
 
-  // ── 就寝・起床の詳細 ──
-  timeDetailRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
+  // ── 睡眠スケジュールと評価の一体型カード ──
+  combinedCard: {
     backgroundColor: 'rgba(15, 23, 42, 0.6)',
-    borderRadius: 16,
-    padding: 20,
+    borderRadius: 20,
     borderWidth: 1,
     borderColor: 'rgba(51, 65, 85, 0.4)',
+    overflow: 'hidden',
+  },
+  scheduleContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 24,
+    paddingBottom: 20,
   },
   timeDetailBlock: {
     flex: 1,
     alignItems: 'center',
   },
   timeDetailLabel: {
-    fontSize: 16,
+    fontSize: 15,
     color: '#94A3B8',
     fontWeight: '600',
-    marginBottom: 6,
+    marginBottom: 8,
+    letterSpacing: 0.5,
   },
   timeDetailValue: {
-    fontSize: 42,
+    fontSize: 44,
     fontWeight: '300',
     color: COLORS.text.dark,
     fontVariant: ['tabular-nums'],
     letterSpacing: 1,
   },
-  timeDiffText: {
-    fontSize: 14,
-    color: COLORS.primary,
-    fontWeight: '500',
-    marginTop: 6,
-  },
   timeDetailArrow: {
-    paddingHorizontal: 12,
+    paddingHorizontal: 8,
   },
   timeDetailArrowIcon: {
-    fontSize: 26,
-    color: 'rgba(99, 102, 241, 0.5)',
+    fontSize: 28,
+    color: 'rgba(99, 102, 241, 0.4)',
+    fontWeight: '300',
   },
-
-  // ── 睡眠時間評価 ──
-  evalCard: {
-    backgroundColor: 'rgba(15, 23, 42, 0.6)',
-    borderRadius: 16,
-    padding: 18,
-    borderWidth: 1,
-    borderColor: 'rgba(51, 65, 85, 0.4)',
+  divider: {
+    height: 1,
+    backgroundColor: 'rgba(51, 65, 85, 0.4)',
+    marginHorizontal: 20,
+  },
+  evalContainer: {
+    padding: 24,
+    paddingTop: 20,
+    backgroundColor: 'rgba(15, 23, 42, 0.3)',
   },
   evalHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  evalHoursWrapper: {
+    flexDirection: 'row',
     alignItems: 'baseline',
-    marginBottom: 12,
+    gap: 8,
+  },
+  evalEmoji: {
+    fontSize: 26,
   },
   evalHours: {
-    fontSize: 47,
+    fontSize: 38,
     fontWeight: '300',
     color: COLORS.text.dark,
     fontVariant: ['tabular-nums'],
   },
   evalUnit: {
-    fontSize: 21,
+    fontSize: 18,
     fontWeight: '500',
     color: '#94A3B8',
   },
+  goalChip: {
+    backgroundColor: 'rgba(51, 65, 85, 0.5)',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 12,
+  },
   evalGoal: {
-    fontSize: 17,
-    color: '#64748B',
-    fontWeight: '500',
+    fontSize: 14,
+    color: '#CBD5E1',
+    fontWeight: '600',
   },
   evalBarTrack: {
-    height: 6,
-    borderRadius: 3,
-    backgroundColor: 'rgba(51, 65, 85, 0.4)',
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: 'rgba(51, 65, 85, 0.5)',
     overflow: 'hidden',
-    marginBottom: 14,
+    marginBottom: 16,
   },
   evalBarFill: {
     height: '100%',
-    borderRadius: 3,
-  },
-  evalMessageRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  evalEmoji: {
-    fontSize: 21,
+    borderRadius: 4,
   },
   evalMessage: {
-    fontSize: 18,
+    fontSize: 17,
     fontWeight: '600',
+    textAlign: 'center',
+    letterSpacing: 0.3,
   },
 
   // ── 重要度 ──
