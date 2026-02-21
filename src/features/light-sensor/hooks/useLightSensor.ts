@@ -5,8 +5,13 @@ import BackgroundActions, { type TaskOptions } from 'react-native-background-act
 import { LIGHT_CONSTANTS, BACKGROUND_CONSTANTS } from '../constants';
 import { useLightSensorStore } from '../LightSensorStore';
 import type { LightSensorData, SleepEnvironment } from '../types';
+import { usePendingLastNightStore } from '@features/sleep-log/pendingLastNightStore';
+import { useSleepSettingsStore } from '@features/sleep-settings';
 
 let isBackgroundRunning = false;
+
+/** バックグラウンドタスク中に蓄積した照度（モジュール共有） */
+let nightReadings: number[] = [];
 
 interface UseLightSensorReturn {
   /** センサーデータ */
@@ -72,28 +77,67 @@ const BACKGROUND_DELAY_MS = 1000;
 
 const backgroundSensorTask = async (_options: TaskOptions): Promise<void> => {
   const delay = BACKGROUND_DELAY_MS;
+  nightReadings = [];
 
   try {
     LightSensor.setUpdateInterval(BACKGROUND_CONSTANTS.BACKGROUND_SENSOR_UPDATE_INTERVAL);
     const subscription = LightSensor.addListener(sensorData => {
-      console.warn('[Background] illuminance:', sensorData.illuminance, 'lux');
-      // ※ZustandやAsyncStorageに保存する処理をここに記述
+      nightReadings.push(sensorData.illuminance);
     });
     let count = 0;
-    // 【重要】タスクを稼働させ続けるためのループ
     while (isBackgroundRunning) {
       await sleep(delay);
       count++;
-      // ★ 生存確認用のログを追加
-      console.warn(`[Alive Check] Task is running... ${count} seconds`);
     }
 
-    // ループを抜けたら（タスクが停止されたら）クリーンアップ
     subscription.remove();
   } catch (error) {
     console.error('[Background] Error in light sensor task:', error);
   }
 };
+
+/**
+ * 蓄積した照度からスコアを算出（平均照度を環境スコアに変換）
+ */
+function aggregateReadingsToScore(readings: number[]): { score: number; lightExceeded: boolean } {
+  if (readings.length === 0) {
+    return { score: 70, lightExceeded: false };
+  }
+  const avgLux = readings.reduce((a, b) => a + b, 0) / readings.length;
+  const env = evaluateSleepEnvironment(avgLux);
+  const lightExceeded = avgLux > LIGHT_CONSTANTS.OPTIMAL_SLEEP_LUX;
+  return { score: env.score, lightExceeded };
+}
+
+/**
+ * モニター停止時に仮データを pendingLastNightStore にセットする
+ */
+function savePendingFromMonitorReadings(): void {
+  const { score, lightExceeded } = aggregateReadingsToScore(nightReadings);
+  nightReadings = []; // クリア
+
+  const d = new Date();
+  d.setDate(d.getDate() - 1);
+  const yesterdayStr = d.toISOString().slice(0, 10);
+
+  const settings = useSleepSettingsStore.getState();
+  const { hour, minute } = settings.getEffectiveSleepTime();
+  const scheduledDate = new Date(d);
+  scheduledDate.setHours(hour, minute, 0, 0);
+  const scheduledSleepTime = scheduledDate.getTime();
+
+  usePendingLastNightStore.getState().setPending({
+    date: yesterdayStr,
+    score,
+    scheduledSleepTime,
+    usagePenalty: 0,
+    environmentPenalty: lightExceeded ? 5 : 0,
+    phase1Warning: false,
+    phase2Warning: false,
+    lightExceeded,
+    noiseExceeded: false,
+  });
+}
 
 /**
  * 照度センサーを使用するカスタムフック
@@ -212,12 +256,15 @@ export const useLightSensor = (): UseLightSensorReturn => {
 
   /**
    * バックグラウンドタスクを停止
+   * 停止後、蓄積した照度から仮データを算出して pendingLastNightStore にセットする
    */
   const stopBackgroundTaskWithSensor = useCallback(async () => {
     try {
       if (Platform.OS === 'android') {
         isBackgroundRunning = false;
         await BackgroundActions.stop();
+        // モニターで記録した照度を集計し、昨夜分の仮データとして保持
+        savePendingFromMonitorReadings();
       }
       stopBackgroundTask();
       setError(null);

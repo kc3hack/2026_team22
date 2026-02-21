@@ -20,14 +20,106 @@
 
 ---
 
-## 3. 想定シーケンス
+## 3. シーケンス図
+
+### 3.1 就寝前：モニターで仮データをセット
+
+```mermaid
+sequenceDiagram
+    participant U as ユーザー
+    participant A as アプリ(UI)
+    participant M as モニター/センサー
+    participant P as pendingLastNightStore
+
+    U->>A: モニター開始
+    A->>M: センサー開始
+    Note over M: 就寝中: 照度・時刻などを記録
+    U->>A: 起床/停止
+    M->>A: 集計結果(score等)
+    A->>P: setPending(...)
+    Note over P: 仮データ保持
+```
+
+### 3.2 起床後：朝の振り返り（昨日のログが既にある場合）
+
+```mermaid
+sequenceDiagram
+    participant U as ユーザー
+    participant H as ホーム画面
+    participant S as useSleepLogStore
+    participant API as API
+
+    U->>H: アプリ起動
+    H->>S: fetchLogs()
+    S->>API: GET /sleep-logs
+    API-->>S: logs
+    S-->>H: 昨日のログあり
+    Note over H: 朝の振り返りカード表示
+    U->>H: 気分を選択
+    H->>S: setMood(id, mood)
+    S->>API: PATCH /sleep-logs/:id
+    API-->>S: 更新済みログ
+    S-->>H: logs 更新
+    Note over H: 気分反映完了
+```
+
+### 3.3 起床後：朝の振り返り（ログなし・仮データあり → 気分選択で自動保存）
+
+```mermaid
+sequenceDiagram
+    participant U as ユーザー
+    participant H as ホーム画面
+    participant P as pendingStore
+    participant S as useSleepLogStore
+    participant API as API
+
+    U->>H: アプリ起動
+    H->>S: fetchLogs()
+    S->>API: GET /sleep-logs
+    API-->>H: 昨日のログなし
+    H->>P: get pending
+    P-->>H: 仮データあり
+    Note over H: 朝の振り返りカード表示（スコアは仮データから）
+    U->>H: 気分を選択
+    H->>S: addLog(仮+気分)
+    S->>API: POST /sleep-logs
+    H->>P: clearPending()
+    H->>S: fetchLogs()
+    S->>API: GET /sleep-logs
+    Note over H: 1件作成・一覧更新
+```
+
+### 3.4 起床後：昨夜を記録（ログも仮データもなし → 手動フォーム）
+
+```mermaid
+sequenceDiagram
+    participant U as ユーザー
+    participant H as ホーム画面
+    participant Modal as AddSleepLogModal
+    participant S as useSleepLogStore
+    participant API as API
+
+    U->>H: アプリ起動
+    Note over H: 昨日のログなし・仮データなし
+    Note over H: 「昨夜を記録」カード表示
+    U->>H: タップ
+    H->>Modal: モーダル表示
+    U->>Modal: 日付・スコア等入力
+    U->>Modal: 保存タップ
+    Modal->>S: addLog(entry)
+    S->>API: POST /sleep-logs
+    Modal->>H: モーダル閉じる
+    H->>S: fetchLogs()
+    S->>API: GET /sleep-logs
+```
+
+### 3.5 フロー整理（テキスト）
 
 ```
 [就寝前]
   ユーザー: モニター開始（照度センサー等）
   アプリ:   バックグラウンドで照度・時間帯を記録
-            → 集計結果（スコア・ペナルティ・警告）を「昨夜分の仮データ」として保持
-            （Zustand / AsyncStorage など。日付は「今夜寝たら明日の朝に保存する日付」= 今日）
+            → 集計結果（スコア・ペナルティ・警告）を pendingLastNightStore に保持
 
 [起床後]
   ユーザー: アプリを開く
@@ -77,6 +169,13 @@
 
 この流れで、「朝の振り返りで選んだら自動的に記録が保存される」かつ「センサー等はアプリが記録し、ユーザー入力は気分中心」にできる。
 
-### モニター側の接続（今後の実装）
+### モニター側の接続（実装済み）
 
-就寝前モニター（照度センサー等）で集計が終わったら、`usePendingLastNightStore.getState().setPending({ date: 昨日, score, ... })` を呼ぶ。日付は「記録対象の日」（就寝した日 = 今日の日付でよいか、または「昨夜」= 今日の前日かは仕様による。朝に保存するので date は「昨日」で統一）。
+照度センサー画面で「バックグラウンド計測停止」を押すと、`useLightSensor` の `stopBackgroundTask` 内で以下を実行する:
+
+1. バックグラウンド中に蓄積した照度（`nightReadings`）を集計
+2. 平均照度からスコア・`lightExceeded` を算出
+3. 設定から就寝予定時刻を取得
+4. `usePendingLastNightStore.getState().setPending({ date: 昨日, score, ... })` を呼ぶ
+
+これにより、翌朝ホームで「朝の振り返り」カードにモニターのスコアが表示され、気分を選ぶと自動で API に保存される。

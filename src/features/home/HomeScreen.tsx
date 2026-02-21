@@ -199,7 +199,9 @@ export const HomeScreen: React.FC = () => {
               initialMood={logForYesterday?.mood ?? null}
               onSelectMood={mood => {
                 if (logForYesterday) {
-                  void setMood(logForYesterday.id, mood);
+                  void setMood(logForYesterday.id, mood).then(() => {
+                    void fetchPlan(); // 気分変更でプラン再生成（sleep_logs の入力が変わるため）
+                  });
                 } else if (pendingLastNight) {
                   void addLog({
                     date: pendingLastNight.date,
@@ -215,6 +217,7 @@ export const HomeScreen: React.FC = () => {
                   }).then(() => {
                     clearPendingLastNight();
                     void fetchLogs();
+                    void fetchPlan(); // 新規ログ追加でプラン再生成
                   });
                 }
               }}

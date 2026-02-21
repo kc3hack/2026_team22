@@ -95,6 +95,7 @@ const toSnakeCaseBody = (req: SleepPlanRequest): Record<string, unknown> => {
       date: l.date,
       score: l.score,
       scheduled_sleep_time: l.scheduledSleepTime,
+      mood: l.mood ?? null,
     })),
     settings: {
       wake_up_time: req.settings.wakeUpTime,

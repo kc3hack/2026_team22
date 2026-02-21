@@ -83,6 +83,8 @@ export interface SleepLogSummary {
   score: number;
   /** 就寝予定時刻 (ISO 8601) */
   scheduledSleepTime: string;
+  /** 気分 (0-5, null=未記録) - 署名ハッシュに含め気分変更でプラン再生成するため必須 */
+  mood?: number | null;
 }
 
 /** 睡眠設定の要約（リクエスト用） */
