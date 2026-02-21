@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { getTodayLocalString } from '@shared/lib';
 import type { SleepSettings, TodayOverride } from './types';
 import { fetchSettingsFromApi, saveSettingsToApi } from './settingsApi';
 
@@ -135,7 +136,7 @@ export const useSleepSettingsStore = create<SleepSettings & SleepSettingsActions
     },
 
     setTodayOverride: override => {
-      const today = new Date().toISOString().slice(0, 10);
+      const today = getTodayLocalString();
       set({ todayOverride: { ...override, date: today } });
     },
 
@@ -143,7 +144,7 @@ export const useSleepSettingsStore = create<SleepSettings & SleepSettingsActions
 
     getEffectiveSleepTime: () => {
       const state = get();
-      const today = new Date().toISOString().slice(0, 10);
+      const today = getTodayLocalString();
       if (state.todayOverride && state.todayOverride.date === today) {
         return { hour: state.todayOverride.sleepHour, minute: state.todayOverride.sleepMinute };
       }
@@ -152,7 +153,7 @@ export const useSleepSettingsStore = create<SleepSettings & SleepSettingsActions
 
     getEffectiveWakeTime: () => {
       const state = get();
-      const today = new Date().toISOString().slice(0, 10);
+      const today = getTodayLocalString();
       if (state.todayOverride && state.todayOverride.date === today) {
         return { hour: state.todayOverride.wakeHour, minute: state.todayOverride.wakeMinute };
       }

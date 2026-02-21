@@ -13,6 +13,7 @@ import {
   Platform,
 } from 'react-native';
 import { COLORS } from '@shared/constants';
+import { getYesterdayLocalString } from '@shared/lib';
 import type { SleepLogEntry } from '../types';
 
 const MOOD_OPTIONS = [
@@ -37,9 +38,7 @@ interface AddSleepLogModalProps {
 }
 
 function getYesterdayISO(): string {
-  const d = new Date();
-  d.setDate(d.getDate() - 1);
-  return d.toISOString().slice(0, 10);
+  return getYesterdayLocalString();
 }
 
 export const AddSleepLogModal: React.FC<AddSleepLogModalProps> = ({

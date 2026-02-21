@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { useSleepMonitorStore } from '../sleepMonitorStore';
 import { usePendingLastNightStore } from '@features/sleep-log/pendingLastNightStore';
 import { useSleepSettingsStore } from '@features/sleep-settings';
+import { toLocalDateString, getYesterdayLocalString } from '@shared/lib';
 import { useUsageTracker } from './useUsageTracker';
 import { useNoiseSensor } from './useNoiseSensor';
 import { useLightSensor } from '@features/light-sensor';
@@ -193,12 +194,8 @@ export const useSleepMonitor = (): UseSleepMonitorReturn => {
     // 集計結果（スコア・警告・環境）を pendingLastNightStore に保存
     const state = useSleepMonitorStore.getState();
     const date = state.sleepTime
-      ? new Date(state.sleepTime).toISOString().slice(0, 10)
-      : (() => {
-          const d = new Date();
-          d.setDate(d.getDate() - 1);
-          return d.toISOString().slice(0, 10);
-        })();
+      ? toLocalDateString(new Date(state.sleepTime))
+      : getYesterdayLocalString();
     const settings = useSleepSettingsStore.getState();
     const { hour, minute } = settings.getEffectiveSleepTime();
     const d = new Date(date);

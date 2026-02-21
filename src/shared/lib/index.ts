@@ -20,3 +20,10 @@ export {
   canSendNotification,
   resetNotificationCooldowns,
 } from './notifications';
+
+export {
+  toLocalDateString,
+  getTodayLocalString,
+  getYesterdayLocalString,
+  addDaysToDateString,
+} from './dateUtils';

@@ -9,6 +9,7 @@ import {
   Platform,
 } from 'react-native';
 import { COLORS } from '@shared/constants';
+import { addDaysToDateString } from '@shared/lib';
 import type { SleepLogEntry } from '../types';
 
 // Android で LayoutAnimation を有効化
@@ -49,11 +50,13 @@ const getMoodLabel = (mood: number | null): string => {
   return labels[mood] ?? '未記録';
 };
 
-/** 日付を読みやすくフォーマット (2025-02-21 → 2/21 金) */
-const formatDate = (dateStr: string): string => {
-  const d = new Date(dateStr);
+/** 就寝日 (YYYY-MM-DD) を起床日に変換してフォーマット (2025-02-20 → 2/21 金) */
+const formatWakeDate = (bedDateStr: string): string => {
+  const wakeDateStr = addDaysToDateString(bedDateStr, 1);
+  const [y, m, d] = wakeDateStr.split('-').map(Number);
+  const date = new Date(y, m - 1, d);
   const weekDays = ['日', '月', '火', '水', '木', '金', '土'];
-  return `${d.getMonth() + 1}/${d.getDate()} (${weekDays[d.getDay()]})`;
+  return `${date.getMonth() + 1}/${date.getDate()} (${weekDays[date.getDay()]})`;
 };
 
 /** スコアに応じた色 */
@@ -105,7 +108,7 @@ export const SleepLogList: React.FC<SleepLogListProps> = ({ logs, onEditRequest 
             {/* ヘッダー行 */}
             <View style={styles.logHeader}>
               <View style={styles.dateRow}>
-                <Text style={styles.logDate}>{formatDate(item.date)}</Text>
+                <Text style={styles.logDate}>{formatWakeDate(item.date)}</Text>
                 <Text style={styles.moodEmoji}>{getMoodEmoji(item.mood)}</Text>
               </View>
               <View style={styles.scoreRow}>
