@@ -1,5 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useSleepMonitorStore } from '../sleepMonitorStore';
+import { usePendingLastNightStore } from '@features/sleep-log/pendingLastNightStore';
+import { useSleepSettingsStore } from '@features/sleep-settings';
 import { useUsageTracker } from './useUsageTracker';
 import { useNoiseSensor } from './useNoiseSensor';
 import { useLightSensor } from '@features/light-sensor';
@@ -175,6 +177,7 @@ export const useSleepMonitor = (): UseSleepMonitorReturn => {
 
   /**
    * 監視を停止
+   * 停止時にスコア・警告履歴を pendingLastNightStore にセットし、朝の振り返りで保存できるようにする
    */
   const stopMonitoring = useCallback(() => {
     store.stopMonitoring();
@@ -186,6 +189,34 @@ export const useSleepMonitor = (): UseSleepMonitorReturn => {
       clearInterval(phaseUpdateRef.current);
       phaseUpdateRef.current = null;
     }
+
+    // 集計結果（スコア・警告・環境）を pendingLastNightStore に保存
+    const state = useSleepMonitorStore.getState();
+    const date = state.sleepTime
+      ? new Date(state.sleepTime).toISOString().slice(0, 10)
+      : (() => {
+          const d = new Date();
+          d.setDate(d.getDate() - 1);
+          return d.toISOString().slice(0, 10);
+        })();
+    const settings = useSleepSettingsStore.getState();
+    const { hour, minute } = settings.getEffectiveSleepTime();
+    const d = new Date(date);
+    d.setHours(hour, minute, 0, 0);
+    const scheduledSleepTime = state.sleepTime ?? d.getTime();
+
+    usePendingLastNightStore.getState().setPending({
+      date,
+      score: state.score.total,
+      scheduledSleepTime,
+      usagePenalty: state.score.usagePenalty,
+      usageMinutes: state.usage.usageMinutes,
+      environmentPenalty: state.score.environmentPenalty,
+      phase1Warning: state.score.phase1Warning,
+      phase2Warning: state.score.phase2Warning,
+      lightExceeded: state.score.lightExceeded,
+      noiseExceeded: state.score.noiseExceeded,
+    });
   }, [store, usageTracker, noiseSensor]);
 
   /**

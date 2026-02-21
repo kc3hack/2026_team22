@@ -38,6 +38,7 @@ async def test_create_sleep_log(client: AsyncClient, ensure_test_user):
             "date": "2026-02-26",
             "score": 85,
             "usage_penalty": 5,
+            "usage_minutes": 22,
             "environment_penalty": 3,
             "phase1_warning": False,
             "phase2_warning": True,
@@ -50,6 +51,7 @@ async def test_create_sleep_log(client: AsyncClient, ensure_test_user):
     assert data["user_id"] == TEST_USER_ID
     assert data["date"] == "2026-02-26"
     assert data["score"] == 85
+    assert data["usage_minutes"] == 22
     assert data["mood"] is None
     assert data["id"] is not None
 

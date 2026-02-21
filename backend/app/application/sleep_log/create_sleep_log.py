@@ -13,6 +13,7 @@ class CreateSleepLogInput:
     score: int
     scheduled_sleep_time: datetime | None = None
     usage_penalty: int = 0
+    usage_minutes: int = 0
     environment_penalty: int = 0
     phase1_warning: bool = False
     phase2_warning: bool = False
@@ -32,6 +33,7 @@ class CreateSleepLogUseCase:
             score=input.score,
             scheduled_sleep_time=input.scheduled_sleep_time,
             usage_penalty=input.usage_penalty,
+            usage_minutes=input.usage_minutes,
             environment_penalty=input.environment_penalty,
             phase1_warning=input.phase1_warning,
             phase2_warning=input.phase2_warning,

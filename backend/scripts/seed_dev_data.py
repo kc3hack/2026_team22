@@ -55,31 +55,42 @@ def main() -> None:
                 conn.commit()
                 return
 
-            # スコアは 70〜90 でばらつかせる
-            rows = [
-                (
+            # バリエーションのあるテストデータ（UI確認用）
+            # 各日: (score, usage_penalty, usage_minutes, environment_penalty,
+            #        phase1_warning, phase2_warning, light_exceeded, noise_exceeded, mood)
+            samples = [
+                (95, 0, 5, 0, False, False, False, False, 5),   # 昨日: 良好
+                (75, 20, 22, 0, True, False, False, False, 4),  # 2日前: スマホ22分→減点
+                (55, 60, 38, 0, True, True, False, False, 2),   # 3日前: スマホ38分→大減点
+                (100, 0, 0, 0, False, False, False, False, 5),  # 4日前: 完璧
+                (85, 0, 8, 5, False, False, True, False, 4),    # 5日前: 光オーバー
+                (70, 20, 25, 5, True, False, True, False, 3),   # 6日前: スマホ+環境
+            ]
+            rows = []
+            for i, d in enumerate(to_insert):
+                s = samples[i % len(samples)]
+                rows.append((
                     str(uuid.uuid4()),
                     user_id,
                     d,
-                    70 + (abs(hash(d.isoformat())) % 21),
+                    s[0],
                     None,
-                    0,
-                    0,
-                    False,
-                    False,
-                    False,
-                    False,
-                    None,
-                )
-                for d in to_insert
-            ]
+                    s[1],
+                    s[2],
+                    s[3],
+                    s[4],
+                    s[5],
+                    s[6],
+                    s[7],
+                    s[8],
+                ))
 
             execute_values(
                 cur,
                 """
                 INSERT INTO sleep_logs (
                     id, user_id, date, score, scheduled_sleep_time,
-                    usage_penalty, environment_penalty,
+                    usage_penalty, usage_minutes, environment_penalty,
                     phase1_warning, phase2_warning, light_exceeded, noise_exceeded, mood
                 ) VALUES %s
                 """,

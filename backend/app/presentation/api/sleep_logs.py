@@ -61,6 +61,7 @@ async def create_sleep_log(
         score=body.score,
         scheduled_sleep_time=body.scheduled_sleep_time,
         usage_penalty=body.usage_penalty,
+        usage_minutes=body.usage_minutes,
         environment_penalty=body.environment_penalty,
         phase1_warning=body.phase1_warning,
         phase2_warning=body.phase2_warning,

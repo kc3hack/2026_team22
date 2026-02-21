@@ -17,6 +17,7 @@ class SleepLogRecord(Protocol):
     score: int
     scheduled_sleep_time: datetime | None
     usage_penalty: int
+    usage_minutes: int
     environment_penalty: int
     phase1_warning: bool
     phase2_warning: bool
@@ -44,6 +45,7 @@ class ISleepLogRepository(Protocol):
         score: int,
         scheduled_sleep_time: datetime | None = None,
         usage_penalty: int = 0,
+        usage_minutes: int = 0,
         environment_penalty: int = 0,
         phase1_warning: bool = False,
         phase2_warning: bool = False,

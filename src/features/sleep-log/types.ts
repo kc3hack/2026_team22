@@ -14,6 +14,8 @@ export interface SleepLogEntry {
   score: number;
   /** スマホ操作減点 */
   usagePenalty: number;
+  /** スマホ使用時間（分） */
+  usageMinutes: number;
   /** 環境減点 */
   environmentPenalty: number;
 

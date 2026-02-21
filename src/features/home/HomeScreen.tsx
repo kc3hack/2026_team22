@@ -16,7 +16,6 @@ import { useSleepSettingsStore } from '@features/sleep-settings';
 import { WheelPicker } from '@shared/components/WheelPicker';
 import { useSleepLogStore } from '@features/sleep-log';
 import { usePendingLastNightStore } from '@features/sleep-log/pendingLastNightStore';
-import { AddSleepLogModal } from '@features/sleep-log/components/AddSleepLogModal';
 import { useSleepPlanStore } from '@features/sleep-plan';
 import { MorningReviewCard } from './components/MorningReviewCard';
 
@@ -31,7 +30,6 @@ export const HomeScreen: React.FC = () => {
   const { pending: pendingLastNight, clearPending: clearPendingLastNight } =
     usePendingLastNightStore();
   const latestLog = logs[0] ?? null;
-  const [addLastNightModalVisible, setAddLastNightModalVisible] = useState(false);
   const { fetchPlan } = useSleepPlanStore();
   const todayPlan = useSleepPlanStore(state => state.getTodayPlan());
 
@@ -208,10 +206,6 @@ export const HomeScreen: React.FC = () => {
   const showMorningReview =
     (__DEV__ || isMorning) && (hasLogForYesterday || pendingLastNight !== null);
 
-  /** 昨夜を記録（手動）: 昨日のログがなく、アプリの仮データもないときだけ表示。 */
-  const needRecordLastNight =
-    (__DEV__ || isMorning) && !hasLogForYesterday && pendingLastNight === null;
-
   const importanceColor = {
     high: COLORS.error,
     medium: COLORS.warning,
@@ -227,21 +221,6 @@ export const HomeScreen: React.FC = () => {
         </View>
 
         <View style={styles.content}>
-          {/* 昨夜を記録（朝で昨夜のログがない場合） */}
-          {needRecordLastNight && (
-            <TouchableOpacity
-              style={styles.recordLastNightCard}
-              onPress={() => setAddLastNightModalVisible(true)}
-              activeOpacity={0.8}
-            >
-              <Text style={styles.recordLastNightEmoji}>🌙</Text>
-              <Text style={styles.recordLastNightTitle}>昨夜を記録しましょう</Text>
-              <Text style={styles.recordLastNightSub}>
-                タップして日付・スコアを入力し、昨夜の睡眠を保存します
-              </Text>
-            </TouchableOpacity>
-          )}
-
           {/* 朝の振り返りカード（ログあり→気分だけ更新 / 仮データあり→気分選択で自動保存） */}
           {showMorningReview && (logForYesterday || pendingLastNight) && (
             <MorningReviewCard
@@ -262,6 +241,7 @@ export const HomeScreen: React.FC = () => {
                     score: pendingLastNight.score,
                     scheduledSleepTime: pendingLastNight.scheduledSleepTime,
                     usagePenalty: pendingLastNight.usagePenalty,
+                    usageMinutes: pendingLastNight.usageMinutes ?? 0,
                     environmentPenalty: pendingLastNight.environmentPenalty,
                     phase1Warning: pendingLastNight.phase1Warning,
                     phase2Warning: pendingLastNight.phase2Warning,
@@ -437,15 +417,6 @@ export const HomeScreen: React.FC = () => {
           </View>
         </View>
       </ScrollView>
-
-      <AddSleepLogModal
-        visible={addLastNightModalVisible}
-        initialDate={yesterdayStr}
-        title="昨夜を記録"
-        onAdd={entry => addLog(entry)}
-        onSuccess={() => void fetchLogs()}
-        onClose={() => setAddLastNightModalVisible(false)}
-      />
     </SafeAreaView>
   );
 };
@@ -480,27 +451,6 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingHorizontal: 16,
     gap: 16,
-  },
-  recordLastNightCard: {
-    backgroundColor: 'rgba(59, 130, 246, 0.12)',
-    borderRadius: 16,
-    padding: 20,
-    borderWidth: 1,
-    borderColor: 'rgba(59, 130, 246, 0.35)',
-  },
-  recordLastNightEmoji: {
-    fontSize: 32,
-    marginBottom: 8,
-  },
-  recordLastNightTitle: {
-    fontSize: 20,
-    fontWeight: '700',
-    color: COLORS.text.dark,
-    marginBottom: 6,
-  },
-  recordLastNightSub: {
-    fontSize: 15,
-    color: '#94A3B8',
   },
   // AI プランカード
   planCard: {

@@ -12,6 +12,7 @@ class SleepLogCreate(BaseModel):
     score: int = Field(..., ge=0, le=100, description="睡眠スコア 0-100")
     scheduled_sleep_time: dt.datetime | None = Field(None, description="予定就寝時刻")
     usage_penalty: int = Field(0, ge=0, description="使用ペナルティ")
+    usage_minutes: int = Field(0, ge=0, description="スマホ使用時間（分）")
     environment_penalty: int = Field(0, ge=0, description="環境ペナルティ")
     phase1_warning: bool = Field(False, description="Phase1 警告")
     phase2_warning: bool = Field(False, description="Phase2 警告")
@@ -31,6 +32,7 @@ class SleepLogUpdate(BaseModel):
     score: int | None = Field(None, ge=0, le=100, description="睡眠スコア 0-100")
     scheduled_sleep_time: dt.datetime | None = Field(None, description="予定就寝時刻")
     usage_penalty: int | None = Field(None, ge=0)
+    usage_minutes: int | None = Field(None, ge=0, description="スマホ使用時間（分）")
     environment_penalty: int | None = Field(None, ge=0)
     phase1_warning: bool | None = None
     phase2_warning: bool | None = None
@@ -46,6 +48,7 @@ class SleepLogResponse(BaseModel):
     score: int
     scheduled_sleep_time: dt.datetime | None
     usage_penalty: int
+    usage_minutes: int
     environment_penalty: int
     phase1_warning: bool
     phase2_warning: bool

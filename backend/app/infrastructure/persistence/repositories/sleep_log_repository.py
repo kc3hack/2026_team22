@@ -53,6 +53,7 @@ class SleepLogRepository:
         score: int,
         scheduled_sleep_time: datetime | None = None,
         usage_penalty: int = 0,
+        usage_minutes: int = 0,
         environment_penalty: int = 0,
         phase1_warning: bool = False,
         phase2_warning: bool = False,
@@ -67,6 +68,7 @@ class SleepLogRepository:
             score=score,
             scheduled_sleep_time=scheduled_sleep_time,
             usage_penalty=usage_penalty,
+            usage_minutes=usage_minutes,
             environment_penalty=environment_penalty,
             phase1_warning=phase1_warning,
             phase2_warning=phase2_warning,
@@ -98,6 +100,7 @@ class SleepLogRepository:
         score: int | None = None,
         scheduled_sleep_time: datetime | None = None,
         usage_penalty: int | None = None,
+        usage_minutes: int | None = None,
         environment_penalty: int | None = None,
         phase1_warning: bool | None = None,
         phase2_warning: bool | None = None,
@@ -117,6 +120,8 @@ class SleepLogRepository:
             row.scheduled_sleep_time = scheduled_sleep_time
         if usage_penalty is not None:
             row.usage_penalty = usage_penalty
+        if usage_minutes is not None:
+            row.usage_minutes = usage_minutes
         if environment_penalty is not None:
             row.environment_penalty = environment_penalty
         if phase1_warning is not None:
