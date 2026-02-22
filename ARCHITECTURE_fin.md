@@ -17,7 +17,7 @@
 | State Management | Zustand (Global) / React Hooks (Local) | v5              |
 | Styling          | StyleSheet (React Native 標準)         | -               |
 | 認証             | Supabase Auth                          | -               |
-| センサー         | expo-sensors, expo-camera, expo-av     | -               |
+| センサー         | expo-sen∆sors, expo-camera, expo-av     | -               |
 | 通知             | expo-notifications                     | -               |
 | バックグラウンド | react-native-background-actions        | -               |
 
