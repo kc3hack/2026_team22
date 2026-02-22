@@ -165,7 +165,7 @@ flowchart TD
 ## 7. データフロー（システム間連携）
 
 ```mermaid
-flowchart LR
+flowchart TD
     subgraph Device["Android デバイス"]
         FE["React Native - Expo SDK 54"]
         SENSOR["デバイスセンサー: 照度・騒音・カメラ"]
