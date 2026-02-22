@@ -199,7 +199,6 @@ graph LR
     API --> DB
 
     style ローカル開発 fill:#e1f5fe
-    style 将来: AWS fill:#fff3e0
 ```
 
 #### BaaS への過度な依存を排除しセキュリティを担保
