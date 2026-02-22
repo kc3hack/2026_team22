@@ -138,11 +138,10 @@ export const DayDetailModal: React.FC<DayDetailModalProps> = ({
             // 翌日の予定なども含まれることがあるため、この日の予定だけにフィルタリング
             const filtered = events.filter(e => {
               const eStart = e.start.getTime();
-              const eEnd = e.end.getTime();
               const dayStart = startOfDay.getTime();
               const dayEnd = endOfDay.getTime();
-              // イベントがこの日の範囲に一部でも被っているか
-              return eStart <= dayEnd && eEnd >= dayStart;
+              // 前日から開始している予定は除外（その日に開始する予定のみ表示）
+              return eStart >= dayStart && eStart <= dayEnd;
             });
             // 開始時刻順にソート
             filtered.sort((a, b) => a.start.getTime() - b.start.getTime());
