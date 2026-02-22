@@ -166,35 +166,35 @@ flowchart TD
 
 ```mermaid
 flowchart LR
-    subgraph Device[Android デバイス]
-        FE[React Native<br/>Expo SDK 54]
-        SENSOR[デバイスセンサー<br/>照度 / 騒音 / カメラ]
-        STORE[Zustand Stores<br/>auth / settings / monitor<br/>log / plan / alarm]
+    subgraph Device["Android デバイス"]
+        FE["React Native - Expo SDK 54"]
+        SENSOR["デバイスセンサー: 照度・騒音・カメラ"]
+        STORE["Zustand Stores: auth, settings, monitor, log, plan, alarm"]
     end
 
-    subgraph External[外部サービス]
-        SUPA[Supabase Auth<br/>JWT 発行・検証]
-        GCAL[Google Calendar<br/>ICS フィード]
-        LLM[OpenRouter API<br/>LLM 睡眠プラン生成]
+    subgraph External["外部サービス"]
+        SUPA["Supabase Auth - JWT 発行・検証"]
+        GCAL["Google Calendar - ICS フィード"]
+        LLM["OpenRouter API - LLM 睡眠プラン生成"]
     end
 
-    subgraph Backend[FastAPI バックエンド]
-        API[/api/v1/<br/>REST エンドポイント]
-        UC[Application 層<br/>ユースケース]
-        REPO[Infrastructure 層<br/>リポジトリ]
+    subgraph Backend["FastAPI バックエンド"]
+        API["REST API エンドポイント"]
+        UC["Application 層 - ユースケース"]
+        REPO["Infrastructure 層 - リポジトリ"]
     end
 
-    DB[(PostgreSQL<br/>users / sleep_logs<br/>settings / plan_cache)]
+    DB[("PostgreSQL: users, sleep_logs, settings, plan_cache")]
 
-    FE <-->|authenticatedFetch<br/>+ JWT| API
-    FE <-->|ログイン / サインアップ| SUPA
-    FE -->|ICS 取得| GCAL
-    SENSOR -->|環境データ| STORE
+    FE <-->|"authenticatedFetch + JWT"| API
+    FE <-->|"ログイン・サインアップ"| SUPA
+    FE -->|"ICS 取得"| GCAL
+    SENSOR -->|"環境データ"| STORE
     STORE <--> FE
 
     API --> UC
     UC --> REPO
     REPO <--> DB
-    UC -->|プラン生成| LLM
-    API -->|JWT 検証| SUPA
+    UC -->|"プラン生成"| LLM
+    API -->|"JWT 検証"| SUPA
 ```
