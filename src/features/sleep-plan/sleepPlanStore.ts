@@ -17,6 +17,7 @@ import type {
 } from './types';
 import { fetchSleepPlan } from './api/sleepPlanApi';
 import { googleCalendar } from '@shared/lib/googleCalendar';
+import { toLocalISOString } from '@shared/lib/dateUtils';
 import { useSleepSettingsStore } from '../sleep-settings/sleepSettingsStore';
 import { useSleepLogStore } from '../sleep-log/sleepLogStore';
 
@@ -99,7 +100,7 @@ export const useSleepPlanStore = create<SleepPlanState & SleepPlanActions>((set,
       const sleepLogs: SleepLogSummary[] = logsState.logs.slice(0, 7).map(log => ({
         date: log.date,
         score: log.score,
-        scheduledSleepTime: new Date(log.scheduledSleepTime).toISOString(),
+        scheduledSleepTime: toLocalISOString(new Date(log.scheduledSleepTime)),
         mood: log.mood ?? null,
       }));
 
@@ -111,8 +112,8 @@ export const useSleepPlanStore = create<SleepPlanState & SleepPlanActions>((set,
 
       const calendarEvents = rawEvents.map(e => ({
         title: e.title,
-        start: e.start.toISOString(),
-        end: e.end.toISOString(),
+        start: toLocalISOString(e.start),
+        end: toLocalISOString(e.end),
         allDay: e.allDay,
       }));
 

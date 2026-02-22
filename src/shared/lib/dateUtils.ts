@@ -42,3 +42,25 @@ export function addDaysToDateString(dateStr: string, days: number): string {
   date.setDate(date.getDate() + days);
   return toLocalDateString(date);
 }
+
+/**
+ * 日付をローカルタイムゾーンのISO8601風文字列 (YYYY-MM-DDTHH:mm:ss+HH:mm) で返す
+ */
+export function toLocalISOString(d: Date): string {
+  const tzOffset = -d.getTimezoneOffset();
+  const diff = tzOffset >= 0 ? '+' : '-';
+  const pad = (n: number) => String(n).padStart(2, '0');
+
+  const off = Math.abs(tzOffset);
+  const offHours = pad(Math.floor(off / 60));
+  const offMins = pad(off % 60);
+
+  const YYYY = d.getFullYear();
+  const MM = pad(d.getMonth() + 1);
+  const DD = pad(d.getDate());
+  const hh = pad(d.getHours());
+  const mm = pad(d.getMinutes());
+  const ss = pad(d.getSeconds());
+
+  return `${YYYY}-${MM}-${DD}T${hh}:${mm}:${ss}${diff}${offHours}:${offMins}`;
+}

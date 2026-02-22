@@ -26,4 +26,5 @@ export {
   getTodayLocalString,
   getYesterdayLocalString,
   addDaysToDateString,
+  toLocalISOString,
 } from './dateUtils';
