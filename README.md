@@ -89,9 +89,17 @@ SleepSupportApp は、AI 駆動の総合睡眠支援 Android アプリケーシ�
     <td>
   <tr>
     <td width="33%"><img src="images/Screenshot_sleep_13.png" width="100%"></td>
-  </tr></td>
   </tr>
 </table>
+
+- 睡眠モニタ > 睡眠環境 > 照度・音圧が規定値を超えると赤色に変わります！
+<table>
+  <tr>
+    <td width="33%"><img src="images/Screenshot_sleep_14.png" width="33%"></td>
+  </tr>
+</table>
+
+
 
 ### 基本的な使い方
 
