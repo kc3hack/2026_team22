@@ -63,7 +63,7 @@ SleepSupportApp は、AI 駆動の総合睡眠支援 Android アプリケーシ�
 
 ## 操作説明・デモ動画
 
-[デモ動画はこちら](https://www.youtube.com/watch?v=fbzGp0XJGq8)
+[デモ動画はこちら](https://youtube.com/shorts/rWXppu_L6qY)
 
 ### 基本的な使い方
 
